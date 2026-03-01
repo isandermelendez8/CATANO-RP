@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cataño RP — Puerto Rico's Finest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#c9a84c;--gold2:#f0c86a;--gold3:#8b6914;--dark:#080808;--dark2:#0f0f0f;--dark3:#161616;--dark4:#1e1e1e;--text:#e8d5a3;--muted:#7a6a4a}
+    html{scroll-behavior:smooth}
+    body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;overflow-x:hidden}
+
+    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(8,8,8,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:70px}
+    .nav-logo img{height:48px;filter:drop-shadow(0 0 8px rgba(201,168,76,0.5))}
+    .nav-links{display:flex;gap:28px;list-style:none}
+    .nav-links a{color:var(--text);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .2s}
+    .nav-links a:hover{color:var(--gold2)}
+    .nav-cta{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:10px 22px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all .2s;text-decoration:none;display:inline-block}
+    .nav-cta:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-1px)}
+
+    #hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding-top:70px}
+    .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.45) saturate(.85);z-index:0}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,8,.2) 0%,rgba(8,8,8,.05) 40%,rgba(8,8,8,.92) 100%);z-index:1}
+    .hero-content{position:relative;z-index:2}
+    .hero-logo{width:min(520px,82vw);filter:drop-shadow(0 0 40px rgba(201,168,76,.6));animation:logoFloat 3s ease-in-out infinite alternate}
+    @keyframes logoFloat{from{transform:translateY(0);filter:drop-shadow(0 0 30px rgba(201,168,76,.5))}to{transform:translateY(-10px);filter:drop-shadow(0 0 60px rgba(201,168,76,.9))}}
+    .hero-tagline{font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,3vw,28px);letter-spacing:8px;color:var(--gold);margin-top:16px;text-shadow:0 0 20px rgba(201,168,76,.5)}
+    .hero-sub{font-size:13px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-top:8px}
+    .hero-btns{display:flex;gap:16px;justify-content:center;margin-top:40px;flex-wrap:wrap}
+    .btn-primary{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:14px 36px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;text-decoration:none;display:inline-block}
+    .btn-primary:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,.4)}
+    .btn-outline{background:transparent;color:var(--gold);padding:14px 36px;border:1px solid var(--gold3);cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;text-decoration:none;display:inline-block}
+    .btn-outline:hover{background:rgba(201,168,76,.1);transform:translateY(-2px)}
+
+    #stats-bar{background:rgba(12,12,12,.98);border-top:1px solid rgba(201,168,76,.2);border-bottom:1px solid rgba(201,168,76,.2);display:flex;justify-content:center;flex-wrap:wrap}
+    .stat-item{display:flex;flex-direction:column;align-items:center;padding:26px 44px;border-right:1px solid rgba(201,168,76,.1);min-width:150px}
+    .stat-item:last-child{border-right:none}
+    .stat-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gold2);line-height:1;text-shadow:0 0 20px rgba(201,168,76,.4)}
+    .stat-label{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:4px}
+    .dot{width:8px;height:8px;border-radius:50%;background:#4caf50;display:inline-block;margin-right:6px;animation:pulse 2s infinite}
+    .live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(230,57,70,.15);border:1px solid rgba(230,57,70,.4);color:#e63946;font-size:10px;letter-spacing:2px;padding:4px 10px;font-weight:700;margin-left:10px;vertical-align:middle}
+    .live-dot{width:6px;height:6px;border-radius:50%;background:#e63946;animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+
+    .sec{position:relative;z-index:1;padding:90px 40px;max-width:1200px;margin:0 auto}
+    .sec-full{background:var(--dark2);padding:90px 0}
+    .section-sub{text-align:center;color:var(--muted);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,5vw,60px);color:var(--gold);letter-spacing:4px;text-align:center;margin-bottom:12px;text-shadow:0 0 30px rgba(201,168,76,.3)}
+    .section-line{width:80px;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto 56px}
+
+    /* WHITELIST */
+    .wl-wrap{background:var(--dark2);padding:90px 40px}
+    .wl-box{max-width:660px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:48px;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px))}
+    .wl-form{display:flex;flex-direction:column;gap:16px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .fg{display:flex;flex-direction:column;gap:7px}
+    .fg label{font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+    .fg input,.fg select,.fg textarea{background:var(--dark4);border:1px solid rgba(201,168,76,.2);color:var(--text);padding:11px 14px;font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:border-color .2s;resize:vertical}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold)}
+    .fg select option{background:var(--dark4)}
+    .wl-notice{background:rgba(201,168,76,.04);border-left:3px solid var(--gold3);padding:13px 16px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:4px}
+    .wl-btn{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:15px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:14px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;width:100%;margin-top:8px}
+    .wl-btn:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-2px)}
+
+    /* UPDATES */
+    .updates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
+    .update-card{background:var(--dark3);border:1px solid rgba(201,168,76,.15);overflow:hidden;transition:transform .25s,border-color .25s;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
+    .update-card:hover{transform:translateY(-4px);border-color:rgba(201,168,76,.4)}
+    .update-img-el{width:100%;height:175px;object-fit:cover;display:block}
+    .update-ph{width:100%;height:175px;background:linear-gradient(135deg,var(--dark4),var(--dark3));display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:2px}
+    .update-body{padding:20px}
+    .update-tag{display:inline-block;background:rgba(201,168,76,.1);color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;margin-bottom:10px}
+    .update-title{font-size:19px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.2}
+    .update-desc{font-size:13px;color:var(--muted);line-height:1.6}
+    .update-date{font-size:10px;color:var(--gold3);letter-spacing:1px;margin-top:14px}
+
+    /* GALLERY */
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;max-width:1200px;margin:0 auto;padding:0 40px}
+    .gallery-item{position:relative;overflow:hidden;aspect-ratio:16/9;cursor:pointer;border:1px solid rgba(201,168,76,.1)}
+    .gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
+    .gallery-item:hover img{transform:scale(1.08)}
+    .gallery-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+    .gallery-item:hover .gallery-ov{opacity:1}
+    .gallery-ph{background:linear-gradient(135deg,var(--dark3),var(--dark4));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:11px;letter-spacing:2px;width:100%;height:100%;min-height:150px}
+
+    /* TEAM */
+    .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}
+    .team-card{background:var(--dark3);border:1px solid rgba(201,168,76,.15);padding:28px 18px;text-align:center;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));transition:border-color .2s}
+    .team-card:hover{border-color:rgba(201,168,76,.4)}
+    .team-avatar{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--dark4));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;border:2px solid rgba(201,168,76,.3);font-family:'Bebas Neue';color:var(--gold)}
+    .team-name{font-size:17px;font-weight:700;color:var(--text)}
+    .team-role{display:inline-block;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-top:6px;background:rgba(201,168,76,.08);padding:4px 10px}
+
+    /* DISCORD */
+    .discord-block{background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:56px 38px;text-align:center;max-width:680px;margin:0 auto;clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px)}
+    .discord-big{font-family:'Bebas Neue',sans-serif;font-size:68px;color:var(--gold2);line-height:1;text-shadow:0 0 30px rgba(201,168,76,.5)}
+    .discord-online-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0 22px;color:var(--muted);font-size:12px;letter-spacing:2px}
+    .discord-btn{display:inline-block;background:#5865F2;color:#fff;padding:14px 38px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;text-decoration:none;transition:all .25s;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%)}
+    .discord-btn:hover{background:#4752c4;transform:translateY(-2px);box-shadow:0 8px 30px rgba(88,101,242,.4)}
+
+    /* ADMIN */
+    .admin-wrap{background:var(--dark2);padding:90px 40px}
+    .admin-box{max-width:940px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:38px}
+    .admin-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid rgba(201,168,76,.1)}
+    .admin-t{font-family:'Bebas Neue';font-size:26px;color:var(--gold);letter-spacing:3px}
+    .tabs{display:flex;gap:4px;margin-bottom:26px;flex-wrap:wrap}
+    .tab{background:var(--dark4);border:1px solid rgba(201,168,76,.1);color:var(--muted);padding:10px 20px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:2px;font-size:11px;text-transform:uppercase;transition:all .2s}
+    .tab.active,.tab:hover{background:rgba(201,168,76,.1);border-color:var(--gold3);color:var(--gold)}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .ai{background:var(--dark4);border:1px solid rgba(201,168,76,.15);color:var(--text);padding:11px 14px;font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:border-color .2s;width:100%}
+    .ai:focus{border-color:var(--gold)}
+    .at{background:var(--dark4);border:1px solid rgba(201,168,76,.15);color:var(--text);padding:11px 14px;width:100%;min-height:110px;font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:border-color .2s;resize:vertical}
+    .at:focus{border-color:var(--gold)}
+    .ir{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .ab{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:11px 24px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all .2s;margin-top:8px}
+    .ab:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-1px)}
+    .ab-d{background:linear-gradient(135deg,#7a1a1a,#c0392b);color:#fff}
+    .al{display:flex;flex-direction:column;gap:10px}
+    .ali{background:var(--dark4);border:1px solid rgba(201,168,76,.1);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+    .ali-t{font-weight:700;font-size:15px;color:var(--text)}
+    .ali-m{font-size:11px;color:var(--muted);margin-top:3px}
+    .aa{display:flex;gap:7px}
+    .badge{display:inline-block;padding:3px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+    .bp{background:rgba(255,165,0,.15);color:orange;border:1px solid rgba(255,165,0,.3)}
+    .ba{background:rgba(76,175,80,.15);color:#4caf50;border:1px solid rgba(76,175,80,.3)}
+    .bd{background:rgba(230,57,70,.15);color:#e63946;border:1px solid rgba(230,57,70,.3)}
+    .upload-area{border:2px dashed rgba(201,168,76,.25);padding:38px;text-align:center;cursor:pointer;transition:border-color .2s;color:var(--muted);font-size:12px;letter-spacing:2px;display:block}
+    .upload-area:hover{border-color:var(--gold3);color:var(--gold)}
+
+    footer{background:var(--dark2);border-top:1px solid rgba(201,168,76,.15);padding:56px 40px 28px;text-align:center}
+    .f-logo{width:110px;margin:0 auto 18px;opacity:.7}
+    .f-txt{color:var(--muted);font-size:11px;letter-spacing:2px}
+    .f-links{display:flex;gap:22px;justify-content:center;margin:18px 0;flex-wrap:wrap}
+    .f-links a{color:var(--muted);text-decoration:none;font-size:11px;letter-spacing:1px;transition:color .2s}
+    .f-links a:hover{color:var(--gold)}
+
+    .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center}
+    .modal-ov.open{display:flex}
+    .modal{background:var(--dark3);border:1px solid rgba(201,168,76,.3);padding:38px;max-width:480px;width:90%;position:relative}
+    .mc{position:absolute;top:14px;right:18px;font-size:22px;color:var(--muted);cursor:pointer;background:none;border:none;transition:color .2s}
+    .mc:hover{color:var(--gold)}
+    .mt{font-family:'Bebas Neue';font-size:26px;color:var(--gold);margin-bottom:22px;letter-spacing:3px}
+
+    .notif{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--dark3);border:1px solid var(--gold3);padding:14px 22px;max-width:300px;font-size:13px;color:var(--text);transform:translateX(120%);transition:transform .4s}
+    .notif.show{transform:translateX(0)}
+
+    .reveal{opacity:0;transform:translateY(24px);transition:all .6s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    @media(max-width:768px){
+      nav{padding:0 18px}
+      .nav-links{display:none}
+      .form-row,.ir{grid-template-columns:1fr}
+      .stat-item{padding:18px 22px}
+      .sec{padding:60px 18px}
+      .gallery-grid{padding:0 18px}
+      .wl-box{padding:26px 18px}
+      .admin-box{padding:22px 14px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><img src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/cee79335-1fe0-423c-8072-277523baccaf.png" alt="Cataño RP"></div>
+  <ul class="nav-links">
+    <li><a href="#hero">Inicio</a></li>
+    <li><a href="#wl">Whitelist</a></li>
+    <li><a href="#updates">Noticias</a></li>
+    <li><a href="#gallery">Galería</a></li>
+    <li><a href="#team">Equipo</a></li>
+    <li><a href="#discord">Discord</a></li>
+    <li><a href="#admin">Admin</a></li>
+  </ul>
+  <a href="#wl" class="nav-cta">Aplicar Whitelist</a>
+</nav>
+
+<!-- HERO -->
+<div id="hero" style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding-top:70px">
+  <video class="hero-video" autoplay muted loop playsinline preload="auto">
+    <source src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/Intro.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <img src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/cee79335-1fe0-423c-8072-277523baccaf.png" alt="Cataño RP" class="hero-logo">
+    <p class="hero-tagline">Puerto Rico's Finest</p>
+    <p class="hero-sub">A GTA V Roleplay Experience</p>
+    <div class="hero-btns">
+      <a href="#wl" class="btn-primary">Aplicar Whitelist</a>
+      <a href="#discord" class="btn-outline">Unirse al Discord</a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div id="stats-bar">
+  <div class="stat-item"><span class="stat-num"><span class="dot"></span><span id="players-num">--</span><span class="live-badge"><span class="live-dot"></span>LIVE</span></span><span class="stat-label">Jugadores Online</span></div>
+  <div class="stat-item"><span class="stat-num" id="discord-num">--</span><span class="stat-label">Miembros Discord</span></div>
+  <div class="stat-item"><span class="stat-num" id="wl-num">0</span><span class="stat-label">Whitelisted</span></div>
+  <div class="stat-item"><span class="stat-num">24/7</span><span class="stat-label">Servidor Activo</span></div>
+</div>
+
+<!-- WHITELIST -->
+<div id="wl" class="wl-wrap">
+  <p class="section-sub reveal">Únete a la experiencia</p>
+  <h2 class="section-title reveal">Aplicación Whitelist</h2>
+  <div class="section-line"></div>
+  <div class="wl-box reveal">
+    <div class="wl-notice">⚠️ Lee las reglas antes de aplicar. Las aplicaciones son revisadas por el staff en 24-72 horas via Discord.</div>
+    <form class="wl-form" id="wl-form" onsubmit="submitWL(event)">
+      <div class="form-row">
+        <div class="fg"><label>Nombre IC</label><input type="text" placeholder="Ej: Juan Pérez" required></div>
+        <div class="fg"><label>Discord</label><input type="text" placeholder="Ej: usuario#0000" required></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Edad</label><input type="number" placeholder="Ej: 22" min="16" required></div>
+        <div class="fg"><label>¿Experiencia en RP?</label>
+          <select required><option value="">Selecciona...</option><option>Sí, tengo experiencia</option><option>Un poco</option><option>No, soy nuevo</option></select>
+        </div>
+      </div>
+      <div class="fg"><label>Historia de tu personaje</label><textarea placeholder="Cuéntanos sobre tu personaje, motivaciones..." rows="5" required></textarea></div>
+      <div class="fg"><label>¿Por qué Cataño RP?</label><textarea placeholder="¿Qué te atrae del servidor?" rows="3" required></textarea></div>
+      <div class="fg"><label>¿Cómo nos encontraste?</label>
+        <select required><option value="">Selecciona...</option><option>Discord</option><option>YouTube</option><option>TikTok</option><option>Un amigo</option><option>Otro</option></select>
+      </div>
+      <button type="submit" class="wl-btn">Enviar Aplicación</button>
+    </form>
+  </div>
+</div>
+
+<!-- UPDATES -->
+<div id="updates" class="sec">
+  <p class="section-sub reveal">Lo último del servidor</p>
+  <h2 class="section-title reveal">Actualizaciones</h2>
+  <div class="section-line"></div>
+  <div class="updates-grid" id="updates-grid"></div>
+  <div style="text-align:center;margin-top:38px"><button class="btn-outline" onclick="openModal('upd-modal')">+ Agregar Actualización</button></div>
+</div>
+
+<!-- GALLERY -->
+<div id="gallery" class="sec-full">
+  <div style="padding:0 40px">
+    <p class="section-sub reveal" style="text-align:center">Momentos del servidor</p>
+    <h2 class="section-title reveal">Galería</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="gallery-grid" id="gallery-grid"></div>
+  <div style="text-align:center;margin-top:38px;padding:0 40px">
+    <label for="gallery-upload" class="btn-primary" style="cursor:pointer;display:inline-block">📷 Agregar Fotos</label>
+    <input type="file" id="gallery-upload" accept="image/*" multiple style="display:none" onchange="addGallery(event)">
+  </div>
+</div>
+
+<!-- TEAM -->
+<div id="team" class="sec">
+  <p class="section-sub reveal">Los que hacen posible el servidor</p>
+  <h2 class="section-title reveal">Nuestro Equipo</h2>
+  <div class="section-line"></div>
+  <div class="team-grid" id="team-grid"></div>
+  <div style="text-align:center;margin-top:38px"><button class="btn-outline" onclick="openModal('team-modal')">+ Agregar Miembro</button></div>
+</div>
+
+<!-- DISCORD -->
+<div id="discord" class="sec-full">
+  <div style="padding:0 40px">
+    <p class="section-sub reveal" style="text-align:center">Únete a la comunidad</p>
+    <h2 class="section-title reveal">Discord</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="discord-block reveal" style="max-width:680px;margin:0 auto">
+    <div style="font-size:56px;margin-bottom:18px">💬</div>
+    <div class="discord-big" id="discord-big">--</div>
+    <div class="discord-online-row"><span class="dot"></span><span id="disc-online">--</span> miembros en línea ahora</div>
+    <div style="display:flex;gap:32px;justify-content:center;margin-bottom:22px">
+      <div style="text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold2)" id="discord-total-big">--</div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted)">TOTAL MIEMBROS</div>
+      </div>
+      <div style="width:1px;background:rgba(201,168,76,.15)"></div>
+      <div style="text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:#4caf50" id="discord-online-big">--</div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted)">EN LÍNEA</div>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:26px;line-height:1.7;max-width:440px;margin-left:auto;margin-right:auto">Únete a nuestro Discord para noticias, soporte, eventos y ser parte de la comunidad número 1 de RP de Puerto Rico.</p>
+    <a id="discord-btn-link" href="https://discord.gg/catanorp" target="_blank" class="discord-btn">Unirse al Discord</a>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="admin-wrap">
+  <p class="section-sub reveal" style="text-align:center">Solo staff autorizado</p>
+  <h2 class="section-title reveal">Panel Admin</h2>
+  <div class="section-line"></div>
+  <div class="admin-box reveal">
+    <div class="admin-hdr">
+      <span class="admin-t">🛡️ Panel de Administración</span>
+      <span style="color:var(--muted);font-size:12px;letter-spacing:1px">Staff Cataño RP</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('t-wl',this)">Whitelists</button>
+      <button class="tab" onclick="switchTab('t-upd',this)">Actualizaciones</button>
+      <button class="tab" onclick="switchTab('t-gal',this)">Galería</button>
+      <button class="tab" onclick="switchTab('t-team',this)">Equipo</button>
+      <button class="tab" onclick="switchTab('t-srv',this)">Servidor</button>
+    </div>
+
+    <div id="t-wl" class="tab-content active">
+      <div class="al" id="wl-admin-list"></div>
+    </div>
+
+    <div id="t-upd" class="tab-content">
+      <div class="ir">
+        <input id="upd-title" class="ai" placeholder="Título de la actualización">
+        <input id="upd-tag" class="ai" placeholder="Etiqueta (NUEVO, PARCHE, EVENTO)">
+      </div>
+      <textarea id="upd-desc" class="at" placeholder="Descripción..." style="margin-bottom:14px"></textarea>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">IMAGEN (OPCIONAL)</label>
+      <input id="upd-img" type="file" accept="image/*" class="ai" style="padding:8px;margin-bottom:14px">
+      <button class="ab" onclick="addUpdate()">Publicar Actualización</button>
+      <div id="updates-admin-list" style="margin-top:20px;display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+    <div id="t-gal" class="tab-content">
+      <label class="upload-area" for="admin-gal-upload">
+        <div>📁 Arrastra imágenes o haz click para subir</div>
+        <div style="font-size:10px;margin-top:6px">JPG, PNG, WebP</div>
+      </label>
+      <input type="file" id="admin-gal-upload" accept="image/*" multiple style="display:none" onchange="addGallery(event)">
+      <div id="gal-preview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px;margin-top:14px"></div>
+    </div>
+
+    <div id="t-team" class="tab-content">
+      <div class="ir">
+        <input id="team-name" class="ai" placeholder="Nombre del miembro">
+        <input id="team-role" class="ai" placeholder="Rol (Owner, Admin, Moderador)">
+      </div>
+      <input id="team-emoji" class="ai" placeholder="Emoji del avatar (👑 🛡️ ⭐)" style="margin-bottom:14px">
+      <button class="ab" onclick="addTeam()">Agregar Miembro</button>
+      <div id="team-admin-list" style="margin-top:18px;display:flex;flex-direction:column;gap:9px"></div>
+    </div>
+
+    <div id="t-srv" class="tab-content">
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🔴 FIVEMANAGE SERVER ID (para jugadores en tiempo real)</label>
+      <div style="display:flex;gap:10px;margin-bottom:18px">
+        <input id="srv-fivemid" class="ai" placeholder="Ej: abc123xyz — encuentra esto en tu FiveManage dashboard" style="flex:1">
+        <button class="ab" onclick="saveSrv('fivemid')" style="margin-top:0;white-space:nowrap">Conectar</button>
+      </div>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">IP DEL SERVIDOR FIVEM</label>
+      <div style="display:flex;gap:10px;margin-bottom:18px">
+        <input id="srv-ip" class="ai" placeholder="connect cfx.re/join/XXXXXX" style="flex:1">
+        <button class="ab" onclick="saveSrv('ip')" style="margin-top:0;white-space:nowrap">Guardar</button>
+      </div>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">LINK DE DISCORD</label>
+      <div style="display:flex;gap:10px;margin-bottom:18px">
+        <input id="srv-disc" class="ai" placeholder="https://discord.gg/..." style="flex:1">
+        <button class="ab" onclick="saveSrv('disc')" style="margin-top:0;white-space:nowrap">Guardar</button>
+      </div>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">JUGADORES ONLINE (MANUAL)</label>
+      <div style="display:flex;gap:10px;margin-bottom:18px">
+        <input id="srv-players" class="ai" placeholder="Ej: 48" style="flex:1">
+        <button class="ab" onclick="saveSrv('players')" style="margin-top:0;white-space:nowrap">Actualizar</button>
+      </div>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">MIEMBROS DISCORD (MANUAL)</label>
+      <div style="display:flex;gap:10px">
+        <input id="srv-discm" class="ai" placeholder="Ej: 1240" style="flex:1">
+        <button class="ab" onclick="saveSrv('discm')" style="margin-top:0;white-space:nowrap">Actualizar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <img src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/cee79335-1fe0-423c-8072-277523baccaf.png" alt="Cataño RP" class="f-logo">
+  <p class="f-txt">PUERTO RICO'S FINEST • A GTA V EXPERIENCE</p>
+  <div class="f-links">
+    <a href="#hero">Inicio</a><a href="#wl">Whitelist</a><a href="#updates">Actualizaciones</a>
+    <a href="#gallery">Galería</a><a href="#team">Equipo</a><a href="#discord">Discord</a>
+  </div>
+  <p class="f-txt" style="margin-top:18px">© 2025 Cataño RP — Todos los derechos reservados</p>
+</footer>
+
+<!-- UPDATE MODAL -->
+<div id="upd-modal" class="modal-ov" onclick="if(event.target===this)closeModal('upd-modal')">
+  <div class="modal">
+    <button class="mc" onclick="closeModal('upd-modal')">✕</button>
+    <div class="mt">Nueva Actualización</div>
+    <div class="fg" style="margin-bottom:12px"><label>Título</label><input id="m-upd-title" class="ai" placeholder="Título..."></div>
+    <div class="fg" style="margin-bottom:16px"><label>Descripción</label><textarea id="m-upd-desc" class="at" placeholder="Descripción..."></textarea></div>
+    <button class="ab" onclick="addUpdateModal()" style="width:100%">Publicar</button>
+  </div>
+</div>
+
+<!-- TEAM MODAL -->
+<div id="team-modal" class="modal-ov" onclick="if(event.target===this)closeModal('team-modal')">
+  <div class="modal">
+    <button class="mc" onclick="closeModal('team-modal')">✕</button>
+    <div class="mt">Agregar al Equipo</div>
+    <div class="fg" style="margin-bottom:12px"><label>Nombre</label><input id="m-team-name" class="ai" placeholder="Nombre del miembro"></div>
+    <div class="fg" style="margin-bottom:12px"><label>Rol</label><input id="m-team-role" class="ai" placeholder="Owner, Admin, Moderador..."></div>
+    <div class="fg" style="margin-bottom:16px"><label>Emoji</label><input id="m-team-emoji" class="ai" placeholder="👑"></div>
+    <button class="ab" onclick="addTeamModal()" style="width:100%">Agregar</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ── STORE ──
+let S = { updates:[], gallery:[], team:[], wl:[], ip:'connect cfx.re/join/eqjgpm', disc:'https://discord.gg/catanorp', discm:'---', players:'--', onlineCnt:'---', fivemId:'eqjgpm' };
+try { const d = localStorage.getItem('catanorp'); if(d) S = {...S, ...JSON.parse(d)}; } catch(e) {}
+const save = () => { try { localStorage.setItem('catanorp', JSON.stringify(S)); } catch(e) {} };
+
+// ── NOTIFY ──
+const notify = msg => {
+  const el = document.getElementById('notif');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3200);
+};
+
+// ── MODAL ──
+const openModal = id => document.getElementById(id).classList.add('open');
+const closeModal = id => document.getElementById(id).classList.remove('open');
+
+// ── STATS ──
+const updateStats = () => {
+  document.getElementById('players-num').textContent = S.players || '--';
+  document.getElementById('discord-num').textContent = S.discm || '--';
+  document.getElementById('discord-big').textContent = S.discm || '--';
+  document.getElementById('disc-online').textContent = S.onlineCnt || '--';
+  document.getElementById('wl-num').textContent = S.wl.filter(w=>w.status==='approved').length;
+  const btn = document.getElementById('discord-btn-link');
+  if(S.disc && S.disc !== '#') btn.href = S.disc;
+  const tb = document.getElementById('discord-total-big');
+  const ob = document.getElementById('discord-online-big');
+  if(tb) tb.textContent = S.discm || '--';
+  if(ob) ob.textContent = S.onlineCnt || '--';
+};
+
+// ── UPDATES ──
+const renderUpdates = () => {
+  const g = document.getElementById('updates-grid');
+  const al = document.getElementById('updates-admin-list');
+  if(!S.updates.length) {
+    g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;letter-spacing:2px;font-size:12px">Sin actualizaciones todavía</div>';
+  } else {
+    g.innerHTML = S.updates.map((u,i) => `
+      <div class="update-card reveal">
+        ${u.img ? `<img src="${u.img}" class="update-img-el" alt="">` : `<div class="update-ph">CATAÑO RP</div>`}
+        <div class="update-body">
+          <span class="update-tag">${u.tag||'UPDATE'}</span>
+          <div class="update-title">${u.title}</div>
+          <div class="update-desc">${u.desc}</div>
+          <div class="update-date">${u.date}</div>
+        </div>
+      </div>`).join('');
+  }
+  if(al) al.innerHTML = S.updates.map((u,i) => `
+    <div class="ali">
+      <div><div class="ali-t">${u.title}</div><div class="ali-m">${u.date} • <span class="update-tag" style="padding:2px 6px;font-size:9px">${u.tag||'UPDATE'}</span></div></div>
+      <button class="ab ab-d" onclick="delUpdate(${i})" style="padding:7px 14px;font-size:10px">Eliminar</button>
+    </div>`).join('');
+  observeReveal();
+};
+
+const addUpdate = () => {
+  const t = document.getElementById('upd-title').value.trim();
+  const d = document.getElementById('upd-desc').value.trim();
+  const tag = document.getElementById('upd-tag').value.trim();
+  const f = document.getElementById('upd-img').files[0];
+  if(!t||!d) { notify('⚠️ Título y descripción requeridos'); return; }
+  const add = img => {
+    S.updates.unshift({ title:t, desc:d, tag:tag||'UPDATE', date:new Date().toLocaleDateString('es-PR'), img:img||null });
+    save(); renderUpdates(); notify('✅ Actualización publicada');
+    ['upd-title','upd-desc','upd-tag'].forEach(id => document.getElementById(id).value='');
+  };
+  if(f) { const r=new FileReader(); r.onload=e=>add(e.target.result); r.readAsDataURL(f); }
+  else add(null);
+};
+
+const addUpdateModal = () => {
+  const t = document.getElementById('m-upd-title').value.trim();
+  const d = document.getElementById('m-upd-desc').value.trim();
+  if(!t) { notify('⚠️ Escribe un título'); return; }
+  S.updates.unshift({ title:t, desc:d||'', tag:'UPDATE', date:new Date().toLocaleDateString('es-PR') });
+  save(); renderUpdates(); closeModal('upd-modal'); notify('✅ Actualización publicada');
+};
+
+const delUpdate = i => { S.updates.splice(i,1); save(); renderUpdates(); notify('🗑️ Eliminado'); };
+
+// ── GALLERY ──
+const renderGallery = () => {
+  const g = document.getElementById('gallery-grid');
+  const p = document.getElementById('gal-preview');
+  g.innerHTML = S.gallery.length ? S.gallery.map((img,i) => `
+    <div class="gallery-item">
+      <img src="${img}" alt="Cataño RP" loading="lazy">
+      <div class="gallery-ov"><span style="font-size:26px;color:var(--gold)">🔍</span></div>
+    </div>`).join('')
+    : `<div style="grid-column:1/-1;text-align:center;padding:56px 0">
+        <div class="gallery-ph"><span style="font-size:38px">📷</span><span>Sin fotos todavía</span></div>
+      </div>`;
+  if(p) p.innerHTML = S.gallery.map((img,i) => `
+    <div style="position:relative">
+      <img src="${img}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block">
+      <button onclick="delGallery(${i})" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;cursor:pointer;padding:2px 7px;font-size:11px">✕</button>
+    </div>`).join('');
+};
+
+const addGallery = e => {
+  Array.from(e.target.files).forEach(f => {
+    const r = new FileReader();
+    r.onload = ev => { S.gallery.push(ev.target.result); save(); renderGallery(); };
+    r.readAsDataURL(f);
+  });
+  notify(`✅ ${e.target.files.length} foto(s) agregada(s)`);
+};
+
+const delGallery = i => { S.gallery.splice(i,1); save(); renderGallery(); };
+
+// ── TEAM ──
+const renderTeam = () => {
+  const g = document.getElementById('team-grid');
+  const al = document.getElementById('team-admin-list');
+  g.innerHTML = S.team.length ? S.team.map(m => `
+    <div class="team-card reveal">
+      <div class="team-avatar">${m.emoji||m.name[0]}</div>
+      <div class="team-name">${m.name}</div>
+      <div class="team-role">${m.role}</div>
+    </div>`).join('')
+    : '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;letter-spacing:2px;font-size:12px">Sin miembros todavía</div>';
+  if(al) al.innerHTML = S.team.map((m,i) => `
+    <div class="ali">
+      <div><div class="ali-t">${m.emoji||''} ${m.name}</div><div class="ali-m">${m.role}</div></div>
+      <button class="ab ab-d" onclick="delTeam(${i})" style="padding:7px 14px;font-size:10px">Eliminar</button>
+    </div>`).join('');
+  observeReveal();
+};
+
+const addTeam = () => {
+  const n = document.getElementById('team-name').value.trim();
+  const r = document.getElementById('team-role').value.trim();
+  const e = document.getElementById('team-emoji').value.trim();
+  if(!n||!r) { notify('⚠️ Nombre y rol requeridos'); return; }
+  S.team.push({ name:n, role:r, emoji:e });
+  save(); renderTeam(); notify('✅ Miembro agregado');
+  ['team-name','team-role','team-emoji'].forEach(id => document.getElementById(id).value='');
+};
+
+const addTeamModal = () => {
+  const n = document.getElementById('m-team-name').value.trim();
+  const r = document.getElementById('m-team-role').value.trim();
+  const e = document.getElementById('m-team-emoji').value.trim();
+  if(!n) { notify('⚠️ Nombre requerido'); return; }
+  S.team.push({ name:n, role:r||'Staff', emoji:e });
+  save(); renderTeam(); closeModal('team-modal'); notify('✅ Miembro del equipo agregado');
+};
+
+const delTeam = i => { S.team.splice(i,1); save(); renderTeam(); };
+
+// ── WHITELIST ──
+const submitWL = e => {
+  e.preventDefault();
+  const inputs = e.target.querySelectorAll('input,select,textarea');
+  S.wl.unshift({ id:Date.now(), nombre:inputs[0].value, discord:inputs[1].value, fecha:new Date().toLocaleDateString('es-PR'), status:'pending' });
+  save(); renderWL(); e.target.reset(); updateStats();
+  notify('✅ Aplicación enviada. Te contactaremos por Discord en 24-72h.');
+};
+
+const renderWL = () => {
+  const list = document.getElementById('wl-admin-list');
+  list.innerHTML = S.wl.length ? S.wl.map((w,i) => `
+    <div class="ali">
+      <div><div class="ali-t">${w.nombre}</div><div class="ali-m">Discord: ${w.discord} • ${w.fecha}</div></div>
+      <div class="aa">
+        <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'RECHAZADO'}</span>
+        ${w.status==='pending'?`<button class="ab" onclick="actWL(${i},'approved')" style="padding:6px 12px;font-size:10px;margin-top:0">✓</button><button class="ab ab-d" onclick="actWL(${i},'denied')" style="padding:6px 12px;font-size:10px;margin-top:0">✕</button>`:''}
+      </div>
+    </div>`).join('')
+    : '<div style="text-align:center;color:var(--muted);padding:38px;letter-spacing:2px;font-size:12px">No hay aplicaciones todavía</div>';
+};
+
+const actWL = (i,s) => { S.wl[i].status=s; save(); renderWL(); updateStats(); notify(s==='approved'?'✅ Aprobado':'❌ Rechazado'); };
+
+// ── SERVER SETTINGS ──
+const saveSrv = type => {
+  const v = document.getElementById('srv-'+({ip:'ip',disc:'disc',players:'players',discm:'discm'}[type])).value.trim();
+  if(type==='ip') S.ip=v;
+  else if(type==='disc') { S.disc=v; document.getElementById('discord-btn-link').href=v; }
+  else if(type==='players') S.players=v;
+  else if(type==='discm') S.discm=v;
+  else if(type==='fivemid') { S.fivemId=v; fetchFiveManage(); }
+  save(); updateStats(); notify('✅ Guardado');
+};
+
+// ── TABS ──
+const switchTab = (id, btn) => {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='t-team') renderTeam();
+  if(id==='t-wl') renderWL();
+  if(id==='t-gal') renderGallery();
+  if(id==='t-srv') {
+    document.getElementById('srv-fivemid').value = S.fivemId||'';
+    document.getElementById('srv-ip').value = S.ip||'';
+    document.getElementById('srv-disc').value = S.disc||'';
+    document.getElementById('srv-players').value = S.players||'';
+    document.getElementById('srv-discm').value = S.discm||'';
+  }
+};
+
+// ── SCROLL REVEAL ──
+const observeReveal = () => {
+  const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold:0.08 });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
+};
+
+// ── LIVE PLAYERS via CFX API ──
+const fetchLivePlayers = async () => {
+  const id = S.fivemId || 'eqjgpm';
+  try {
+    // CFX public API - players list
+    const res = await fetch('https://servers-frontend.fivem.net/api/servers/single/' + id);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.Data) {
+      const online = data.Data.clients || 0;
+      const max = data.Data.sv_maxclients || 64;
+      S.players = online + '/' + max;
+      S.serverName = data.Data.hostname || 'Cataño RP';
+      save(); updateStats();
+      // Animate the number
+      animateNum('players-num', online, '/' + max);
+    }
+  } catch(e) { console.log('CFX fetch error:', e); }
+};
+
+// ── DISCORD MEMBERS via Discord Widget API ──
+const fetchDiscord = async () => {
+  try {
+    // Extract guild ID from invite or use widget
+    const res = await fetch('https://discord.com/api/v9/invites/catanorp?with_counts=true');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.guild) {
+      const total = data.approximate_member_count || 0;
+      const online = data.approximate_presence_count || 0;
+      S.discm = total.toLocaleString();
+      S.onlineCnt = online.toLocaleString();
+      save(); updateStats();
+      animateNum('discord-num', total, '');
+      animateNum('discord-big', total, '');
+      animateNum('discord-total-big', total, '');
+      animateNum('discord-online-big', online, '');
+    }
+  } catch(e) { console.log('Discord fetch error:', e); }
+};
+
+// ── NUMBER ANIMATION ──
+const animateNum = (id, target, suffix) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let n = 0; const dur = 1200; const start = Date.now();
+  const step = () => {
+    const progress = Math.min((Date.now() - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    n = Math.floor(ease * target);
+    el.textContent = n.toLocaleString() + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target.toLocaleString() + suffix;
+  };
+  requestAnimationFrame(step);
+};
+
+const fetchFiveManage = fetchLivePlayers; // alias
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  updateStats(); renderUpdates(); renderGallery(); renderTeam(); renderWL(); observeReveal();
+  fetchLivePlayers();
+  fetchDiscord();
+  setInterval(fetchLivePlayers, 30000);
+  setInterval(fetchDiscord, 60000);
+});
+</script>
+</body>
+</html>

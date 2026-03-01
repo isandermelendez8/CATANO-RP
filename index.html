@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cataño RP — Puerto Rico's Finest</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyBCkSVRxTnlsz7OiBAKHD90F766Seo7dHk",
       authDomain: "catano-rp.firebaseapp.com",
@@ -18,31 +16,24 @@
       messagingSenderId: "120464528892",
       appId: "1:120464528892:web:3edeca0e04888e466b4e79"
     };
-
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    // Make Firebase available globally
     window.db = db;
     window.fsDoc = doc;
     window.fsSet = setDoc;
     window.fsGet = getDoc;
     window.fsSnapshot = onSnapshot;
-    window.fsCollection = collection;
-    window.fsAddDoc = addDoc;
-    window.fsGetDocs = getDocs;
-    window.fsDeleteDoc = deleteDoc;
-    window.fsUpdateDoc = updateDoc;
     window.firebaseReady = true;
     window.dispatchEvent(new Event('firebase-ready'));
   </script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#c9a84c;--gold2:#f0c86a;--gold3:#8b6914;--dark:#080808;--dark2:#0f0f0f;--dark3:#161616;--dark4:#1e1e1e;--text:#e8d5a3;--muted:#7a6a4a}
+    :root{--gold:#c9a84c;--gold2:#f0c86a;--gold3:#8b6914;--dark:#080808;--dark2:#0f0f0f;--dark3:#161616;--dark4:#1e1e1e;--text:#e8d5a3;--muted:#7a6a4a;--green:#4caf50;--red:#e63946}
     html{scroll-behavior:smooth}
     body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;overflow-x:hidden}
 
-    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(8,8,8,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:70px}
+    /* NAV */
+    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(8,8,8,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:70px}
     .nav-logo img{height:48px;filter:drop-shadow(0 0 8px rgba(201,168,76,0.5))}
     .nav-links{display:flex;gap:28px;list-style:none}
     .nav-links a{color:var(--text);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .2s}
@@ -50,6 +41,7 @@
     .nav-cta{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:10px 22px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all .2s;text-decoration:none;display:inline-block}
     .nav-cta:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-1px)}
 
+    /* HERO */
     #hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding-top:70px}
     .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.45) saturate(.85);z-index:0}
     .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,8,.2) 0%,rgba(8,8,8,.05) 40%,rgba(8,8,8,.92) 100%);z-index:1}
@@ -64,6 +56,7 @@
     .btn-outline{background:transparent;color:var(--gold);padding:14px 36px;border:1px solid var(--gold3);cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;text-decoration:none;display:inline-block}
     .btn-outline:hover{background:rgba(201,168,76,.1);transform:translateY(-2px)}
 
+    /* STATS */
     #stats-bar{background:rgba(12,12,12,.98);border-top:1px solid rgba(201,168,76,.2);border-bottom:1px solid rgba(201,168,76,.2);display:flex;justify-content:center;flex-wrap:wrap}
     .stat-item{display:flex;flex-direction:column;align-items:center;padding:26px 44px;border-right:1px solid rgba(201,168,76,.1);min-width:150px}
     .stat-item:last-child{border-right:none}
@@ -74,25 +67,67 @@
     .live-dot{width:6px;height:6px;border-radius:50%;background:#e63946;animation:pulse 1s infinite}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 
+    /* SECTIONS */
     .sec{position:relative;z-index:1;padding:90px 40px;max-width:1200px;margin:0 auto}
     .sec-full{background:var(--dark2);padding:90px 0}
     .section-sub{text-align:center;color:var(--muted);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
     .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,5vw,60px);color:var(--gold);letter-spacing:4px;text-align:center;margin-bottom:12px;text-shadow:0 0 30px rgba(201,168,76,.3)}
     .section-line{width:80px;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto 56px}
+    .reveal{opacity:0;transform:translateY(24px);transition:all .6s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
 
-    /* WHITELIST */
+    /* WHITELIST - MULTI STEP */
     .wl-wrap{background:var(--dark2);padding:90px 40px}
-    .wl-box{max-width:660px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:48px;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px))}
-    .wl-form{display:flex;flex-direction:column;gap:16px}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .fg{display:flex;flex-direction:column;gap:7px}
+    .wl-box{max-width:700px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:48px;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px))}
+    .wl-notice{background:rgba(201,168,76,.04);border-left:3px solid var(--gold3);padding:13px 16px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+
+    /* STEPS INDICATOR */
+    .steps-wrap{display:flex;align-items:center;margin-bottom:36px}
+    .step-circle{width:36px;height:36px;border-radius:50%;border:2px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:16px;color:var(--muted);flex-shrink:0;transition:all .3s;position:relative}
+    .step-circle.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
+    .step-circle.done{border-color:var(--green);color:var(--green);background:rgba(76,175,80,.1)}
+    .step-label{position:absolute;top:42px;font-size:9px;letter-spacing:1px;font-family:'Rajdhani';font-weight:600;white-space:nowrap;color:var(--muted)}
+    .step-circle.active .step-label,.step-circle.done .step-label{color:var(--gold)}
+    .step-line{flex:1;height:2px;background:rgba(201,168,76,.15);margin:0 6px}
+    .step-line.done{background:var(--gold3)}
+
+    /* STEP PANELS */
+    .wl-step-panel{display:none}
+    .wl-step-panel.active{display:block}
+    .fg{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
     .fg label{font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
-    .fg input,.fg select,.fg textarea{background:var(--dark4);border:1px solid rgba(201,168,76,.2);color:var(--text);padding:11px 14px;font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:border-color .2s;resize:vertical}
+    .fg input,.fg select,.fg textarea{background:var(--dark4);border:1px solid rgba(201,168,76,.2);color:var(--text);padding:11px 14px;font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:border-color .2s;resize:vertical;width:100%}
     .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold)}
     .fg select option{background:var(--dark4)}
-    .wl-notice{background:rgba(201,168,76,.04);border-left:3px solid var(--gold3);padding:13px 16px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:4px}
-    .wl-btn{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:15px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:14px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;width:100%;margin-top:8px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+    /* QUESTIONS */
+    .wl-q{background:var(--dark4);border:1px solid rgba(201,168,76,.1);padding:16px 18px;margin-bottom:10px;border-radius:2px}
+    .wl-q-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.5}
+    .wl-q-opts{display:flex;gap:10px}
+    .wl-q-opt{flex:1;padding:10px;border:1px solid rgba(201,168,76,.2);background:var(--dark3);color:var(--muted);cursor:pointer;font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:1px;text-align:center;transition:all .2s}
+    .wl-q-opt:hover{border-color:var(--gold3);color:var(--text)}
+    .wl-q-opt.sel-yes{border-color:var(--green);background:rgba(76,175,80,.1);color:var(--green)}
+    .wl-q-opt.sel-no{border-color:var(--red);background:rgba(230,57,70,.1);color:var(--red)}
+
+    /* RESULT */
+    .wl-result{text-align:center;padding:32px 0}
+    .wl-result-icon{font-size:64px;margin-bottom:16px}
+    .wl-result-title{font-family:'Bebas Neue';font-size:36px;letter-spacing:3px;margin-bottom:12px}
+    .wl-result-msg{font-size:14px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto 24px}
+    .wl-result.approved .wl-result-title{color:var(--green)}
+    .wl-result.denied .wl-result-title{color:var(--red)}
+
+    /* BUTTONS */
+    .wl-btn{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:14px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:14px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;width:100%;margin-top:8px}
     .wl-btn:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-2px)}
+    .wl-btn-outline{background:transparent;color:var(--gold);padding:12px;border:1px solid var(--gold3);cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all .25s;width:100%;margin-top:8px}
+    .wl-btn-row{display:flex;gap:12px;margin-top:12px}
+    .wl-btn-row .wl-btn,.wl-btn-row .wl-btn-outline{flex:1;margin-top:0}
+    .wl-step-title{font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px;margin-bottom:20px}
+    .q-section-title{font-size:11px;letter-spacing:3px;color:var(--gold3);text-transform:uppercase;margin:18px 0 10px;border-bottom:1px solid rgba(201,168,76,.1);padding-bottom:6px}
+    .q-unanswered{border-color:var(--red)!important;animation:shake .3s ease}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
     /* UPDATES */
     .updates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
@@ -113,26 +148,25 @@
     .gallery-item:hover img{transform:scale(1.08)}
     .gallery-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
     .gallery-item:hover .gallery-ov{opacity:1}
-    .gallery-ph{background:linear-gradient(135deg,var(--dark3),var(--dark4));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:11px;letter-spacing:2px;width:100%;height:100%;min-height:150px}
 
     /* TEAM */
     .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}
     .team-card{background:var(--dark3);border:1px solid rgba(201,168,76,.15);padding:28px 18px;text-align:center;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));transition:border-color .2s}
     .team-card:hover{border-color:rgba(201,168,76,.4)}
-    .team-avatar{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--dark4));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;border:2px solid rgba(201,168,76,.3);font-family:'Bebas Neue';color:var(--gold)}
+    .team-avatar{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--dark4));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;border:2px solid rgba(201,168,76,.3)}
     .team-name{font-size:17px;font-weight:700;color:var(--text)}
     .team-role{display:inline-block;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-top:6px;background:rgba(201,168,76,.08);padding:4px 10px}
 
     /* DISCORD */
     .discord-block{background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:56px 38px;text-align:center;max-width:680px;margin:0 auto;clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px)}
-    .discord-big{font-family:'Bebas Neue',sans-serif;font-size:68px;color:var(--gold2);line-height:1;text-shadow:0 0 30px rgba(201,168,76,.5)}
+    .discord-big{font-family:'Bebas Neue',sans-serif;font-size:68px;color:var(--gold2);line-height:1}
     .discord-online-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0 22px;color:var(--muted);font-size:12px;letter-spacing:2px}
     .discord-btn{display:inline-block;background:#5865F2;color:#fff;padding:14px 38px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;text-decoration:none;transition:all .25s;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%)}
-    .discord-btn:hover{background:#4752c4;transform:translateY(-2px);box-shadow:0 8px 30px rgba(88,101,242,.4)}
+    .discord-btn:hover{background:#4752c4;transform:translateY(-2px)}
 
     /* ADMIN */
     .admin-wrap{background:var(--dark2);padding:90px 40px}
-    .admin-box{max-width:940px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:38px}
+    .admin-box{max-width:960px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:38px}
     .admin-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid rgba(201,168,76,.1)}
     .admin-t{font-family:'Bebas Neue';font-size:26px;color:var(--gold);letter-spacing:3px}
     .tabs{display:flex;gap:4px;margin-bottom:26px;flex-wrap:wrap}
@@ -142,16 +176,16 @@
     .ai{background:var(--dark4);border:1px solid rgba(201,168,76,.15);color:var(--text);padding:11px 14px;font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:border-color .2s;width:100%}
     .ai:focus{border-color:var(--gold)}
     .at{background:var(--dark4);border:1px solid rgba(201,168,76,.15);color:var(--text);padding:11px 14px;width:100%;min-height:110px;font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:border-color .2s;resize:vertical}
-    .at:focus{border-color:var(--gold)}
     .ir{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
     .ab{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:11px 24px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all .2s;margin-top:8px}
-    .ab:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-1px)}
-    .ab-d{background:linear-gradient(135deg,#7a1a1a,#c0392b);color:#fff}
+    .ab:hover{background:linear-gradient(135deg,var(--gold),var(--gold2))}
+    .ab-d{background:linear-gradient(135deg,#7a1a1a,#c0392b)!important;color:#fff!important}
+    .ab-g{background:linear-gradient(135deg,#1a5c1a,#27ae60)!important;color:#fff!important}
     .al{display:flex;flex-direction:column;gap:10px}
-    .ali{background:var(--dark4);border:1px solid rgba(201,168,76,.1);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+    .ali{background:var(--dark4);border:1px solid rgba(201,168,76,.1);padding:14px 18px}
     .ali-t{font-weight:700;font-size:15px;color:var(--text)}
     .ali-m{font-size:11px;color:var(--muted);margin-top:3px}
-    .aa{display:flex;gap:7px}
+    .aa{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
     .badge{display:inline-block;padding:3px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700}
     .bp{background:rgba(255,165,0,.15);color:orange;border:1px solid rgba(255,165,0,.3)}
     .ba{background:rgba(76,175,80,.15);color:#4caf50;border:1px solid rgba(76,175,80,.3)}
@@ -159,6 +193,20 @@
     .upload-area{border:2px dashed rgba(201,168,76,.25);padding:38px;text-align:center;cursor:pointer;transition:border-color .2s;color:var(--muted);font-size:12px;letter-spacing:2px;display:block}
     .upload-area:hover{border-color:var(--gold3);color:var(--gold)}
 
+    /* LOGS */
+    .log-card{background:var(--dark4);border:1px solid rgba(201,168,76,.1);margin-bottom:10px}
+    .log-card.log-approved{border-left:3px solid var(--green)}
+    .log-card.log-denied{border-left:3px solid var(--red)}
+    .log-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;gap:12px;flex-wrap:wrap}
+    .log-body{padding:0 18px 18px;border-top:1px solid rgba(201,168,76,.08);display:none}
+    .log-body.open{display:block}
+    .log-field{display:flex;gap:8px;margin-top:10px;font-size:13px;flex-wrap:wrap}
+    .log-lbl{color:var(--gold);font-size:10px;letter-spacing:1px;text-transform:uppercase;min-width:100px;flex-shrink:0}
+    .log-val{color:var(--text);flex:1}
+    .log-wrong{background:rgba(230,57,70,.06);border:1px solid rgba(230,57,70,.2);padding:10px 14px;margin-top:10px;font-size:12px;color:#e63946;line-height:1.9}
+    .log-acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+    /* FOOTER */
     footer{background:var(--dark2);border-top:1px solid rgba(201,168,76,.15);padding:56px 40px 28px;text-align:center}
     .f-logo{width:110px;margin:0 auto 18px;opacity:.7}
     .f-txt{color:var(--muted);font-size:11px;letter-spacing:2px}
@@ -166,6 +214,11 @@
     .f-links a{color:var(--muted);text-decoration:none;font-size:11px;letter-spacing:1px;transition:color .2s}
     .f-links a:hover{color:var(--gold)}
 
+    /* NOTIF */
+    .notif{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--dark3);border:1px solid var(--gold3);padding:14px 22px;max-width:300px;font-size:13px;color:var(--text);transform:translateX(120%);transition:transform .4s}
+    .notif.show{transform:translateX(0)}
+
+    /* MODAL */
     .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center}
     .modal-ov.open{display:flex}
     .modal{background:var(--dark3);border:1px solid rgba(201,168,76,.3);padding:38px;max-width:480px;width:90%;position:relative}
@@ -173,73 +226,35 @@
     .mc:hover{color:var(--gold)}
     .mt{font-family:'Bebas Neue';font-size:26px;color:var(--gold);margin-bottom:22px;letter-spacing:3px}
 
-    .notif{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--dark3);border:1px solid var(--gold3);padding:14px 22px;max-width:300px;font-size:13px;color:var(--text);transform:translateX(120%);transition:transform .4s}
-    .notif.show{transform:translateX(0)}
-
-    .reveal{opacity:0;transform:translateY(24px);transition:all .6s ease}
-    .reveal.visible{opacity:1;transform:translateY(0)}
-    .log-card{background:var(--dark4);border:1px solid rgba(201,168,76,.1);margin-bottom:12px;overflow:hidden;transition:border-color .2s}
-    .log-card:hover{border-color:rgba(201,168,76,.25)}
-    .log-card.log-approved{border-left:3px solid #4caf50}
-    .log-card.log-denied{border-left:3px solid #e63946}
-    .log-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;gap:12px;flex-wrap:wrap}
-    .log-body{padding:0 18px 18px;border-top:1px solid rgba(201,168,76,.08);display:none}
-    .log-body.open{display:block}
-    .log-field{display:flex;gap:8px;margin-top:10px;font-size:13px;flex-wrap:wrap}
-    .log-label{color:var(--gold);font-size:10px;letter-spacing:1px;text-transform:uppercase;min-width:90px;flex-shrink:0}
-    .log-val{color:var(--text);flex:1}
-    .log-wrong{background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.2);padding:10px 14px;margin-top:10px;font-size:12px;color:#e63946;line-height:1.8}
-    .log-actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(201,168,76,.08)}
-    .wl-step{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:'Bebas Neue';font-size:20px;color:var(--muted);width:40px;height:40px;border-radius:50%;border:2px solid rgba(201,168,76,.2);justify-content:center;position:relative;flex-shrink:0}
-    .wl-step span{font-size:9px;letter-spacing:1px;position:absolute;top:44px;white-space:nowrap;font-family:'Rajdhani';font-weight:600}
-    .wl-step.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
-    .wl-step.done{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.1)}
-    .wl-step-line{flex:1;height:2px;background:rgba(201,168,76,.15);margin:0 4px;margin-bottom:0;align-self:center}
-    #wl-steps{padding-bottom:36px}
-    .wl-q{background:var(--dark4);border:1px solid rgba(201,168,76,.1);padding:16px 18px;margin-bottom:12px}
-    .wl-q-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.5}
-    .wl-q-opts{display:flex;gap:10px}
-    .wl-q-opt{flex:1;padding:10px;border:1px solid rgba(201,168,76,.2);background:var(--dark3);color:var(--muted);cursor:pointer;font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:1px;text-align:center;transition:all .2s}
-    .wl-q-opt:hover{border-color:var(--gold3);color:var(--text)}
-    .wl-q-opt.selected-yes{border-color:#4caf50;background:rgba(76,175,80,.1);color:#4caf50}
-    .wl-q-opt.selected-no{border-color:#e63946;background:rgba(230,57,70,.1);color:#e63946}
-
     @media(max-width:768px){
-      nav{padding:0 18px}
-      .nav-links{display:none}
+      nav{padding:0 18px}.nav-links{display:none}
       .form-row,.ir{grid-template-columns:1fr}
-      .stat-item{padding:18px 22px}
-      .sec{padding:60px 18px}
-      .gallery-grid{padding:0 18px}
-      .wl-box{padding:26px 18px}
+      .stat-item{padding:18px 22px}.sec{padding:60px 18px}
+      .gallery-grid{padding:0 18px}.wl-box{padding:26px 18px}
       .admin-box{padding:22px 14px}
     }
   </style>
 </head>
 <body>
 
-<!-- FIREBASE LOADING BAR -->
-<div id="fb-loading" style="position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(to right,var(--gold3),var(--gold),var(--gold2),var(--gold3));background-size:200% 100%;animation:fbLoad 1.5s linear infinite;z-index:9999;transition:opacity .5s">
-</div>
+<!-- LOADING BAR -->
+<div id="fb-loading" style="position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(to right,var(--gold3),var(--gold),var(--gold2),var(--gold3));background-size:200% 100%;animation:fbLoad 1.5s linear infinite;z-index:9999;transition:opacity .5s"></div>
 <style>@keyframes fbLoad{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
 
 <!-- NAV -->
 <nav>
   <div class="nav-logo"><img src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/cee79335-1fe0-423c-8072-277523baccaf.png" alt="Cataño RP"></div>
   <ul class="nav-links">
-    <li><a href="#hero">Inicio</a></li>
-    <li><a href="#wl">Whitelist</a></li>
-    <li><a href="#updates">Noticias</a></li>
-    <li><a href="#gallery">Galería</a></li>
-    <li><a href="#team">Equipo</a></li>
-    <li><a href="#discord">Discord</a></li>
+    <li><a href="#hero">Inicio</a></li><li><a href="#wl">Whitelist</a></li>
+    <li><a href="#updates">Noticias</a></li><li><a href="#gallery">Galería</a></li>
+    <li><a href="#team">Equipo</a></li><li><a href="#discord">Discord</a></li>
     <li><a href="#admin">Admin</a></li>
   </ul>
   <a href="#wl" class="nav-cta">Aplicar Whitelist</a>
 </nav>
 
 <!-- HERO -->
-<div id="hero" style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding-top:70px">
+<div id="hero">
   <video class="hero-video" autoplay muted loop playsinline preload="auto">
     <source src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/Intro.mp4" type="video/mp4">
   </video>
@@ -269,25 +284,73 @@
   <h2 class="section-title reveal">Aplicación Whitelist</h2>
   <div class="section-line"></div>
   <div class="wl-box reveal">
-    <div class="wl-notice">⚠️ Lee las reglas antes de aplicar. Las aplicaciones son revisadas por el staff en 24-72 horas via Discord.</div>
-    <form class="wl-form" id="wl-form" onsubmit="submitWL(event)">
+    <div class="wl-notice">⚠️ Debes ser miembro del Discord <strong>discord.gg/catanorp</strong> para aplicar. Las aplicaciones son evaluadas automáticamente. Debes tener 14+ años.</div>
+
+    <!-- STEPS -->
+    <div class="steps-wrap" id="wl-steps-bar">
+      <div class="step-circle active" id="sc1">1<span class="step-label">DATOS</span></div>
+      <div class="step-line" id="sl1"></div>
+      <div class="step-circle" id="sc2">2<span class="step-label">NORMAS</span></div>
+      <div class="step-line" id="sl2"></div>
+      <div class="step-circle" id="sc3">3<span class="step-label">CK/PK</span></div>
+      <div class="step-line" id="sl3"></div>
+      <div class="step-circle" id="sc4">4<span class="step-label">RESULTADO</span></div>
+    </div>
+
+    <!-- STEP 1: DATOS -->
+    <div class="wl-step-panel active" id="wl-p1">
+      <div class="wl-step-title">📋 Tus Datos</div>
       <div class="form-row">
-        <div class="fg"><label>Nombre IC</label><input type="text" placeholder="Ej: Juan Pérez" required></div>
-        <div class="fg"><label>Discord</label><input type="text" placeholder="Ej: usuario#0000" required></div>
+        <div class="fg"><label>Nombre Real *</label><input id="w-nombre" type="text" placeholder="Ej: Juan Rodriguez" required></div>
+        <div class="fg"><label>Edad *</label><input id="w-edad" type="number" placeholder="Ej: 18" min="1" max="99" required></div>
       </div>
       <div class="form-row">
-        <div class="fg"><label>Edad</label><input type="number" placeholder="Ej: 22" min="16" required></div>
-        <div class="fg"><label>¿Experiencia en RP?</label>
-          <select required><option value="">Selecciona...</option><option>Sí, tengo experiencia</option><option>Un poco</option><option>No, soy nuevo</option></select>
+        <div class="fg"><label>Gmail *</label><input id="w-gmail" type="email" placeholder="Ej: juan@gmail.com" required></div>
+        <div class="fg"><label>Discord (usuario) *</label><input id="w-discord" type="text" placeholder="Ej: juanrp" required></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Nombre IC (Personaje) *</label><input id="w-ic" type="text" placeholder="Ej: Carlos Mendoza" required></div>
+        <div class="fg"><label>Experiencia en RP</label>
+          <select id="w-exp"><option value="">Selecciona...</option><option>Sí, mucha experiencia</option><option>Algo de experiencia</option><option>Soy nuevo en el RP</option></select>
         </div>
       </div>
-      <div class="fg"><label>Historia de tu personaje</label><textarea placeholder="Cuéntanos sobre tu personaje, motivaciones..." rows="5" required></textarea></div>
-      <div class="fg"><label>¿Por qué Cataño RP?</label><textarea placeholder="¿Qué te atrae del servidor?" rows="3" required></textarea></div>
       <div class="fg"><label>¿Cómo nos encontraste?</label>
-        <select required><option value="">Selecciona...</option><option>Discord</option><option>YouTube</option><option>TikTok</option><option>Un amigo</option><option>Otro</option></select>
+        <select id="w-found"><option value="">Selecciona...</option><option>Discord</option><option>YouTube</option><option>TikTok</option><option>Un amigo</option><option>Otro</option></select>
       </div>
-      <button type="submit" class="wl-btn">Enviar Aplicación</button>
-    </form>
+      <button class="wl-btn" onclick="wlNext(1)">Siguiente → Normas de RP</button>
+    </div>
+
+    <!-- STEP 2: NORMAS -->
+    <div class="wl-step-panel" id="wl-p2">
+      <div class="wl-step-title">📜 Normas de Roleplay</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Responde cada pregunta correctamente. Selecciona Sí o No.</p>
+
+      <div id="wl-q-normas"></div>
+
+      <div class="wl-btn-row">
+        <button class="wl-btn-outline" onclick="wlBack(2)">← Atrás</button>
+        <button class="wl-btn" onclick="wlNext(2)">Siguiente → CK / PK</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: CK/PK -->
+    <div class="wl-step-panel" id="wl-p3">
+      <div class="wl-step-title">💀 Conceptos CK / PK</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Demuestra que conoces los conceptos de muerte en RP.</p>
+
+      <div id="wl-q-ckpk"></div>
+
+      <div class="wl-btn-row">
+        <button class="wl-btn-outline" onclick="wlBack(3)">← Atrás</button>
+        <button class="wl-btn" onclick="wlSubmit()">📨 Enviar Aplicación</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: RESULTADO -->
+    <div class="wl-step-panel" id="wl-p4">
+      <div id="wl-result-box"></div>
+      <button class="wl-btn-outline" onclick="wlReset()" style="margin-top:16px">Volver al inicio</button>
+    </div>
   </div>
 </div>
 
@@ -297,7 +360,6 @@
   <h2 class="section-title reveal">Actualizaciones</h2>
   <div class="section-line"></div>
   <div class="updates-grid" id="updates-grid"></div>
-  <div style="text-align:center;margin-top:38px"><button class="btn-outline" onclick="openModal('upd-modal')">+ Agregar Actualización</button></div>
 </div>
 
 <!-- GALLERY -->
@@ -320,7 +382,6 @@
   <h2 class="section-title reveal">Nuestro Equipo</h2>
   <div class="section-line"></div>
   <div class="team-grid" id="team-grid"></div>
-  <div style="text-align:center;margin-top:38px"><button class="btn-outline" onclick="openModal('team-modal')">+ Agregar Miembro</button></div>
 </div>
 
 <!-- DISCORD -->
@@ -330,7 +391,7 @@
     <h2 class="section-title reveal">Discord</h2>
     <div class="section-line"></div>
   </div>
-  <div class="discord-block reveal" style="max-width:680px;margin:0 auto">
+  <div class="discord-block reveal">
     <div style="font-size:56px;margin-bottom:18px">💬</div>
     <div class="discord-big" id="discord-big">--</div>
     <div class="discord-online-row"><span class="dot"></span><span id="disc-online">--</span> miembros en línea ahora</div>
@@ -341,7 +402,7 @@
       </div>
       <div style="width:1px;background:rgba(201,168,76,.15)"></div>
       <div style="text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:#4caf50" id="discord-online-big">--</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green)" id="discord-online-big">--</div>
         <div style="font-size:10px;letter-spacing:2px;color:var(--muted)">EN LÍNEA</div>
       </div>
     </div>
@@ -358,35 +419,38 @@
   <div class="admin-box reveal">
     <div class="admin-hdr">
       <span class="admin-t">🛡️ Panel de Administración</span>
-      <span style="color:var(--muted);font-size:12px;letter-spacing:1px">Staff Cataño RP</span>
+      <span style="color:var(--muted);font-size:12px">Staff Cataño RP</span>
     </div>
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('t-wl',this)">Whitelists</button>
-      <button class="tab" onclick="switchTab('t-logs',this)">📋 Logs</button>
-      <button class="tab" onclick="switchTab('t-upd',this)">Actualizaciones</button>
-      <button class="tab" onclick="switchTab('t-gal',this)">Galería</button>
-      <button class="tab" onclick="switchTab('t-team',this)">Equipo</button>
-      <button class="tab" onclick="switchTab('t-srv',this)">Servidor</button>
+      <button class="tab active" onclick="switchTab('t-wl',this)">📋 Whitelists</button>
+      <button class="tab" onclick="switchTab('t-logs',this)">🗒️ Logs</button>
+      <button class="tab" onclick="switchTab('t-upd',this)">📰 Actualizaciones</button>
+      <button class="tab" onclick="switchTab('t-gal',this)">🖼️ Galería</button>
+      <button class="tab" onclick="switchTab('t-team',this)">👥 Equipo</button>
+      <button class="tab" onclick="switchTab('t-srv',this)">⚙️ Servidor</button>
     </div>
 
+    <!-- WL TAB -->
     <div id="t-wl" class="tab-content active">
+      <div id="wl-stats-bar" style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap"></div>
       <div class="al" id="wl-admin-list"></div>
     </div>
 
+    <!-- LOGS TAB -->
     <div id="t-logs" class="tab-content">
-      <!-- FILTER BUTTONS -->
-      <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
-        <button class="tab" onclick="filterLogs('all')" id="log-f-all" style="padding:8px 16px">Todos</button>
-        <button class="tab" onclick="filterLogs('approved')" id="log-f-approved" style="padding:8px 16px">✅ Aprobados</button>
-        <button class="tab" onclick="filterLogs('denied')" id="log-f-denied" style="padding:8px 16px">❌ Denegados</button>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="tab" onclick="filterLogs('all')" id="lf-all">Todos</button>
+        <button class="tab" onclick="filterLogs('approved')" id="lf-approved">✅ Aprobados</button>
+        <button class="tab" onclick="filterLogs('denied')" id="lf-denied">❌ Denegados</button>
       </div>
-      <div style="display:flex;gap:10px;margin-bottom:16px">
-        <input id="log-search" class="ai" placeholder="🔍 Buscar por nombre, discord, gmail..." oninput="filterLogs('search')" style="flex:1">
-        <button class="ab ab-d" onclick="clearLogs()" style="margin-top:0;padding:0 18px;white-space:nowrap">🗑️ Limpiar</button>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <input id="log-search" class="ai" placeholder="🔍 Buscar nombre, discord, gmail..." oninput="filterLogs('search')" style="flex:1">
+        <button class="ab ab-d" onclick="clearLogs()" style="margin-top:0;padding:0 18px">🗑️ Limpiar todo</button>
       </div>
       <div id="logs-container"></div>
     </div>
 
+    <!-- UPDATES TAB -->
     <div id="t-upd" class="tab-content">
       <div class="ir">
         <input id="upd-title" class="ai" placeholder="Título de la actualización">
@@ -396,9 +460,10 @@
       <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">IMAGEN (OPCIONAL)</label>
       <input id="upd-img" type="file" accept="image/*" class="ai" style="padding:8px;margin-bottom:14px">
       <button class="ab" onclick="addUpdate()">Publicar Actualización</button>
-      <div id="updates-admin-list" style="margin-top:20px;display:flex;flex-direction:column;gap:10px"></div>
+      <div id="updates-admin-list" style="margin-top:18px;display:flex;flex-direction:column;gap:9px"></div>
     </div>
 
+    <!-- GALLERY TAB -->
     <div id="t-gal" class="tab-content">
       <label class="upload-area" for="admin-gal-upload">
         <div>📁 Arrastra imágenes o haz click para subir</div>
@@ -408,6 +473,7 @@
       <div id="gal-preview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px;margin-top:14px"></div>
     </div>
 
+    <!-- TEAM TAB -->
     <div id="t-team" class="tab-content">
       <div class="ir">
         <input id="team-name" class="ai" placeholder="Nombre del miembro">
@@ -418,19 +484,20 @@
       <div id="team-admin-list" style="margin-top:18px;display:flex;flex-direction:column;gap:9px"></div>
     </div>
 
+    <!-- SERVER TAB -->
     <div id="t-srv" class="tab-content">
-      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🤖 DISCORD WEBHOOK (para logs de whitelist)</label>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🤖 DISCORD WEBHOOK (logs de whitelist)</label>
       <div style="display:flex;gap:10px;margin-bottom:6px">
         <input id="srv-webhook" class="ai" placeholder="https://discord.com/api/webhooks/..." style="flex:1">
         <button class="ab" onclick="saveSrv('webhook')" style="margin-top:0;white-space:nowrap">Guardar</button>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:18px">Crea un webhook en tu canal de Discord: Canal → Configuración → Integraciones → Webhooks</div>
-      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🔴 FIVEMANAGE SERVER ID (para jugadores en tiempo real)</label>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:18px">Canal Discord → Editar → Integraciones → Webhooks → Crear Webhook → Copiar URL</div>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🔴 FIVEM SERVER ID (jugadores live)</label>
       <div style="display:flex;gap:10px;margin-bottom:18px">
-        <input id="srv-fivemid" class="ai" placeholder="Ej: abc123xyz — encuentra esto en tu FiveManage dashboard" style="flex:1">
+        <input id="srv-fivemid" class="ai" placeholder="Ej: eqjgpm" style="flex:1">
         <button class="ab" onclick="saveSrv('fivemid')" style="margin-top:0;white-space:nowrap">Conectar</button>
       </div>
-      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">IP DEL SERVIDOR FIVEM</label>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">IP DEL SERVIDOR</label>
       <div style="display:flex;gap:10px;margin-bottom:18px">
         <input id="srv-ip" class="ai" placeholder="connect cfx.re/join/XXXXXX" style="flex:1">
         <button class="ab" onclick="saveSrv('ip')" style="margin-top:0;white-space:nowrap">Guardar</button>
@@ -467,157 +534,458 @@
   <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,.08);display:flex;justify-content:center;gap:48px;flex-wrap:wrap;align-items:center">
     <div style="text-align:center">
       <div style="font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px">Fundador</div>
-      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px;text-shadow:0 0 12px rgba(201,168,76,.4)">👑 Made</div>
+      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px">👑 Made</div>
     </div>
     <div style="width:1px;height:40px;background:rgba(201,168,76,.12)"></div>
     <div style="text-align:center">
       <div style="font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px">Co-Fundador</div>
-      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px;text-shadow:0 0 12px rgba(201,168,76,.4)">🐶 Buster</div>
+      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px">🐶 Buster</div>
     </div>
   </div>
 </footer>
 
-<!-- UPDATE MODAL -->
-<div id="upd-modal" class="modal-ov" onclick="if(event.target===this)closeModal('upd-modal')">
-  <div class="modal">
-    <button class="mc" onclick="closeModal('upd-modal')">✕</button>
-    <div class="mt">Nueva Actualización</div>
-    <div class="fg" style="margin-bottom:12px"><label>Título</label><input id="m-upd-title" class="ai" placeholder="Título..."></div>
-    <div class="fg" style="margin-bottom:16px"><label>Descripción</label><textarea id="m-upd-desc" class="at" placeholder="Descripción..."></textarea></div>
-    <button class="ab" onclick="addUpdateModal()" style="width:100%">Publicar</button>
-  </div>
-</div>
-
-<!-- TEAM MODAL -->
-<div id="team-modal" class="modal-ov" onclick="if(event.target===this)closeModal('team-modal')">
-  <div class="modal">
-    <button class="mc" onclick="closeModal('team-modal')">✕</button>
-    <div class="mt">Agregar al Equipo</div>
-    <div class="fg" style="margin-bottom:12px"><label>Nombre</label><input id="m-team-name" class="ai" placeholder="Nombre del miembro"></div>
-    <div class="fg" style="margin-bottom:12px"><label>Rol</label><input id="m-team-role" class="ai" placeholder="Owner, Admin, Moderador..."></div>
-    <div class="fg" style="margin-bottom:16px"><label>Emoji</label><input id="m-team-emoji" class="ai" placeholder="👑"></div>
-    <button class="ab" onclick="addTeamModal()" style="width:100%">Agregar</button>
-  </div>
-</div>
-
-<!-- NOTIFICATION -->
 <div class="notif" id="notif"></div>
 
 <script>
-// ── STORE ──
-let S = { updates:[], gallery:[], team:[], wl:[], ip:'connect cfx.re/join/eqjgpm', disc:'https://discord.gg/catanorp', discm:'---', players:'--', onlineCnt:'---', fivemId:'eqjgpm', webhook:'' };
+// ══════════════════════════════════════════
+// STORE
+// ══════════════════════════════════════════
+let S = {
+  updates:[], gallery:[], team:[], wl:[],
+  ip:'connect cfx.re/join/eqjgpm',
+  disc:'https://discord.gg/catanorp',
+  discm:'--', players:'--', onlineCnt:'--',
+  fivemId:'eqjgpm', webhook:''
+};
 
-// ── FIREBASE SYNC ──
+// ══════════════════════════════════════════
+// WHITELIST QUESTIONS
+// ══════════════════════════════════════════
+const WL_NORMAS = [
+  { text:'¿Está permitido usar información externa (Discord, stream) si tu personaje no la sabe?', correct:'no' },
+  { text:'¿Puedes forzar acciones sobre otro jugador sin darle oportunidad de responder?', correct:'no' },
+  { text:'¿El metagaming está permitido si mejora la historia?', correct:'no' },
+  { text:'¿Debes valorar la vida de tu personaje en situaciones de peligro extremo?', correct:'si' },
+  { text:'¿Puedes desconectarte para evitar consecuencias en rol?', correct:'no' },
+  { text:'¿Está permitido hacer RK (venganza tras morir)?', correct:'no' },
+  { text:'¿Puedes robar sin iniciar rol previo?', correct:'no' },
+  { text:'¿Es obligatorio respetar el entorno roleplay?', correct:'si' },
+  { text:'¿Puedes mezclar chat OOC con situaciones IC?', correct:'no' },
+  { text:'¿Se puede usar información vista en un directo para beneficio IC?', correct:'no' },
+  { text:'¿Está permitido el powergaming si el otro jugador no se queja?', correct:'no' },
+  { text:'¿Debes seguir las normas aunque pertenezcas a una facción importante?', correct:'si' },
+  { text:'¿Puedes ignorar heridas graves y actuar como si nada?', correct:'no' },
+  { text:'¿Se debe mantener coherencia con la historia de tu personaje?', correct:'si' },
+  { text:'¿Está permitido cortar rol porque no te gusta el resultado?', correct:'no' }
+];
+const WL_CKPK = [
+  { text:'¿Un CK implica la muerte definitiva del personaje?', correct:'si' },
+  { text:'¿Un PK implica pérdida parcial de memoria del personaje?', correct:'si' },
+  { text:'¿Se puede aplicar un CK sin aprobación administrativa (en la mayoría de servidores)?', correct:'no' },
+  { text:'¿Después de un PK puedes recordar exactamente quién te mató?', correct:'no' },
+  { text:'¿Es obligatorio seguir rol de heridas después de un PK si sobreviviste?', correct:'si' }
+];
+
+// ══════════════════════════════════════════
+// FIREBASE
+// ══════════════════════════════════════════
 let fbReady = false;
-const FB_DOC = 'catanorp/main';
 
 const saveToFirebase = async (data) => {
   if (!fbReady || !window.db) return;
   try {
-    // Split large data (gallery has base64 images) into chunks
-    const main = { updates: data.updates||[], team: data.team||[], ip: data.ip, disc: data.disc, discm: data.discm, players: data.players, onlineCnt: data.onlineCnt, fivemId: data.fivemId, webhook: data.webhook };
-    await window.fsSet(window.fsDoc(window.db, 'catanorp', 'main'), main, { merge: true });
-    // Save WL separately
-    if (data.wl && data.wl.length > 0) {
-      await window.fsSet(window.fsDoc(window.db, 'catanorp', 'whitelist'), { entries: data.wl }, { merge: false });
-    }
-    // Save gallery separately (base64 images are large)
-    if (data.gallery) {
-      await window.fsSet(window.fsDoc(window.db, 'catanorp', 'gallery'), { items: data.gallery }, { merge: false });
-    }
-  } catch(e) { console.log('Firebase save error:', e); }
+    const main = { updates:data.updates||[], team:data.team||[], ip:data.ip, disc:data.disc, discm:data.discm, players:data.players, onlineCnt:data.onlineCnt, fivemId:data.fivemId, webhook:data.webhook };
+    await window.fsSet(window.fsDoc(window.db,'catanorp','main'), main, {merge:true});
+    if (data.wl) await window.fsSet(window.fsDoc(window.db,'catanorp','whitelist'), {entries:data.wl}, {merge:false});
+    if (data.gallery) await window.fsSet(window.fsDoc(window.db,'catanorp','gallery'), {items:data.gallery}, {merge:false});
+  } catch(e) { console.log('Firebase save error:',e); }
 };
 
 const loadFromFirebase = async () => {
   if (!fbReady || !window.db) return;
   try {
     const [mainSnap, wlSnap, galSnap] = await Promise.all([
-      window.fsGet(window.fsDoc(window.db, 'catanorp', 'main')),
-      window.fsGet(window.fsDoc(window.db, 'catanorp', 'whitelist')),
-      window.fsGet(window.fsDoc(window.db, 'catanorp', 'gallery'))
+      window.fsGet(window.fsDoc(window.db,'catanorp','main')),
+      window.fsGet(window.fsDoc(window.db,'catanorp','whitelist')),
+      window.fsGet(window.fsDoc(window.db,'catanorp','gallery'))
     ]);
-    if (mainSnap.exists()) S = { ...S, ...mainSnap.data() };
+    if (mainSnap.exists()) S = {...S, ...mainSnap.data()};
     if (wlSnap.exists()) S.wl = wlSnap.data().entries || [];
     if (galSnap.exists()) S.gallery = galSnap.data().items || [];
-    console.log('✅ Firebase loaded');
     updateStats(); renderUpdates(); renderGallery(); renderTeam(); renderWL();
     observeReveal();
-  } catch(e) { console.log('Firebase load error:', e); }
+  } catch(e) { console.log('Firebase load error:',e); }
 };
 
 const save = () => {
-  // Save to localStorage as backup
-  try { localStorage.setItem('catanorp_backup', JSON.stringify(S)); } catch(e) {}
-  // Save to Firebase
+  try { localStorage.setItem('catanorp_bk', JSON.stringify(S)); } catch(e){}
   saveToFirebase(S);
 };
 
-// Load backup from localStorage while Firebase loads
-try {
-  const d = localStorage.getItem('catanorp_backup');
-  if(d) S = {...S, ...JSON.parse(d)};
-} catch(e) {}
+try { const d = localStorage.getItem('catanorp_bk'); if(d) S={...S,...JSON.parse(d)}; } catch(e){}
 
-// Init Firebase when ready
 const initFirebase = () => {
   fbReady = true;
   loadFromFirebase();
-  // Live sync — listen for changes
   if (window.db) {
-    window.fsSnapshot(window.fsDoc(window.db, 'catanorp', 'main'), (snap) => {
-      if (snap.exists()) { S = { ...S, ...snap.data() }; updateStats(); renderUpdates(); renderTeam(); observeReveal(); }
+    window.fsSnapshot(window.fsDoc(window.db,'catanorp','main'), snap => {
+      if(snap.exists()){ S={...S,...snap.data()}; updateStats(); renderUpdates(); renderTeam(); observeReveal(); }
     });
-    window.fsSnapshot(window.fsDoc(window.db, 'catanorp', 'whitelist'), (snap) => {
-      if (snap.exists()) { S.wl = snap.data().entries || []; renderWL(); updateStats(); }
+    window.fsSnapshot(window.fsDoc(window.db,'catanorp','whitelist'), snap => {
+      if(snap.exists()){ S.wl=snap.data().entries||[]; renderWL(); updateStats(); }
     });
-    window.fsSnapshot(window.fsDoc(window.db, 'catanorp', 'gallery'), (snap) => {
-      if (snap.exists()) { S.gallery = snap.data().items || []; renderGallery(); }
+    window.fsSnapshot(window.fsDoc(window.db,'catanorp','gallery'), snap => {
+      if(snap.exists()){ S.gallery=snap.data().items||[]; renderGallery(); }
     });
   }
 };
+if (window.firebaseReady) initFirebase();
+else window.addEventListener('firebase-ready', initFirebase);
 
-if (window.firebaseReady) {
-  initFirebase();
-} else {
-  window.addEventListener('firebase-ready', initFirebase);
-}
-
-// ── NOTIFY ──
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
 const notify = msg => {
   const el = document.getElementById('notif');
   el.textContent = msg; el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3200);
+  setTimeout(()=>el.classList.remove('show'),3200);
 };
-
-// ── MODAL ──
-const openModal = id => document.getElementById(id).classList.add('open');
-const closeModal = id => document.getElementById(id).classList.remove('open');
-
-// ── STATS ──
+const observeReveal = () => {
+  const obs = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08});
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el));
+};
 const updateStats = () => {
-  document.getElementById('players-num').textContent = S.players || '--';
-  document.getElementById('discord-num').textContent = S.discm || '--';
-  document.getElementById('discord-big').textContent = S.discm || '--';
-  document.getElementById('disc-online').textContent = S.onlineCnt || '--';
-  document.getElementById('wl-num').textContent = S.wl.filter(w=>w.status==='approved').length;
+  document.getElementById('players-num').textContent = S.players||'--';
+  document.getElementById('discord-num').textContent = S.discm||'--';
+  document.getElementById('discord-big').textContent = S.discm||'--';
+  document.getElementById('disc-online').textContent = S.onlineCnt||'--';
+  const approved = (S.wl||[]).filter(w=>w.status==='approved').length;
+  document.getElementById('wl-num').textContent = approved;
   const btn = document.getElementById('discord-btn-link');
-  if(S.disc && S.disc !== '#') btn.href = S.disc;
+  if(S.disc && S.disc!=='#') btn.href = S.disc;
   const tb = document.getElementById('discord-total-big');
   const ob = document.getElementById('discord-online-big');
-  if(tb) tb.textContent = S.discm || '--';
-  if(ob) ob.textContent = S.onlineCnt || '--';
+  if(tb) tb.textContent = S.discm||'--';
+  if(ob) ob.textContent = S.onlineCnt||'--';
 };
 
-// ── UPDATES ──
+// ══════════════════════════════════════════
+// WHITELIST FLOW
+// ══════════════════════════════════════════
+let wlAnswers = {};
+
+const buildQuestions = (containerId, questions) => {
+  const c = document.getElementById(containerId);
+  c.innerHTML = questions.map((q,i)=>`
+    <div class="wl-q" id="q-${containerId}-${i}">
+      <div class="wl-q-text">${i+1}. ${q.text}</div>
+      <div class="wl-q-opts">
+        <div class="wl-q-opt" onclick="selectQ('${containerId}',${i},'si',this)">✅ Sí</div>
+        <div class="wl-q-opt" onclick="selectQ('${containerId}',${i},'no',this)">❌ No</div>
+      </div>
+    </div>`).join('');
+};
+
+const selectQ = (group, idx, val, el) => {
+  const card = document.getElementById(`q-${group}-${idx}`);
+  card.querySelectorAll('.wl-q-opt').forEach(o=>o.classList.remove('sel-yes','sel-no'));
+  el.classList.add(val==='si'?'sel-yes':'sel-no');
+  if(!wlAnswers[group]) wlAnswers[group]={};
+  wlAnswers[group][idx] = val;
+  card.classList.remove('q-unanswered');
+};
+
+const setStep = (n) => {
+  for(let i=1;i<=4;i++){
+    document.getElementById(`wl-p${i}`).classList.toggle('active',i===n);
+    const sc = document.getElementById(`sc${i}`);
+    if(sc){
+      sc.classList.remove('active','done');
+      if(i<n) sc.classList.add('done');
+      if(i===n) sc.classList.add('active');
+    }
+    if(i<4){
+      const sl = document.getElementById(`sl${i}`);
+      if(sl) sl.classList.toggle('done',i<n);
+    }
+  }
+};
+
+const wlNext = (step) => {
+  if(step===1){
+    const nombre = document.getElementById('w-nombre').value.trim();
+    const edad = parseInt(document.getElementById('w-edad').value)||0;
+    const gmail = document.getElementById('w-gmail').value.trim();
+    const discord = document.getElementById('w-discord').value.trim();
+    const ic = document.getElementById('w-ic').value.trim();
+    if(!nombre||!gmail||!discord||!ic){ notify('⚠️ Completa todos los campos obligatorios'); return; }
+    if(!/\s/.test(nombre) || nombre.length < 4){ notify('⚠️ Pon tu nombre completo (nombre y apellido)'); return; }
+    if(/\d/.test(nombre)){ notify('⚠️ El nombre no puede contener números'); return; }
+    if(edad < 14){ notify('❌ Debes tener 14 años o más para aplicar'); return; }
+    buildQuestions('wl-q-normas', WL_NORMAS);
+    setStep(2);
+    wlAnswers['wl-q-normas']={};
+  } else if(step===2){
+    const unanswered = WL_NORMAS.map((_,i)=>wlAnswers['wl-q-normas']&&wlAnswers['wl-q-normas'][i]?null:i).filter(x=>x!==null);
+    if(unanswered.length>0){
+      unanswered.forEach(i=>{
+        const card=document.getElementById(`q-wl-q-normas-${i}`);
+        if(card) card.classList.add('q-unanswered');
+      });
+      notify('⚠️ Responde todas las preguntas'); return;
+    }
+    buildQuestions('wl-q-ckpk', WL_CKPK);
+    setStep(3);
+    wlAnswers['wl-q-ckpk']={};
+  }
+};
+
+const wlBack = (step) => {
+  setStep(step-1);
+};
+
+const wlSubmit = () => {
+  const unanswered = WL_CKPK.map((_,i)=>wlAnswers['wl-q-ckpk']&&wlAnswers['wl-q-ckpk'][i]?null:i).filter(x=>x!==null);
+  if(unanswered.length>0){
+    unanswered.forEach(i=>{
+      const card=document.getElementById(`q-wl-q-ckpk-${i}`);
+      if(card) card.classList.add('q-unanswered');
+    });
+    notify('⚠️ Responde todas las preguntas'); return;
+  }
+
+  const nombre = document.getElementById('w-nombre').value.trim();
+  const edad = parseInt(document.getElementById('w-edad').value)||0;
+  const gmail = document.getElementById('w-gmail').value.trim();
+  const discord = document.getElementById('w-discord').value.trim();
+  const ic = document.getElementById('w-ic').value.trim();
+  const exp = document.getElementById('w-exp').value;
+  const found = document.getElementById('w-found').value;
+
+  // Evaluate answers
+  let wrongNormas = [];
+  WL_NORMAS.forEach((q,i)=>{
+    if(wlAnswers['wl-q-normas'][i] !== q.correct) wrongNormas.push(`Pregunta Normas ${i+1}: "${q.text}"`);
+  });
+  let wrongCKPK = [];
+  WL_CKPK.forEach((q,i)=>{
+    if(wlAnswers['wl-q-ckpk'][i] !== q.correct) wrongCKPK.push(`Pregunta CK/PK ${i+1}: "${q.text}"`);
+  });
+
+  const totalWrong = wrongNormas.length + wrongCKPK.length;
+  const autoStatus = totalWrong === 0 ? 'approved' : 'denied';
+
+  const entry = {
+    id: Date.now(),
+    nombre, edad, gmail, discord, ic, exp: exp||'No indicado', found: found||'No indicado',
+    fecha: new Date().toLocaleDateString('es-PR'),
+    status: autoStatus,
+    wrongCount: totalWrong,
+    wrongList: [...wrongNormas, ...wrongCKPK],
+    autoEval: true
+  };
+
+  S.wl.unshift(entry);
+  save(); renderWL(); updateStats();
+
+  // Send Discord webhook
+  sendWebhook(entry);
+
+  // Show result
+  setStep(4);
+  const rb = document.getElementById('wl-result-box');
+  if(autoStatus==='approved'){
+    rb.innerHTML = `<div class="wl-result approved">
+      <div class="wl-result-icon">🎉</div>
+      <div class="wl-result-title">¡FELICIDADES!</div>
+      <div class="wl-result-msg">Has aprobado correctamente la whitelist. Demostraste tener claros los conceptos básicos y las normas del servidor.<br><br>Ya puedes continuar con el proceso de ingreso. Te damos la bienvenida y esperamos que disfrutes tu experiencia roleando.<br><br><strong>¡Nos vemos dentro! 🚀</strong><br><br>Únete al Discord: <a href="https://discord.gg/catanorp" target="_blank" style="color:var(--gold)">discord.gg/catanorp</a></div>
+    </div>`;
+  } else {
+    rb.innerHTML = `<div class="wl-result denied">
+      <div class="wl-result-icon">❌</div>
+      <div class="wl-result-title">NO APROBADO</div>
+      <div class="wl-result-msg">Lamentablemente, no has aprobado en esta ocasión. Algunas respuestas no fueron correctas y es importante tener claros los conceptos básicos de rol (MG, PG, CK, PK, valoración de vida, etc.) antes de ingresar al servidor.<br><br>Te invitamos a repasar las normas y volver a intentarlo cuando te sientas preparado/a.<br><br><strong>¡Te esperamos en la próxima oportunidad!</strong><br><br>Tienes <strong>${totalWrong} respuesta(s) incorrecta(s)</strong>.</div>
+    </div>`;
+  }
+};
+
+const wlReset = () => {
+  wlAnswers = {};
+  document.getElementById('w-nombre').value='';
+  document.getElementById('w-edad').value='';
+  document.getElementById('w-gmail').value='';
+  document.getElementById('w-discord').value='';
+  document.getElementById('w-ic').value='';
+  setStep(1);
+};
+
+// ══════════════════════════════════════════
+// DISCORD WEBHOOK
+// ══════════════════════════════════════════
+const sendWebhook = async (entry) => {
+  if(!S.webhook) return;
+  const color = entry.status==='approved' ? 3066993 : 15158332;
+  const statusEmoji = entry.status==='approved' ? '✅' : '❌';
+  const statusText = entry.status==='approved' ? 'APROBADO AUTOMÁTICAMENTE' : 'DENEGADO AUTOMÁTICAMENTE';
+  const embed = {
+    embeds:[{
+      title: `${statusEmoji} Nueva Whitelist — ${entry.nombre}`,
+      color,
+      fields:[
+        {name:'👤 Nombre Real', value: entry.nombre, inline:true},
+        {name:'🎂 Edad', value: String(entry.edad), inline:true},
+        {name:'📧 Gmail', value: entry.gmail, inline:true},
+        {name:'💬 Discord', value: entry.discord, inline:true},
+        {name:'🎭 Personaje IC', value: entry.ic, inline:true},
+        {name:'🎮 Experiencia RP', value: entry.exp, inline:true},
+        {name:'📅 Fecha', value: entry.fecha, inline:true},
+        {name:'🔍 Cómo nos encontró', value: entry.found, inline:true},
+        {name:'❓ Respuestas incorrectas', value: String(entry.wrongCount), inline:true},
+        {name:'📊 Resultado', value: statusText, inline:false},
+        ...(entry.wrongList && entry.wrongList.length > 0 ? [{name:'❌ Preguntas falladas', value: entry.wrongList.slice(0,5).join('\n'), inline:false}] : [])
+      ],
+      footer:{ text:'Cataño RP — Sistema de Whitelist' },
+      timestamp: new Date().toISOString()
+    }]
+  };
+  try {
+    await fetch(S.webhook, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(embed) });
+  } catch(e){ console.log('Webhook error:',e); }
+};
+
+// ══════════════════════════════════════════
+// ADMIN — WHITELIST
+// ══════════════════════════════════════════
+const renderWL = () => {
+  const list = document.getElementById('wl-admin-list');
+  const statsBar = document.getElementById('wl-stats-bar');
+  const total = S.wl.length;
+  const approved = S.wl.filter(w=>w.status==='approved').length;
+  const denied = S.wl.filter(w=>w.status==='denied').length;
+  const pending = S.wl.filter(w=>w.status==='pending').length;
+  if(statsBar) statsBar.innerHTML = `
+    <div style="background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.3);padding:10px 18px;color:#4caf50;font-family:'Bebas Neue';font-size:20px">✅ ${approved} <span style="font-size:11px;font-family:'Rajdhani'">APROBADOS</span></div>
+    <div style="background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.3);padding:10px 18px;color:#e63946;font-family:'Bebas Neue';font-size:20px">❌ ${denied} <span style="font-size:11px;font-family:'Rajdhani'">DENEGADOS</span></div>
+    <div style="background:rgba(255,165,0,.1);border:1px solid rgba(255,165,0,.3);padding:10px 18px;color:orange;font-family:'Bebas Neue';font-size:20px">⏳ ${pending} <span style="font-size:11px;font-family:'Rajdhani'">PENDIENTES</span></div>
+    <div style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);padding:10px 18px;color:var(--gold);font-family:'Bebas Neue';font-size:20px">📋 ${total} <span style="font-size:11px;font-family:'Rajdhani'">TOTAL</span></div>`;
+
+  list.innerHTML = S.wl.length ? S.wl.map((w,i)=>`
+    <div class="ali" style="flex-direction:column;align-items:flex-start;gap:8px">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;flex-wrap:wrap;gap:8px">
+        <div style="flex:1">
+          <div class="ali-t">👤 ${w.nombre} <span style="color:var(--muted);font-size:12px">— IC: ${w.ic||'N/A'}</span></div>
+          <div class="ali-m">📧 ${w.gmail||'N/A'} &nbsp;|&nbsp; 💬 ${w.discord} &nbsp;|&nbsp; 🎂 ${w.edad} años &nbsp;|&nbsp; 📅 ${w.fecha}</div>
+          <div class="ali-m">🎮 Exp: ${w.exp||'N/A'} &nbsp;|&nbsp; 🔍 Encontró: ${w.found||'N/A'}</div>
+          <div style="margin-top:6px">${w.wrongCount>0
+            ? `<span style="color:#e63946;font-size:12px">❌ ${w.wrongCount} respuesta(s) incorrecta(s)</span>`
+            : '<span style="color:#4caf50;font-size:12px">✅ Todas las respuestas correctas</span>'}</div>
+        </div>
+        <div>
+          <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'DENEGADO'}</span>
+        </div>
+      </div>
+      <div class="aa">
+        ${w.status!=='approved'?`<button class="ab ab-g" onclick="actWL(${i},'approved')" style="padding:6px 14px;font-size:10px;margin-top:0">✓ Aprobar</button>`:''}
+        ${w.status!=='denied'?`<button class="ab ab-d" onclick="actWL(${i},'denied')" style="padding:6px 14px;font-size:10px;margin-top:0">✕ Denegar</button>`:''}
+        <button class="ab" onclick="resendWebhook(${i})" style="padding:6px 14px;font-size:10px;margin-top:0;background:linear-gradient(135deg,#1a3a7a,#2980b9);color:#fff">📨 Discord</button>
+        <button class="ab ab-d" onclick="delWL(${i})" style="padding:6px 14px;font-size:10px;margin-top:0">🗑️</button>
+      </div>
+    </div>`).join('')
+    : '<div style="text-align:center;color:var(--muted);padding:38px;letter-spacing:2px;font-size:12px">No hay aplicaciones todavía</div>';
+};
+
+const actWL = (i,s) => {
+  S.wl[i].status=s;
+  save(); renderWL(); updateStats();
+  notify(s==='approved'?'✅ Aprobado':'❌ Denegado');
+  // Send webhook on manual action too
+  sendWebhookAction(S.wl[i], s);
+};
+const delWL = (i) => { S.wl.splice(i,1); save(); renderWL(); updateStats(); notify('🗑️ Eliminado'); };
+const resendWebhook = (i) => { sendWebhook(S.wl[i]); notify('📨 Enviado a Discord'); };
+
+const sendWebhookAction = async (entry, action) => {
+  if(!S.webhook) return;
+  const color = action==='approved' ? 3066993 : 15158332;
+  const embed = { embeds:[{
+    title: `${action==='approved'?'✅':'❌'} Admin actualizó: ${entry.nombre}`,
+    color,
+    description: `Estado cambiado a **${action==='approved'?'APROBADO':'DENEGADO'}** manualmente por staff.`,
+    fields:[{name:'👤 Aplicante',value:`${entry.nombre} — ${entry.discord}`,inline:true},{name:'📅 Fecha',value:entry.fecha,inline:true}],
+    footer:{text:'Cataño RP — Panel Admin'},
+    timestamp: new Date().toISOString()
+  }]};
+  try { await fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(embed)}); } catch(e){}
+};
+
+// ══════════════════════════════════════════
+// LOGS
+// ══════════════════════════════════════════
+let currentLogFilter = 'all';
+const renderLogs = (filter) => {
+  currentLogFilter = filter;
+  const search = (document.getElementById('log-search')||{}).value||'';
+  let items = [...S.wl];
+  if(filter==='approved') items=items.filter(w=>w.status==='approved');
+  else if(filter==='denied') items=items.filter(w=>w.status==='denied');
+  if(search) {
+    const q=search.toLowerCase();
+    items=items.filter(w=>(w.nombre||'').toLowerCase().includes(q)||(w.discord||'').toLowerCase().includes(q)||(w.gmail||'').toLowerCase().includes(q));
+  }
+  ['lf-all','lf-approved','lf-denied'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('active');
+  });
+  const activeBtn = document.getElementById(`lf-${filter==='search'?currentLogFilter:filter}`);
+  if(activeBtn) activeBtn.classList.add('active');
+  const c = document.getElementById('logs-container');
+  if(!items.length){ c.innerHTML='<div style="text-align:center;color:var(--muted);padding:28px;font-size:12px;letter-spacing:2px">Sin registros</div>'; return; }
+  c.innerHTML = items.map((w,i)=>{
+    const realIdx = S.wl.indexOf(w);
+    return `<div class="log-card log-${w.status}" id="lc-${realIdx}">
+      <div class="log-header" onclick="toggleLog(${realIdx})">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:15px;color:var(--text)">👤 ${w.nombre}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">💬 ${w.discord} &nbsp;|&nbsp; 📅 ${w.fecha} &nbsp;|&nbsp; ${w.wrongCount>0?`❌ ${w.wrongCount} fallos`:'✅ Sin fallos'}</div>
+        </div>
+        <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'DENEGADO'}</span>
+        <span style="color:var(--muted);font-size:18px;margin-left:8px">▾</span>
+      </div>
+      <div class="log-body" id="lb-${realIdx}">
+        <div class="log-field"><span class="log-lbl">Nombre Real</span><span class="log-val">${w.nombre}</span></div>
+        <div class="log-field"><span class="log-lbl">Personaje IC</span><span class="log-val">${w.ic||'N/A'}</span></div>
+        <div class="log-field"><span class="log-lbl">Edad</span><span class="log-val">${w.edad} años</span></div>
+        <div class="log-field"><span class="log-lbl">Gmail</span><span class="log-val">${w.gmail||'N/A'}</span></div>
+        <div class="log-field"><span class="log-lbl">Discord</span><span class="log-val">${w.discord}</span></div>
+        <div class="log-field"><span class="log-lbl">Experiencia</span><span class="log-val">${w.exp||'N/A'}</span></div>
+        <div class="log-field"><span class="log-lbl">Nos encontró</span><span class="log-val">${w.found||'N/A'}</span></div>
+        <div class="log-field"><span class="log-lbl">Fallos</span><span class="log-val">${w.wrongCount||0} respuesta(s) incorrecta(s)</span></div>
+        ${w.wrongList&&w.wrongList.length>0?`<div class="log-wrong">⚠️ Preguntas falladas:<br>${w.wrongList.join('<br>')}</div>`:''}
+        <div class="log-acts">
+          ${w.status!=='approved'?`<button class="ab ab-g" onclick="actWL(${realIdx},'approved');renderLogs('${currentLogFilter}')" style="padding:8px 16px;font-size:11px;margin-top:0">✓ Aprobar</button>`:''}
+          ${w.status!=='denied'?`<button class="ab ab-d" onclick="actWL(${realIdx},'denied');renderLogs('${currentLogFilter}')" style="padding:8px 16px;font-size:11px;margin-top:0">✕ Denegar</button>`:''}
+          <button class="ab" onclick="resendWebhook(${realIdx})" style="padding:8px 16px;font-size:11px;margin-top:0;background:linear-gradient(135deg,#1a3a7a,#2980b9);color:#fff">📨 Reenviar Discord</button>
+          <button class="ab ab-d" onclick="delWL(${realIdx});renderLogs('${currentLogFilter}')" style="padding:8px 14px;font-size:11px;margin-top:0">🗑️ Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+};
+const filterLogs = f => renderLogs(f==='search'?currentLogFilter:f);
+const toggleLog = i => { const el=document.getElementById(`lb-${i}`); if(el) el.classList.toggle('open'); };
+const clearLogs = () => { if(!confirm('¿Limpiar todos los logs? Esto no se puede deshacer.')) return; S.wl=[]; save(); renderLogs('all'); updateStats(); notify('🗑️ Logs limpiados'); };
+
+// ══════════════════════════════════════════
+// UPDATES
+// ══════════════════════════════════════════
 const renderUpdates = () => {
   const g = document.getElementById('updates-grid');
   const al = document.getElementById('updates-admin-list');
   if(!S.updates.length) {
-    g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;letter-spacing:2px;font-size:12px">Sin actualizaciones todavía</div>';
+    g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;letter-spacing:2px;font-size:12px">Sin actualizaciones todavía</div>';
   } else {
-    g.innerHTML = S.updates.map((u,i) => `
+    g.innerHTML=S.updates.map((u,i)=>`
       <div class="update-card reveal">
-        ${u.img ? `<img src="${u.img}" class="update-img-el" alt="">` : `<div class="update-ph">CATAÑO RP</div>`}
+        ${u.img?`<img src="${u.img}" class="update-img-el" alt="">`:`<div class="update-ph">CATAÑO RP</div>`}
         <div class="update-body">
           <span class="update-tag">${u.tag||'UPDATE'}</span>
           <div class="update-title">${u.title}</div>
@@ -626,153 +994,107 @@ const renderUpdates = () => {
         </div>
       </div>`).join('');
   }
-  if(al) al.innerHTML = S.updates.map((u,i) => `
-    <div class="ali">
-      <div><div class="ali-t">${u.title}</div><div class="ali-m">${u.date} • <span class="update-tag" style="padding:2px 6px;font-size:9px">${u.tag||'UPDATE'}</span></div></div>
-      <button class="ab ab-d" onclick="delUpdate(${i})" style="padding:7px 14px;font-size:10px">Eliminar</button>
+  if(al) al.innerHTML=S.updates.map((u,i)=>`
+    <div class="ali" style="display:flex;justify-content:space-between;align-items:center">
+      <div><div class="ali-t">${u.title}</div><div class="ali-m">${u.date} • ${u.tag||'UPDATE'}</div></div>
+      <button class="ab ab-d" onclick="delUpdate(${i})" style="padding:7px 14px;font-size:10px;margin-top:0">Eliminar</button>
     </div>`).join('');
   observeReveal();
 };
-
 const addUpdate = () => {
-  const t = document.getElementById('upd-title').value.trim();
-  const d = document.getElementById('upd-desc').value.trim();
-  const tag = document.getElementById('upd-tag').value.trim();
-  const f = document.getElementById('upd-img').files[0];
-  if(!t||!d) { notify('⚠️ Título y descripción requeridos'); return; }
-  const add = img => {
-    S.updates.unshift({ title:t, desc:d, tag:tag||'UPDATE', date:new Date().toLocaleDateString('es-PR'), img:img||null });
-    save(); renderUpdates(); notify('✅ Actualización publicada');
-    ['upd-title','upd-desc','upd-tag'].forEach(id => document.getElementById(id).value='');
+  const t=document.getElementById('upd-title').value.trim();
+  const d=document.getElementById('upd-desc').value.trim();
+  const tag=document.getElementById('upd-tag').value.trim();
+  const f=document.getElementById('upd-img').files[0];
+  if(!t||!d){notify('⚠️ Título y descripción requeridos');return;}
+  const add=img=>{
+    S.updates.unshift({title:t,desc:d,tag:tag||'UPDATE',date:new Date().toLocaleDateString('es-PR'),img:img||null});
+    save();renderUpdates();notify('✅ Actualización publicada');
+    ['upd-title','upd-desc','upd-tag'].forEach(id=>document.getElementById(id).value='');
   };
-  if(f) { const r=new FileReader(); r.onload=e=>add(e.target.result); r.readAsDataURL(f); }
+  if(f){const r=new FileReader();r.onload=e=>add(e.target.result);r.readAsDataURL(f);}
   else add(null);
 };
+const delUpdate = i=>{S.updates.splice(i,1);save();renderUpdates();notify('🗑️ Eliminado');};
 
-const addUpdateModal = () => {
-  const t = document.getElementById('m-upd-title').value.trim();
-  const d = document.getElementById('m-upd-desc').value.trim();
-  if(!t) { notify('⚠️ Escribe un título'); return; }
-  S.updates.unshift({ title:t, desc:d||'', tag:'UPDATE', date:new Date().toLocaleDateString('es-PR') });
-  save(); renderUpdates(); closeModal('upd-modal'); notify('✅ Actualización publicada');
-};
-
-const delUpdate = i => { S.updates.splice(i,1); save(); renderUpdates(); notify('🗑️ Eliminado'); };
-
-// ── GALLERY ──
+// ══════════════════════════════════════════
+// GALLERY
+// ══════════════════════════════════════════
 const renderGallery = () => {
-  const g = document.getElementById('gallery-grid');
-  const p = document.getElementById('gal-preview');
-  g.innerHTML = S.gallery.length ? S.gallery.map((img,i) => `
+  const g=document.getElementById('gallery-grid');
+  const p=document.getElementById('gal-preview');
+  g.innerHTML=S.gallery.length?S.gallery.map((img,i)=>`
     <div class="gallery-item">
       <img src="${img}" alt="Cataño RP" loading="lazy">
       <div class="gallery-ov"><span style="font-size:26px;color:var(--gold)">🔍</span></div>
     </div>`).join('')
-    : `<div style="grid-column:1/-1;text-align:center;padding:56px 0">
-        <div class="gallery-ph"><span style="font-size:38px">📷</span><span>Sin fotos todavía</span></div>
-      </div>`;
-  if(p) p.innerHTML = S.gallery.map((img,i) => `
+    :`<div style="grid-column:1/-1;text-align:center;padding:56px 0;color:var(--muted)">📷 Sin fotos todavía</div>`;
+  if(p) p.innerHTML=S.gallery.map((img,i)=>`
     <div style="position:relative">
       <img src="${img}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block">
       <button onclick="delGallery(${i})" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;cursor:pointer;padding:2px 7px;font-size:11px">✕</button>
     </div>`).join('');
 };
-
-const addGallery = e => {
-  Array.from(e.target.files).forEach(f => {
-    const r = new FileReader();
-    r.onload = ev => { S.gallery.push(ev.target.result); save(); renderGallery(); };
+const addGallery=e=>{
+  Array.from(e.target.files).forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{S.gallery.push(ev.target.result);save();renderGallery();};
     r.readAsDataURL(f);
   });
   notify(`✅ ${e.target.files.length} foto(s) agregada(s)`);
 };
+const delGallery=i=>{S.gallery.splice(i,1);save();renderGallery();};
 
-const delGallery = i => { S.gallery.splice(i,1); save(); renderGallery(); };
-
-// ── TEAM ──
-const renderTeam = () => {
-  const g = document.getElementById('team-grid');
-  const al = document.getElementById('team-admin-list');
-  g.innerHTML = S.team.length ? S.team.map(m => `
+// ══════════════════════════════════════════
+// TEAM
+// ══════════════════════════════════════════
+const renderTeam=()=>{
+  const g=document.getElementById('team-grid');
+  const al=document.getElementById('team-admin-list');
+  g.innerHTML=S.team.length?S.team.map(m=>`
     <div class="team-card reveal">
       <div class="team-avatar">${m.emoji||m.name[0]}</div>
       <div class="team-name">${m.name}</div>
       <div class="team-role">${m.role}</div>
     </div>`).join('')
-    : '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;letter-spacing:2px;font-size:12px">Sin miembros todavía</div>';
-  if(al) al.innerHTML = S.team.map((m,i) => `
-    <div class="ali">
+    :'<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;font-size:12px;letter-spacing:2px">Sin miembros todavía</div>';
+  if(al) al.innerHTML=S.team.map((m,i)=>`
+    <div class="ali" style="display:flex;justify-content:space-between;align-items:center">
       <div><div class="ali-t">${m.emoji||''} ${m.name}</div><div class="ali-m">${m.role}</div></div>
-      <button class="ab ab-d" onclick="delTeam(${i})" style="padding:7px 14px;font-size:10px">Eliminar</button>
+      <button class="ab ab-d" onclick="delTeam(${i})" style="padding:7px 14px;font-size:10px;margin-top:0">Eliminar</button>
     </div>`).join('');
   observeReveal();
 };
-
-const addTeam = () => {
-  const n = document.getElementById('team-name').value.trim();
-  const r = document.getElementById('team-role').value.trim();
-  const e = document.getElementById('team-emoji').value.trim();
-  if(!n||!r) { notify('⚠️ Nombre y rol requeridos'); return; }
-  S.team.push({ name:n, role:r, emoji:e });
-  save(); renderTeam(); notify('✅ Miembro agregado');
-  ['team-name','team-role','team-emoji'].forEach(id => document.getElementById(id).value='');
+const addTeam=()=>{
+  const n=document.getElementById('team-name').value.trim();
+  const r=document.getElementById('team-role').value.trim();
+  const e=document.getElementById('team-emoji').value.trim();
+  if(!n||!r){notify('⚠️ Nombre y rol requeridos');return;}
+  S.team.push({name:n,role:r,emoji:e});
+  save();renderTeam();notify('✅ Miembro agregado');
+  ['team-name','team-role','team-emoji'].forEach(id=>document.getElementById(id).value='');
 };
+const delTeam=i=>{S.team.splice(i,1);save();renderTeam();};
 
-const addTeamModal = () => {
-  const n = document.getElementById('m-team-name').value.trim();
-  const r = document.getElementById('m-team-role').value.trim();
-  const e = document.getElementById('m-team-emoji').value.trim();
-  if(!n) { notify('⚠️ Nombre requerido'); return; }
-  S.team.push({ name:n, role:r||'Staff', emoji:e });
-  save(); renderTeam(); closeModal('team-modal'); notify('✅ Miembro del equipo agregado');
-};
-
-const delTeam = i => { S.team.splice(i,1); save(); renderTeam(); };
-
-// ── WHITELIST ──
-const submitWL = e => {
-  e.preventDefault();
-  const inputs = e.target.querySelectorAll('input,select,textarea');
-  S.wl.unshift({ id:Date.now(), nombre:inputs[0].value, discord:inputs[1].value, fecha:new Date().toLocaleDateString('es-PR'), status:'pending' });
-  save(); renderWL(); e.target.reset(); updateStats();
-  notify('✅ Aplicación enviada. Te contactaremos por Discord en 24-72h.');
-};
-
-const renderWL = () => {
-  const list = document.getElementById('wl-admin-list');
-  list.innerHTML = S.wl.length ? S.wl.map((w,i) => `
-    <div class="ali" style="flex-direction:column;align-items:flex-start;gap:10px">
-      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;flex-wrap:wrap;gap:8px">
-        <div>
-          <div class="ali-t">👤 ${w.nombre} <span style="color:var(--muted);font-size:13px">— IC: ${w.nombreIC||'N/A'}</span></div>
-          <div class="ali-m">📧 ${w.gmail||'N/A'} &nbsp;|&nbsp; 💬 ${w.discord} &nbsp;|&nbsp; 🎂 ${w.edad} años &nbsp;|&nbsp; 📅 ${w.fecha}</div>
-          ${(w.wrongCount||0) > 0 ? `<div style="color:#e63946;font-size:11px;margin-top:4px">❌ ${w.wrongCount} respuesta(s) incorrecta(s)</div>` : '<div style="color:#4caf50;font-size:11px;margin-top:4px">✅ Todas las respuestas correctas</div>'}
-        </div>
-        <div class="aa">
-          <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'RECHAZADO'}</span>
-          ${w.status==='pending'?`<button class="ab" onclick="actWL(${i},'approved')" style="padding:6px 12px;font-size:10px;margin-top:0">✓ Aprobar</button><button class="ab ab-d" onclick="actWL(${i},'denied')" style="padding:6px 12px;font-size:10px;margin-top:0">✕ Rechazar</button>`:''}
-        </div>
-      </div>
-    </div>`).join('')
-    : '<div style="text-align:center;color:var(--muted);padding:38px;letter-spacing:2px;font-size:12px">No hay aplicaciones todavía</div>';
-};
-
-const actWL = (i,s) => { S.wl[i].status=s; save(); renderWL(); updateStats(); notify(s==='approved'?'✅ Aprobado':'❌ Rechazado'); };
-
-// ── SERVER SETTINGS ──
-const saveSrv = type => {
-  const v = document.getElementById('srv-'+({ip:'ip',disc:'disc',players:'players',discm:'discm'}[type])).value.trim();
+// ══════════════════════════════════════════
+// SERVER SETTINGS
+// ══════════════════════════════════════════
+const saveSrv=type=>{
+  const ids={ip:'srv-ip',disc:'srv-disc',players:'srv-players',discm:'srv-discm',fivemid:'srv-fivemid',webhook:'srv-webhook'};
+  const v=document.getElementById(ids[type]).value.trim();
   if(type==='ip') S.ip=v;
-  else if(type==='disc') { S.disc=v; document.getElementById('discord-btn-link').href=v; }
+  else if(type==='disc'){S.disc=v;document.getElementById('discord-btn-link').href=v;}
   else if(type==='players') S.players=v;
   else if(type==='discm') S.discm=v;
-  else if(type==='fivemid') { S.fivemId=v; fetchFiveManage(); }
+  else if(type==='fivemid'){S.fivemId=v;fetchLivePlayers();}
   else if(type==='webhook') S.webhook=v;
-  save(); updateStats(); notify('✅ Guardado');
+  save();updateStats();notify('✅ Guardado');
 };
 
-// ── TABS ──
-const switchTab = (id, btn) => {
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+const switchTab=(id,btn)=>{
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -781,95 +1103,59 @@ const switchTab = (id, btn) => {
   if(id==='t-wl') renderWL();
   if(id==='t-logs') renderLogs('all');
   if(id==='t-gal') renderGallery();
-  if(id==='t-srv') {
-    document.getElementById('srv-webhook').value = S.webhook||'';
-    document.getElementById('srv-fivemid').value = S.fivemId||'';
-    document.getElementById('srv-ip').value = S.ip||'';
-    document.getElementById('srv-disc').value = S.disc||'';
-    document.getElementById('srv-players').value = S.players||'';
-    document.getElementById('srv-discm').value = S.discm||'';
+  if(id==='t-upd') renderUpdates();
+  if(id==='t-srv'){
+    document.getElementById('srv-webhook').value=S.webhook||'';
+    document.getElementById('srv-fivemid').value=S.fivemId||'';
+    document.getElementById('srv-ip').value=S.ip||'';
+    document.getElementById('srv-disc').value=S.disc||'';
+    document.getElementById('srv-players').value=S.players||'';
+    document.getElementById('srv-discm').value=S.discm||'';
   }
 };
 
-// ── SCROLL REVEAL ──
-const observeReveal = () => {
-  const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold:0.08 });
-  document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
-};
-
-// ── LIVE PLAYERS via CFX API ──
-const fetchLivePlayers = async () => {
-  const id = S.fivemId || 'eqjgpm';
-  try {
-    // CFX public API - players list
-    const res = await fetch('https://servers-frontend.fivem.net/api/servers/single/' + id);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data && data.Data) {
-      const online = data.Data.clients || 0;
-      const max = data.Data.sv_maxclients || 64;
-      S.players = online + '/' + max;
-      S.serverName = data.Data.hostname || 'Cataño RP';
-      save(); updateStats();
-      // Animate the number
-      animateNum('players-num', online, '/' + max);
+// ══════════════════════════════════════════
+// LIVE DATA
+// ══════════════════════════════════════════
+const fetchLivePlayers=async()=>{
+  const id=S.fivemId||'eqjgpm';
+  try{
+    const res=await fetch('https://servers-frontend.fivem.net/api/servers/single/'+id);
+    if(!res.ok) return;
+    const data=await res.json();
+    if(data&&data.Data){
+      const online=data.Data.clients||0;
+      const max=data.Data.sv_maxclients||64;
+      S.players=online+'/'+max;
+      updateStats();
     }
-  } catch(e) { console.log('CFX fetch error:', e); }
+  }catch(e){}
 };
-
-// ── DISCORD MEMBERS via Discord Widget API ──
-const fetchDiscord = async () => {
-  try {
-    // Extract guild ID from invite or use widget
-    const res = await fetch('https://discord.com/api/v9/invites/catanorp?with_counts=true');
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data && data.guild) {
-      const total = data.approximate_member_count || 0;
-      const online = data.approximate_presence_count || 0;
-      S.discm = total.toLocaleString();
-      S.onlineCnt = online.toLocaleString();
-      save(); updateStats();
-      animateNum('discord-num', total, '');
-      animateNum('discord-big', total, '');
-      animateNum('discord-total-big', total, '');
-      animateNum('discord-online-big', online, '');
+const fetchDiscord=async()=>{
+  try{
+    const res=await fetch('https://discord.com/api/v9/invites/catanorp?with_counts=true');
+    if(!res.ok) return;
+    const data=await res.json();
+    if(data&&data.guild){
+      const total=data.approximate_member_count||0;
+      const online=data.approximate_presence_count||0;
+      S.discm=total.toLocaleString();
+      S.onlineCnt=online.toLocaleString();
+      updateStats();
     }
-  } catch(e) { console.log('Discord fetch error:', e); }
+  }catch(e){}
 };
 
-// ── NUMBER ANIMATION ──
-const animateNum = (id, target, suffix) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  let n = 0; const dur = 1200; const start = Date.now();
-  const step = () => {
-    const progress = Math.min((Date.now() - start) / dur, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    n = Math.floor(ease * target);
-    el.textContent = n.toLocaleString() + suffix;
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = target.toLocaleString() + suffix;
-  };
-  requestAnimationFrame(step);
-};
-
-const fetchFiveManage = fetchLivePlayers; // alias
-
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
-  // Render with localStorage backup immediately while Firebase loads
-  updateStats(); renderUpdates(); renderGallery(); renderTeam(); renderWL(); observeReveal();
-  // Live player/discord fetching
-  fetchLivePlayers();
-  fetchDiscord();
-  setInterval(fetchLivePlayers, 30000);
-  setInterval(fetchDiscord, 60000);
-  // Show loading indicator
-  const loadingBar = document.getElementById('fb-loading');
-  if (loadingBar) {
-    setTimeout(() => { loadingBar.style.opacity = '0'; setTimeout(() => loadingBar.remove(), 500); }, 3000);
-  }
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  updateStats();renderUpdates();renderGallery();renderTeam();renderWL();observeReveal();
+  fetchLivePlayers();fetchDiscord();
+  setInterval(fetchLivePlayers,30000);
+  setInterval(fetchDiscord,60000);
+  const lb=document.getElementById('fb-loading');
+  if(lb) setTimeout(()=>{lb.style.opacity='0';setTimeout(()=>lb.remove(),500);},3000);
 });
 </script>
 </body>

@@ -725,28 +725,23 @@ let S = {
 // WHITELIST QUESTIONS
 // ══════════════════════════════════════════
 const WL_NORMAS = [
-  { text:'¿Está permitido usar información externa (Discord, stream) si tu personaje no la sabe?', correct:'no' },
-  { text:'¿Puedes forzar acciones sobre otro jugador sin darle oportunidad de responder?', correct:'no' },
-  { text:'¿El metagaming está permitido si mejora la historia?', correct:'no' },
-  { text:'¿Debes valorar la vida de tu personaje en situaciones de peligro extremo?', correct:'si' },
-  { text:'¿Puedes desconectarte para evitar consecuencias en rol?', correct:'no' },
-  { text:'¿Está permitido hacer RK (venganza tras morir)?', correct:'no' },
-  { text:'¿Puedes robar sin iniciar rol previo?', correct:'no' },
-  { text:'¿Es obligatorio respetar el entorno roleplay?', correct:'si' },
-  { text:'¿Puedes mezclar chat OOC con situaciones IC?', correct:'no' },
-  { text:'¿Se puede usar información vista en un directo para beneficio IC?', correct:'no' },
-  { text:'¿Está permitido el powergaming si el otro jugador no se queja?', correct:'no' },
-  { text:'¿Debes seguir las normas aunque pertenezcas a una facción importante?', correct:'si' },
-  { text:'¿Puedes ignorar heridas graves y actuar como si nada?', correct:'no' },
-  { text:'¿Se debe mantener coherencia con la historia de tu personaje?', correct:'si' },
-  { text:'¿Está permitido cortar rol porque no te gusta el resultado?', correct:'no' }
+  { text:'¿Sabes la diferencia entre PK (Player Kill) y CK (Character Kill)?', correct:'si' },
+  { text:'¿Está permitido hacer metagaming en el servidor?', correct:'no' },
+  { text:'¿Puedes usar información de Discord dentro del rol sin que tu personaje la haya obtenido en juego?', correct:'no' },
+  { text:'¿Un CK implica la muerte permanente del personaje?', correct:'si' },
+  { text:'¿Se puede hacer Powergaming si la situación lo "amerita"?', correct:'no' },
+  { text:'¿Debes valorar tu vida (NVL) en situaciones de peligro?', correct:'si' },
+  { text:'¿Está permitido hacer Revenge Kill después de un PK?', correct:'no' },
+  { text:'¿El rol de entorno es obligatorio aunque no haya staff presente?', correct:'si' },
+  { text:'¿Puedes forzar acciones a otro jugador sin darle oportunidad de responder?', correct:'no' },
+  { text:'¿Un personaje puede recordar todo después de un PK?', correct:'no' }
 ];
 const WL_CKPK = [
-  { text:'¿Un CK implica la muerte definitiva del personaje?', correct:'si' },
-  { text:'¿Un PK implica pérdida parcial de memoria del personaje?', correct:'si' },
-  { text:'¿Se puede aplicar un CK sin aprobación administrativa (en la mayoría de servidores)?', correct:'no' },
-  { text:'¿Después de un PK puedes recordar exactamente quién te mató?', correct:'no' },
-  { text:'¿Es obligatorio seguir rol de heridas después de un PK si sobreviviste?', correct:'si' }
+  { text:'Explica con tus palabras qué es PK y qué consecuencias tiene.', correct:'open', keyword:['muere','muerte','memoria','kill','pk','personaje','no recuerda','olvida','parcial'] },
+  { text:'¿Qué es CK y en qué situaciones puede aplicarse?', correct:'open', keyword:['permanente','definitiv','nuevo personaje','administr','aprobacion','caracter'] },
+  { text:'¿Qué es metagaming y da un ejemplo claro?', correct:'open', keyword:['discord','stream','fuera','externo','informacion','juego','ic','ooc'] },
+  { text:'¿Qué es powergaming y cómo evitarlo?', correct:'open', keyword:['forzar','irreales','reaccionar','responder','imposible','real','accion'] },
+  { text:'¿Qué significa valorar la vida (NVL) y por qué es importante?', correct:'open', keyword:['morir','muerte','arma','cooperar','temer','vida','peligro','miedo'] }
 ];
 
 // ══════════════════════════════════════════
@@ -842,11 +837,26 @@ const buildQuestions = (containerId, questions) => {
   c.innerHTML = questions.map((q,i)=>`
     <div class="wl-q" id="q-${containerId}-${i}">
       <div class="wl-q-text">${i+1}. ${q.text}</div>
-      <div class="wl-q-opts">
-        <div class="wl-q-opt" onclick="selectQ('${containerId}',${i},'si',this)">✅ Sí</div>
-        <div class="wl-q-opt" onclick="selectQ('${containerId}',${i},'no',this)">❌ No</div>
-      </div>
+      ${q.correct==='open'
+        ? `<textarea class="wl-open-answer" id="oa-${containerId}-${i}" placeholder="Escribe tu respuesta aquí..." rows="3" oninput="saveOpenAnswer('${containerId}',${i},this.value)" style="width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,.2);color:var(--text);padding:10px;font-family:'Rajdhani';font-size:14px;outline:none;resize:vertical;margin-top:4px"></textarea>`
+        : `<div class="wl-q-opts">
+          <div class="wl-q-opt" onclick="selectQ('${containerId}',${i},'si',this)">✅ Sí</div>
+          <div class="wl-q-opt" onclick="selectQ('${containerId}',${i},'no',this)">❌ No</div>
+        </div>`
+      }
     </div>`).join('');
+};
+
+const saveOpenAnswer = (group, idx, val) => {
+  if(!wlAnswers[group]) wlAnswers[group]={};
+  wlAnswers[group][idx] = val.trim();
+};
+
+const analyzeOpenAnswer = (answer, keywords) => {
+  if(!answer || answer.length < 15) return false;
+  const lower = answer.toLowerCase();
+  const matches = keywords.filter(k => lower.includes(k));
+  return matches.length >= 2;
 };
 
 const selectQ = (group, idx, val, el) => {
@@ -897,6 +907,7 @@ const wlNext = (step) => {
       });
       notify('⚠️ Responde todas las preguntas'); return;
     }
+    if(!wlAnswers['wl-q-normas']) wlAnswers['wl-q-normas']={};
     buildQuestions('wl-q-ckpk', WL_CKPK);
     setStep(3);
     wlAnswers['wl-q-ckpk']={};
@@ -908,13 +919,17 @@ const wlBack = (step) => {
 };
 
 const wlSubmit = () => {
-  const unanswered = WL_CKPK.map((_,i)=>wlAnswers['wl-q-ckpk']&&wlAnswers['wl-q-ckpk'][i]?null:i).filter(x=>x!==null);
-  if(unanswered.length>0){
-    unanswered.forEach(i=>{
+  // Validate open answers
+  const unansweredCK = WL_CKPK.map((_,i)=>{
+    const ans = wlAnswers['wl-q-ckpk'] && wlAnswers['wl-q-ckpk'][i];
+    return (!ans || ans.length < 10) ? i : null;
+  }).filter(x=>x!==null);
+  if(unansweredCK.length>0){
+    unansweredCK.forEach(i=>{
       const card=document.getElementById(`q-wl-q-ckpk-${i}`);
       if(card) card.classList.add('q-unanswered');
     });
-    notify('⚠️ Responde todas las preguntas'); return;
+    notify('⚠️ Responde todas las preguntas generales'); return;
   }
 
   const nombre = document.getElementById('w-nombre').value.trim();
@@ -925,18 +940,33 @@ const wlSubmit = () => {
   const exp = document.getElementById('w-exp').value;
   const found = document.getElementById('w-found').value;
 
-  // Evaluate answers
-  let wrongNormas = [];
-  WL_NORMAS.forEach((q,i)=>{
-    if(wlAnswers['wl-q-normas'][i] !== q.correct) wrongNormas.push(`Pregunta Normas ${i+1}: "${q.text}"`);
-  });
-  let wrongCKPK = [];
+  // Check for troll/gibberish answers
+  let trollAnswers = [];
   WL_CKPK.forEach((q,i)=>{
-    if(wlAnswers['wl-q-ckpk'][i] !== q.correct) wrongCKPK.push(`Pregunta CK/PK ${i+1}: "${q.text}"`);
+    const ans = (wlAnswers['wl-q-ckpk'][i]||'').trim();
+    const words = ans.split(/\s+/).filter(w=>w.length>2);
+    const isGibberish = words.length < 3 || /^(.)+$/.test(ans) || ans.replace(/[aeiou]/gi,'').length > ans.length*0.8;
+    if(isGibberish) trollAnswers.push(`Pregunta ${i+1}: respuesta incoherente`);
   });
 
-  const totalWrong = wrongNormas.length + wrongCKPK.length;
-  const autoStatus = totalWrong === 0 ? 'approved' : 'denied';
+  // Evaluate Si/No answers
+  let wrongNormas = [];
+  WL_NORMAS.forEach((q,i)=>{
+    if(wlAnswers['wl-q-normas'][i] !== q.correct) wrongNormas.push(`Normas P${i+1}: "${q.text}"`);
+  });
+
+  // Evaluate open answers by keywords
+  let wrongCKPK = [];
+  WL_CKPK.forEach((q,i)=>{
+    const ans = wlAnswers['wl-q-ckpk'][i]||'';
+    if(!analyzeOpenAnswer(ans, q.keyword)) wrongCKPK.push(`General P${i+1}: "${q.text}"`);
+  });
+
+  const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
+  const autoStatus = (totalWrong === 0 && trollAnswers.length === 0) ? 'approved' : 'denied';
+
+  // Build open answers summary
+  const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');
 
   const entry = {
     id: Date.now(),
@@ -944,7 +974,8 @@ const wlSubmit = () => {
     fecha: new Date().toLocaleDateString('es-PR'),
     status: autoStatus,
     wrongCount: totalWrong,
-    wrongList: [...wrongNormas, ...wrongCKPK],
+    wrongList: [...wrongNormas, ...wrongCKPK, ...trollAnswers],
+    openAnswers,
     autoEval: true
   };
 
@@ -953,6 +984,9 @@ const wlSubmit = () => {
 
   // Send Discord webhook
   sendWebhook(entry);
+
+  // Send Gmail notification (delayed 10-15 min simulation via setTimeout)
+  sendEmailResult(entry);
 
   // Show result
   setStep(4);
@@ -1313,6 +1347,8 @@ const fetchDiscord=async()=>{
 // INIT
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
+  // Init EmailJS
+  if(typeof emailjs !== 'undefined') emailjs.init('MDw-2Gp7Ab4cq2_ZN');
   // Discord OAuth2 callback check
   if(window.location.hash.includes('access_token')) { handleDiscordCallback(); }
   else { restoreDiscordSession(); }

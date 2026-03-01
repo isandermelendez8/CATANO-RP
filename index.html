@@ -226,6 +226,22 @@
     .mc:hover{color:var(--gold)}
     .mt{font-family:'Bebas Neue';font-size:26px;color:var(--gold);margin-bottom:22px;letter-spacing:3px}
 
+    /* DISCORD LOGIN */
+    .discord-login-wall{text-align:center;padding:40px 20px}
+    .discord-login-wall .dlw-icon{font-size:56px;margin-bottom:16px}
+    .discord-login-wall h3{font-family:'Bebas Neue';font-size:28px;color:var(--gold);letter-spacing:3px;margin-bottom:12px}
+    .discord-login-wall p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px;max-width:420px;margin-left:auto;margin-right:auto}
+    .btn-discord{display:inline-flex;align-items:center;gap:10px;background:#5865F2;color:#fff;padding:14px 32px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;font-size:14px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;text-decoration:none}
+    .btn-discord:hover{background:#4752c4;transform:translateY(-2px);box-shadow:0 8px 30px rgba(88,101,242,.4)}
+    .discord-user-bar{display:flex;align-items:center;gap:12px;background:rgba(88,101,242,.1);border:1px solid rgba(88,101,242,.3);padding:12px 18px;margin-bottom:20px}
+    .discord-user-bar img{width:36px;height:36px;border-radius:50%}
+    .discord-user-bar .dub-name{font-weight:700;color:var(--text);font-size:15px}
+    .discord-user-bar .dub-tag{font-size:11px;color:var(--muted);letter-spacing:1px}
+    .dub-logout{margin-left:auto;background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--muted);padding:6px 12px;cursor:pointer;font-family:'Rajdhani';font-size:11px;letter-spacing:1px;transition:all .2s}
+    .dub-logout:hover{border-color:var(--red);color:var(--red)}
+    .no-role-msg{background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.3);padding:20px;text-align:center;color:#e63946;font-size:14px;line-height:1.7}
+    .verified-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.3);color:#4caf50;font-size:11px;letter-spacing:2px;padding:4px 12px;font-weight:700;margin-left:8px}
+
     @media(max-width:768px){
       nav{padding:0 18px}.nav-links{display:none}
       .form-row,.ir{grid-template-columns:1fr}
@@ -284,73 +300,97 @@
   <h2 class="section-title reveal">Aplicación Whitelist</h2>
   <div class="section-line"></div>
   <div class="wl-box reveal">
-    <div class="wl-notice">⚠️ Debes ser miembro del Discord <strong>discord.gg/catanorp</strong> para aplicar. Las aplicaciones son evaluadas automáticamente. Debes tener 14+ años.</div>
 
-    <!-- STEPS -->
-    <div class="steps-wrap" id="wl-steps-bar">
-      <div class="step-circle active" id="sc1">1<span class="step-label">DATOS</span></div>
-      <div class="step-line" id="sl1"></div>
-      <div class="step-circle" id="sc2">2<span class="step-label">NORMAS</span></div>
-      <div class="step-line" id="sl2"></div>
-      <div class="step-circle" id="sc3">3<span class="step-label">CK/PK</span></div>
-      <div class="step-line" id="sl3"></div>
-      <div class="step-circle" id="sc4">4<span class="step-label">RESULTADO</span></div>
+    <!-- LOGIN WALL -->
+    <div id="wl-login-wall">
+      <div class="discord-login-wall">
+        <div class="dlw-icon">🔐</div>
+        <h3>Conecta tu Discord</h3>
+        <p>Para aplicar a la whitelist debes iniciar sesión con Discord y estar <strong>verificado</strong> en nuestro servidor <strong>Cataño RP</strong>.</p>
+        <button class="btn-discord" onclick="discordLogin()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          Iniciar sesión con Discord
+        </button>
+        <p style="font-size:11px;margin-top:14px;color:var(--muted)">Solo verificamos si estás en el servidor y tienes el rol verificado. No guardamos tu token.</p>
+      </div>
     </div>
 
-    <!-- STEP 1: DATOS -->
-    <div class="wl-step-panel active" id="wl-p1">
-      <div class="wl-step-title">📋 Tus Datos</div>
-      <div class="form-row">
-        <div class="fg"><label>Nombre Real *</label><input id="w-nombre" type="text" placeholder="Ej: Juan Rodriguez" required></div>
-        <div class="fg"><label>Edad *</label><input id="w-edad" type="number" placeholder="Ej: 18" min="1" max="99" required></div>
+    <!-- WL CONTENT (visible tras login con rol verificado) -->
+    <div id="wl-content" style="display:none">
+      <div class="discord-user-bar">
+        <img id="dub-avatar" src="" alt="" style="width:36px;height:36px;border-radius:50%">
+        <div>
+          <div class="dub-name" id="dub-name">--</div>
+          <div style="font-size:11px;color:var(--muted)">Discord conectado <span class="verified-badge">✅ VERIFICADO</span></div>
+        </div>
+        <button class="dub-logout" onclick="discordLogout()">Cerrar sesión</button>
       </div>
-      <div class="form-row">
-        <div class="fg"><label>Gmail *</label><input id="w-gmail" type="email" placeholder="Ej: juan@gmail.com" required></div>
-        <div class="fg"><label>Discord (usuario) *</label><input id="w-discord" type="text" placeholder="Ej: juanrp" required></div>
+
+      <div class="wl-notice">⚠️ Las aplicaciones son evaluadas automáticamente. Debes tener 14+ años y responder todas las preguntas correctamente.</div>
+
+      <!-- STEPS -->
+      <div class="steps-wrap" id="wl-steps-bar">
+        <div class="step-circle active" id="sc1">1<span class="step-label">DATOS</span></div>
+        <div class="step-line" id="sl1"></div>
+        <div class="step-circle" id="sc2">2<span class="step-label">NORMAS</span></div>
+        <div class="step-line" id="sl2"></div>
+        <div class="step-circle" id="sc3">3<span class="step-label">CK/PK</span></div>
+        <div class="step-line" id="sl3"></div>
+        <div class="step-circle" id="sc4">4<span class="step-label">RESULTADO</span></div>
       </div>
-      <div class="form-row">
-        <div class="fg"><label>Nombre IC (Personaje) *</label><input id="w-ic" type="text" placeholder="Ej: Carlos Mendoza" required></div>
-        <div class="fg"><label>Experiencia en RP</label>
-          <select id="w-exp"><option value="">Selecciona...</option><option>Sí, mucha experiencia</option><option>Algo de experiencia</option><option>Soy nuevo en el RP</option></select>
+
+      <!-- STEP 1: DATOS -->
+      <div class="wl-step-panel active" id="wl-p1">
+        <div class="wl-step-title">📋 Tus Datos</div>
+        <div class="form-row">
+          <div class="fg"><label>Nombre Real *</label><input id="w-nombre" type="text" placeholder="Ej: Juan Rodriguez"></div>
+          <div class="fg"><label>Edad *</label><input id="w-edad" type="number" placeholder="Ej: 18" min="1" max="99"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Gmail *</label><input id="w-gmail" type="email" placeholder="Ej: juan@gmail.com"></div>
+          <div class="fg"><label>Discord</label><input id="w-discord" type="text" placeholder="Se completa automático" readonly style="opacity:.6"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Nombre IC (Personaje) *</label><input id="w-ic" type="text" placeholder="Ej: Carlos Mendoza"></div>
+          <div class="fg"><label>Experiencia en RP</label>
+            <select id="w-exp"><option value="">Selecciona...</option><option>Sí, mucha experiencia</option><option>Algo de experiencia</option><option>Soy nuevo en el RP</option></select>
+          </div>
+        </div>
+        <div class="fg"><label>¿Cómo nos encontraste?</label>
+          <select id="w-found"><option value="">Selecciona...</option><option>Discord</option><option>YouTube</option><option>TikTok</option><option>Un amigo</option><option>Otro</option></select>
+        </div>
+        <button class="wl-btn" onclick="wlNext(1)">Siguiente → Normas de RP</button>
+      </div>
+
+      <!-- STEP 2: NORMAS -->
+      <div class="wl-step-panel" id="wl-p2">
+        <div class="wl-step-title">📜 Normas de Roleplay</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Responde cada pregunta correctamente. Selecciona Sí o No.</p>
+        <div id="wl-q-normas"></div>
+        <div class="wl-btn-row">
+          <button class="wl-btn-outline" onclick="wlBack(2)">← Atrás</button>
+          <button class="wl-btn" onclick="wlNext(2)">Siguiente → CK / PK</button>
         </div>
       </div>
-      <div class="fg"><label>¿Cómo nos encontraste?</label>
-        <select id="w-found"><option value="">Selecciona...</option><option>Discord</option><option>YouTube</option><option>TikTok</option><option>Un amigo</option><option>Otro</option></select>
+
+      <!-- STEP 3: CK/PK -->
+      <div class="wl-step-panel" id="wl-p3">
+        <div class="wl-step-title">💀 Conceptos CK / PK</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Demuestra que conoces los conceptos de muerte en RP.</p>
+        <div id="wl-q-ckpk"></div>
+        <div class="wl-btn-row">
+          <button class="wl-btn-outline" onclick="wlBack(3)">← Atrás</button>
+          <button class="wl-btn" onclick="wlSubmit()">📨 Enviar Aplicación</button>
+        </div>
       </div>
-      <button class="wl-btn" onclick="wlNext(1)">Siguiente → Normas de RP</button>
-    </div>
 
-    <!-- STEP 2: NORMAS -->
-    <div class="wl-step-panel" id="wl-p2">
-      <div class="wl-step-title">📜 Normas de Roleplay</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Responde cada pregunta correctamente. Selecciona Sí o No.</p>
-
-      <div id="wl-q-normas"></div>
-
-      <div class="wl-btn-row">
-        <button class="wl-btn-outline" onclick="wlBack(2)">← Atrás</button>
-        <button class="wl-btn" onclick="wlNext(2)">Siguiente → CK / PK</button>
+      <!-- STEP 4: RESULTADO -->
+      <div class="wl-step-panel" id="wl-p4">
+        <div id="wl-result-box"></div>
+        <button class="wl-btn-outline" onclick="wlReset()" style="margin-top:16px">Volver al inicio</button>
       </div>
-    </div>
+    </div><!-- end wl-content -->
 
-    <!-- STEP 3: CK/PK -->
-    <div class="wl-step-panel" id="wl-p3">
-      <div class="wl-step-title">💀 Conceptos CK / PK</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Demuestra que conoces los conceptos de muerte en RP.</p>
-
-      <div id="wl-q-ckpk"></div>
-
-      <div class="wl-btn-row">
-        <button class="wl-btn-outline" onclick="wlBack(3)">← Atrás</button>
-        <button class="wl-btn" onclick="wlSubmit()">📨 Enviar Aplicación</button>
-      </div>
-    </div>
-
-    <!-- STEP 4: RESULTADO -->
-    <div class="wl-step-panel" id="wl-p4">
-      <div id="wl-result-box"></div>
-      <button class="wl-btn-outline" onclick="wlReset()" style="margin-top:16px">Volver al inicio</button>
-    </div>
   </div>
 </div>
 
@@ -547,7 +587,130 @@
 <div class="notif" id="notif"></div>
 
 <script>
-// ══════════════════════════════════════════
+// DISCORD OAUTH2
+const DISCORD_CLIENT_ID = '1477752422536319146';
+const DISCORD_REDIRECT = 'https://spectacular-daffodil-12c660.netlify.app';
+const VERIFIED_ROLE_ID = '1447434378413084875';
+const DISCORD_GUILD_ID = '1447431428588703826';
+let discordUser = null;
+
+const discordLogin = () => {
+  const params = new URLSearchParams({
+    client_id: DISCORD_CLIENT_ID,
+    redirect_uri: DISCORD_REDIRECT,
+    response_type: 'token',
+    scope: 'identify guilds.members.read'
+  });
+  window.location.href = 'https://discord.com/api/oauth2/authorize?' + params.toString();
+};
+
+const discordLogout = () => {
+  discordUser = null;
+  sessionStorage.removeItem('discord_user');
+  document.getElementById('wl-login-wall').style.display = 'block';
+  document.getElementById('wl-content').style.display = 'none';
+  document.getElementById('wl-login-wall').innerHTML = `
+    <div class="discord-login-wall">
+      <div class="dlw-icon">🔐</div>
+      <h3>Conecta tu Discord</h3>
+      <p>Para aplicar a la whitelist debes iniciar sesión con Discord y estar <strong>verificado</strong> en nuestro servidor <strong>Cataño RP</strong>.</p>
+      <button class="btn-discord" onclick="discordLogin()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        Iniciar sesión con Discord
+      </button>
+      <p style="font-size:11px;margin-top:14px;color:var(--muted)">Solo verificamos si estás en el servidor y tienes el rol verificado. No guardamos tu token.</p>
+    </div>`;
+  notify('👋 Sesión cerrada');
+};
+
+const handleDiscordCallback = async () => {
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  const token = params.get('access_token');
+  if (!token) return;
+  history.replaceState(null, '', window.location.pathname);
+
+  document.getElementById('wl-login-wall').innerHTML = `
+    <div class="discord-login-wall">
+      <div class="dlw-icon">⏳</div>
+      <h3>Verificando...</h3>
+      <p>Comprobando tu cuenta de Discord y rol de verificado.</p>
+    </div>`;
+
+  setTimeout(()=>{ const el=document.getElementById('wl'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },300);
+
+  try {
+    const [userRes, memberRes] = await Promise.all([
+      fetch('https://discord.com/api/users/@me', { headers:{ Authorization:'Bearer '+token } }),
+      fetch('https://discord.com/api/users/@me/guilds/'+DISCORD_GUILD_ID+'/member', { headers:{ Authorization:'Bearer '+token } })
+    ]);
+    const user = await userRes.json();
+    const member = await memberRes.json();
+
+    if (!member || member.code || member.message) {
+      document.getElementById('wl-login-wall').innerHTML = `
+        <div class="discord-login-wall">
+          <div class="dlw-icon">🚫</div>
+          <h3 style="color:var(--red)">No estás en el servidor</h3>
+          <p>Debes unirte a <strong>Cataño RP</strong> en Discord antes de poder aplicar.</p>
+          <a href="https://discord.gg/catanorp" target="_blank" class="btn-discord" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:12px">🔗 Unirse al Discord</a><br>
+          <button onclick="discordLogin()" class="wl-btn-outline" style="width:auto;padding:10px 24px;margin-top:14px">Intentar de nuevo</button>
+        </div>`;
+      return;
+    }
+
+    const roles = member.roles || [];
+    if (!roles.includes(VERIFIED_ROLE_ID)) {
+      document.getElementById('wl-login-wall').innerHTML = `
+        <div class="discord-login-wall">
+          <div class="dlw-icon">⚠️</div>
+          <h3 style="color:orange">Sin rol verificado</h3>
+          <p>Estás en el servidor pero no tienes el rol <strong>Verificado</strong>. Verifícate en el Discord primero.</p>
+          <a href="https://discord.gg/catanorp" target="_blank" class="btn-discord" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:12px">🔗 Ir al Discord</a><br>
+          <button onclick="discordLogin()" class="wl-btn-outline" style="width:auto;padding:10px 24px;margin-top:14px">Ya me verifiqué — Intentar de nuevo</button>
+        </div>`;
+      return;
+    }
+
+    discordUser = {
+      id: user.id,
+      username: user.username,
+      tag: (user.discriminator && user.discriminator!=='0') ? user.username+'#'+user.discriminator : user.username,
+      avatar: user.avatar ? 'https://cdn.discordapp.com/avatars/'+user.id+'/'+user.avatar+'.png' : 'https://cdn.discordapp.com/embed/avatars/0.png'
+    };
+    sessionStorage.setItem('discord_user', JSON.stringify(discordUser));
+    showWLForm();
+    notify('✅ ¡Discord verificado! Ya puedes aplicar');
+
+  } catch(e) {
+    console.log('Discord auth error:',e);
+    document.getElementById('wl-login-wall').innerHTML = `
+      <div class="discord-login-wall">
+        <div class="dlw-icon">❌</div>
+        <h3 style="color:var(--red)">Error de verificación</h3>
+        <p>Hubo un problema. Intenta de nuevo.</p>
+        <button onclick="discordLogin()" class="btn-discord">Intentar de nuevo</button>
+      </div>`;
+  }
+};
+
+const showWLForm = () => {
+  document.getElementById('wl-login-wall').style.display = 'none';
+  document.getElementById('wl-content').style.display = 'block';
+  if(discordUser){
+    document.getElementById('dub-avatar').src = discordUser.avatar;
+    document.getElementById('dub-name').textContent = discordUser.tag;
+    document.getElementById('w-discord').value = discordUser.tag;
+  }
+};
+
+const restoreDiscordSession = () => {
+  const saved = sessionStorage.getItem('discord_user');
+  if (saved) {
+    try { discordUser = JSON.parse(saved); showWLForm(); } catch(e){}
+  }
+};
+
 // STORE
 // ══════════════════════════════════════════
 let S = {
@@ -1150,6 +1313,9 @@ const fetchDiscord=async()=>{
 // INIT
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
+  // Discord OAuth2 callback check
+  if(window.location.hash.includes('access_token')) { handleDiscordCallback(); }
+  else { restoreDiscordSession(); }
   updateStats();renderUpdates();renderGallery();renderTeam();renderWL();observeReveal();
   fetchLivePlayers();fetchDiscord();
   setInterval(fetchLivePlayers,30000);

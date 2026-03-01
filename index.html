@@ -5,6 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cataño RP — Puerto Rico's Finest</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCkSVRxTnlsz7OiBAKHD90F766Seo7dHk",
+      authDomain: "catano-rp.firebaseapp.com",
+      projectId: "catano-rp",
+      storageBucket: "catano-rp.firebasestorage.app",
+      messagingSenderId: "120464528892",
+      appId: "1:120464528892:web:3edeca0e04888e466b4e79"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Make Firebase available globally
+    window.db = db;
+    window.fsDoc = doc;
+    window.fsSet = setDoc;
+    window.fsGet = getDoc;
+    window.fsSnapshot = onSnapshot;
+    window.fsCollection = collection;
+    window.fsAddDoc = addDoc;
+    window.fsGetDocs = getDocs;
+    window.fsDeleteDoc = deleteDoc;
+    window.fsUpdateDoc = updateDoc;
+    window.firebaseReady = true;
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--gold:#c9a84c;--gold2:#f0c86a;--gold3:#8b6914;--dark:#080808;--dark2:#0f0f0f;--dark3:#161616;--dark4:#1e1e1e;--text:#e8d5a3;--muted:#7a6a4a}
@@ -147,6 +178,31 @@
 
     .reveal{opacity:0;transform:translateY(24px);transition:all .6s ease}
     .reveal.visible{opacity:1;transform:translateY(0)}
+    .log-card{background:var(--dark4);border:1px solid rgba(201,168,76,.1);margin-bottom:12px;overflow:hidden;transition:border-color .2s}
+    .log-card:hover{border-color:rgba(201,168,76,.25)}
+    .log-card.log-approved{border-left:3px solid #4caf50}
+    .log-card.log-denied{border-left:3px solid #e63946}
+    .log-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;gap:12px;flex-wrap:wrap}
+    .log-body{padding:0 18px 18px;border-top:1px solid rgba(201,168,76,.08);display:none}
+    .log-body.open{display:block}
+    .log-field{display:flex;gap:8px;margin-top:10px;font-size:13px;flex-wrap:wrap}
+    .log-label{color:var(--gold);font-size:10px;letter-spacing:1px;text-transform:uppercase;min-width:90px;flex-shrink:0}
+    .log-val{color:var(--text);flex:1}
+    .log-wrong{background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.2);padding:10px 14px;margin-top:10px;font-size:12px;color:#e63946;line-height:1.8}
+    .log-actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(201,168,76,.08)}
+    .wl-step{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:'Bebas Neue';font-size:20px;color:var(--muted);width:40px;height:40px;border-radius:50%;border:2px solid rgba(201,168,76,.2);justify-content:center;position:relative;flex-shrink:0}
+    .wl-step span{font-size:9px;letter-spacing:1px;position:absolute;top:44px;white-space:nowrap;font-family:'Rajdhani';font-weight:600}
+    .wl-step.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
+    .wl-step.done{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.1)}
+    .wl-step-line{flex:1;height:2px;background:rgba(201,168,76,.15);margin:0 4px;margin-bottom:0;align-self:center}
+    #wl-steps{padding-bottom:36px}
+    .wl-q{background:var(--dark4);border:1px solid rgba(201,168,76,.1);padding:16px 18px;margin-bottom:12px}
+    .wl-q-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.5}
+    .wl-q-opts{display:flex;gap:10px}
+    .wl-q-opt{flex:1;padding:10px;border:1px solid rgba(201,168,76,.2);background:var(--dark3);color:var(--muted);cursor:pointer;font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:1px;text-align:center;transition:all .2s}
+    .wl-q-opt:hover{border-color:var(--gold3);color:var(--text)}
+    .wl-q-opt.selected-yes{border-color:#4caf50;background:rgba(76,175,80,.1);color:#4caf50}
+    .wl-q-opt.selected-no{border-color:#e63946;background:rgba(230,57,70,.1);color:#e63946}
 
     @media(max-width:768px){
       nav{padding:0 18px}
@@ -161,6 +217,11 @@
   </style>
 </head>
 <body>
+
+<!-- FIREBASE LOADING BAR -->
+<div id="fb-loading" style="position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(to right,var(--gold3),var(--gold),var(--gold2),var(--gold3));background-size:200% 100%;animation:fbLoad 1.5s linear infinite;z-index:9999;transition:opacity .5s">
+</div>
+<style>@keyframes fbLoad{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
 
 <!-- NAV -->
 <nav>
@@ -301,6 +362,7 @@
     </div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab('t-wl',this)">Whitelists</button>
+      <button class="tab" onclick="switchTab('t-logs',this)">📋 Logs</button>
       <button class="tab" onclick="switchTab('t-upd',this)">Actualizaciones</button>
       <button class="tab" onclick="switchTab('t-gal',this)">Galería</button>
       <button class="tab" onclick="switchTab('t-team',this)">Equipo</button>
@@ -309,6 +371,20 @@
 
     <div id="t-wl" class="tab-content active">
       <div class="al" id="wl-admin-list"></div>
+    </div>
+
+    <div id="t-logs" class="tab-content">
+      <!-- FILTER BUTTONS -->
+      <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+        <button class="tab" onclick="filterLogs('all')" id="log-f-all" style="padding:8px 16px">Todos</button>
+        <button class="tab" onclick="filterLogs('approved')" id="log-f-approved" style="padding:8px 16px">✅ Aprobados</button>
+        <button class="tab" onclick="filterLogs('denied')" id="log-f-denied" style="padding:8px 16px">❌ Denegados</button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <input id="log-search" class="ai" placeholder="🔍 Buscar por nombre, discord, gmail..." oninput="filterLogs('search')" style="flex:1">
+        <button class="ab ab-d" onclick="clearLogs()" style="margin-top:0;padding:0 18px;white-space:nowrap">🗑️ Limpiar</button>
+      </div>
+      <div id="logs-container"></div>
     </div>
 
     <div id="t-upd" class="tab-content">
@@ -343,6 +419,12 @@
     </div>
 
     <div id="t-srv" class="tab-content">
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🤖 DISCORD WEBHOOK (para logs de whitelist)</label>
+      <div style="display:flex;gap:10px;margin-bottom:6px">
+        <input id="srv-webhook" class="ai" placeholder="https://discord.com/api/webhooks/..." style="flex:1">
+        <button class="ab" onclick="saveSrv('webhook')" style="margin-top:0;white-space:nowrap">Guardar</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:18px">Crea un webhook en tu canal de Discord: Canal → Configuración → Integraciones → Webhooks</div>
       <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🔴 FIVEMANAGE SERVER ID (para jugadores en tiempo real)</label>
       <div style="display:flex;gap:10px;margin-bottom:18px">
         <input id="srv-fivemid" class="ai" placeholder="Ej: abc123xyz — encuentra esto en tu FiveManage dashboard" style="flex:1">
@@ -381,6 +463,18 @@
     <a href="#gallery">Galería</a><a href="#team">Equipo</a><a href="#discord">Discord</a>
   </div>
   <p class="f-txt" style="margin-top:18px">© 2025 Cataño RP — Todos los derechos reservados</p>
+  <p style="margin-top:10px;font-size:11px;color:rgba(201,168,76,.3);letter-spacing:2px">👑 MADE BY BUSTER DEVS</p>
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,.08);display:flex;justify-content:center;gap:48px;flex-wrap:wrap;align-items:center">
+    <div style="text-align:center">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px">Fundador</div>
+      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px;text-shadow:0 0 12px rgba(201,168,76,.4)">👑 Made</div>
+    </div>
+    <div style="width:1px;height:40px;background:rgba(201,168,76,.12)"></div>
+    <div style="text-align:center">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px">Co-Fundador</div>
+      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px;text-shadow:0 0 12px rgba(201,168,76,.4)">🐶 Buster</div>
+    </div>
+  </div>
 </footer>
 
 <!-- UPDATE MODAL -->
@@ -411,9 +505,82 @@
 
 <script>
 // ── STORE ──
-let S = { updates:[], gallery:[], team:[], wl:[], ip:'connect cfx.re/join/eqjgpm', disc:'https://discord.gg/catanorp', discm:'---', players:'--', onlineCnt:'---', fivemId:'eqjgpm' };
-try { const d = localStorage.getItem('catanorp'); if(d) S = {...S, ...JSON.parse(d)}; } catch(e) {}
-const save = () => { try { localStorage.setItem('catanorp', JSON.stringify(S)); } catch(e) {} };
+let S = { updates:[], gallery:[], team:[], wl:[], ip:'connect cfx.re/join/eqjgpm', disc:'https://discord.gg/catanorp', discm:'---', players:'--', onlineCnt:'---', fivemId:'eqjgpm', webhook:'' };
+
+// ── FIREBASE SYNC ──
+let fbReady = false;
+const FB_DOC = 'catanorp/main';
+
+const saveToFirebase = async (data) => {
+  if (!fbReady || !window.db) return;
+  try {
+    // Split large data (gallery has base64 images) into chunks
+    const main = { updates: data.updates||[], team: data.team||[], ip: data.ip, disc: data.disc, discm: data.discm, players: data.players, onlineCnt: data.onlineCnt, fivemId: data.fivemId, webhook: data.webhook };
+    await window.fsSet(window.fsDoc(window.db, 'catanorp', 'main'), main, { merge: true });
+    // Save WL separately
+    if (data.wl && data.wl.length > 0) {
+      await window.fsSet(window.fsDoc(window.db, 'catanorp', 'whitelist'), { entries: data.wl }, { merge: false });
+    }
+    // Save gallery separately (base64 images are large)
+    if (data.gallery) {
+      await window.fsSet(window.fsDoc(window.db, 'catanorp', 'gallery'), { items: data.gallery }, { merge: false });
+    }
+  } catch(e) { console.log('Firebase save error:', e); }
+};
+
+const loadFromFirebase = async () => {
+  if (!fbReady || !window.db) return;
+  try {
+    const [mainSnap, wlSnap, galSnap] = await Promise.all([
+      window.fsGet(window.fsDoc(window.db, 'catanorp', 'main')),
+      window.fsGet(window.fsDoc(window.db, 'catanorp', 'whitelist')),
+      window.fsGet(window.fsDoc(window.db, 'catanorp', 'gallery'))
+    ]);
+    if (mainSnap.exists()) S = { ...S, ...mainSnap.data() };
+    if (wlSnap.exists()) S.wl = wlSnap.data().entries || [];
+    if (galSnap.exists()) S.gallery = galSnap.data().items || [];
+    console.log('✅ Firebase loaded');
+    updateStats(); renderUpdates(); renderGallery(); renderTeam(); renderWL();
+    observeReveal();
+  } catch(e) { console.log('Firebase load error:', e); }
+};
+
+const save = () => {
+  // Save to localStorage as backup
+  try { localStorage.setItem('catanorp_backup', JSON.stringify(S)); } catch(e) {}
+  // Save to Firebase
+  saveToFirebase(S);
+};
+
+// Load backup from localStorage while Firebase loads
+try {
+  const d = localStorage.getItem('catanorp_backup');
+  if(d) S = {...S, ...JSON.parse(d)};
+} catch(e) {}
+
+// Init Firebase when ready
+const initFirebase = () => {
+  fbReady = true;
+  loadFromFirebase();
+  // Live sync — listen for changes
+  if (window.db) {
+    window.fsSnapshot(window.fsDoc(window.db, 'catanorp', 'main'), (snap) => {
+      if (snap.exists()) { S = { ...S, ...snap.data() }; updateStats(); renderUpdates(); renderTeam(); observeReveal(); }
+    });
+    window.fsSnapshot(window.fsDoc(window.db, 'catanorp', 'whitelist'), (snap) => {
+      if (snap.exists()) { S.wl = snap.data().entries || []; renderWL(); updateStats(); }
+    });
+    window.fsSnapshot(window.fsDoc(window.db, 'catanorp', 'gallery'), (snap) => {
+      if (snap.exists()) { S.gallery = snap.data().items || []; renderGallery(); }
+    });
+  }
+};
+
+if (window.firebaseReady) {
+  initFirebase();
+} else {
+  window.addEventListener('firebase-ready', initFirebase);
+}
 
 // ── NOTIFY ──
 const notify = msg => {
@@ -574,11 +741,17 @@ const submitWL = e => {
 const renderWL = () => {
   const list = document.getElementById('wl-admin-list');
   list.innerHTML = S.wl.length ? S.wl.map((w,i) => `
-    <div class="ali">
-      <div><div class="ali-t">${w.nombre}</div><div class="ali-m">Discord: ${w.discord} • ${w.fecha}</div></div>
-      <div class="aa">
-        <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'RECHAZADO'}</span>
-        ${w.status==='pending'?`<button class="ab" onclick="actWL(${i},'approved')" style="padding:6px 12px;font-size:10px;margin-top:0">✓</button><button class="ab ab-d" onclick="actWL(${i},'denied')" style="padding:6px 12px;font-size:10px;margin-top:0">✕</button>`:''}
+    <div class="ali" style="flex-direction:column;align-items:flex-start;gap:10px">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <div class="ali-t">👤 ${w.nombre} <span style="color:var(--muted);font-size:13px">— IC: ${w.nombreIC||'N/A'}</span></div>
+          <div class="ali-m">📧 ${w.gmail||'N/A'} &nbsp;|&nbsp; 💬 ${w.discord} &nbsp;|&nbsp; 🎂 ${w.edad} años &nbsp;|&nbsp; 📅 ${w.fecha}</div>
+          ${(w.wrongCount||0) > 0 ? `<div style="color:#e63946;font-size:11px;margin-top:4px">❌ ${w.wrongCount} respuesta(s) incorrecta(s)</div>` : '<div style="color:#4caf50;font-size:11px;margin-top:4px">✅ Todas las respuestas correctas</div>'}
+        </div>
+        <div class="aa">
+          <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'RECHAZADO'}</span>
+          ${w.status==='pending'?`<button class="ab" onclick="actWL(${i},'approved')" style="padding:6px 12px;font-size:10px;margin-top:0">✓ Aprobar</button><button class="ab ab-d" onclick="actWL(${i},'denied')" style="padding:6px 12px;font-size:10px;margin-top:0">✕ Rechazar</button>`:''}
+        </div>
       </div>
     </div>`).join('')
     : '<div style="text-align:center;color:var(--muted);padding:38px;letter-spacing:2px;font-size:12px">No hay aplicaciones todavía</div>';
@@ -594,6 +767,7 @@ const saveSrv = type => {
   else if(type==='players') S.players=v;
   else if(type==='discm') S.discm=v;
   else if(type==='fivemid') { S.fivemId=v; fetchFiveManage(); }
+  else if(type==='webhook') S.webhook=v;
   save(); updateStats(); notify('✅ Guardado');
 };
 
@@ -605,8 +779,10 @@ const switchTab = (id, btn) => {
   btn.classList.add('active');
   if(id==='t-team') renderTeam();
   if(id==='t-wl') renderWL();
+  if(id==='t-logs') renderLogs('all');
   if(id==='t-gal') renderGallery();
   if(id==='t-srv') {
+    document.getElementById('srv-webhook').value = S.webhook||'';
     document.getElementById('srv-fivemid').value = S.fivemId||'';
     document.getElementById('srv-ip').value = S.ip||'';
     document.getElementById('srv-disc').value = S.disc||'';
@@ -682,11 +858,18 @@ const fetchFiveManage = fetchLivePlayers; // alias
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
+  // Render with localStorage backup immediately while Firebase loads
   updateStats(); renderUpdates(); renderGallery(); renderTeam(); renderWL(); observeReveal();
+  // Live player/discord fetching
   fetchLivePlayers();
   fetchDiscord();
   setInterval(fetchLivePlayers, 30000);
   setInterval(fetchDiscord, 60000);
+  // Show loading indicator
+  const loadingBar = document.getElementById('fb-loading');
+  if (loadingBar) {
+    setTimeout(() => { loadingBar.style.opacity = '0'; setTimeout(() => loadingBar.remove(), 500); }, 3000);
+  }
 });
 </script>
 </body>

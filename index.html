@@ -573,12 +573,23 @@ const handleDiscordCallback = async () => {
 
     const inGuild = Array.isArray(guilds) && guilds.some(g => g.id === DISCORD_GUILD_ID);
 
+    // DEBUG - remove later
+    console.log('=== DISCORD DEBUG ===');
+    console.log('GUILD_ID buscado:', DISCORD_GUILD_ID);
+    console.log('Guilds encontrados:', Array.isArray(guilds) ? guilds.map(g=>g.id+' = '+g.name).join('\n') : JSON.stringify(guilds));
+    console.log('inGuild:', inGuild);
+
     if (!inGuild) {
+      const guildList = Array.isArray(guilds) ? guilds.map(g=>`${g.name} (${g.id})`).join('<br>') : JSON.stringify(guilds);
       document.getElementById('wl-login-wall').innerHTML = `
         <div class="discord-login-wall">
           <div class="dlw-icon">🚫</div>
           <h3 style="color:var(--red)">No estás en el servidor</h3>
           <p>Debes unirte a <strong>Cataño RP</strong> en Discord antes de poder aplicar.</p>
+          <div style="background:rgba(0,0,0,.3);padding:10px;font-size:11px;color:#aaa;text-align:left;margin:10px 0;border:1px solid #333">
+            <strong>DEBUG - Servidores detectados:</strong><br>${guildList}<br><br>
+            <strong>ID buscado:</strong> ${DISCORD_GUILD_ID}
+          </div>
           <a href="https://discord.gg/catanorp" target="_blank" class="btn-discord" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:12px">🔗 Unirse al Discord</a><br>
           <button onclick="discordLogin()" class="wl-btn-outline" style="width:auto;padding:10px 24px;margin-top:14px">Intentar de nuevo</button>
         </div>`;

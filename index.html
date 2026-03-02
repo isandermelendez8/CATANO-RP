@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cataño RP — Puerto Rico's Finest</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -31,8 +32,6 @@
     :root{--gold:#c9a84c;--gold2:#f0c86a;--gold3:#8b6914;--dark:#080808;--dark2:#0f0f0f;--dark3:#161616;--dark4:#1e1e1e;--text:#e8d5a3;--muted:#7a6a4a;--green:#4caf50;--red:#e63946}
     html{scroll-behavior:smooth}
     body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;overflow-x:hidden}
-
-    /* NAV */
     nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(8,8,8,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:70px}
     .nav-logo img{height:48px;filter:drop-shadow(0 0 8px rgba(201,168,76,0.5))}
     .nav-links{display:flex;gap:28px;list-style:none}
@@ -40,8 +39,6 @@
     .nav-links a:hover{color:var(--gold2)}
     .nav-cta{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:10px 22px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all .2s;text-decoration:none;display:inline-block}
     .nav-cta:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-1px)}
-
-    /* HERO */
     #hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding-top:70px}
     .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.45) saturate(.85);z-index:0}
     .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,8,.2) 0%,rgba(8,8,8,.05) 40%,rgba(8,8,8,.92) 100%);z-index:1}
@@ -55,8 +52,6 @@
     .btn-primary:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,.4)}
     .btn-outline{background:transparent;color:var(--gold);padding:14px 36px;border:1px solid var(--gold3);cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;text-decoration:none;display:inline-block}
     .btn-outline:hover{background:rgba(201,168,76,.1);transform:translateY(-2px)}
-
-    /* STATS */
     #stats-bar{background:rgba(12,12,12,.98);border-top:1px solid rgba(201,168,76,.2);border-bottom:1px solid rgba(201,168,76,.2);display:flex;justify-content:center;flex-wrap:wrap}
     .stat-item{display:flex;flex-direction:column;align-items:center;padding:26px 44px;border-right:1px solid rgba(201,168,76,.1);min-width:150px}
     .stat-item:last-child{border-right:none}
@@ -66,8 +61,6 @@
     .live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(230,57,70,.15);border:1px solid rgba(230,57,70,.4);color:#e63946;font-size:10px;letter-spacing:2px;padding:4px 10px;font-weight:700;margin-left:10px;vertical-align:middle}
     .live-dot{width:6px;height:6px;border-radius:50%;background:#e63946;animation:pulse 1s infinite}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-
-    /* SECTIONS */
     .sec{position:relative;z-index:1;padding:90px 40px;max-width:1200px;margin:0 auto}
     .sec-full{background:var(--dark2);padding:90px 0}
     .section-sub{text-align:center;color:var(--muted);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
@@ -75,13 +68,9 @@
     .section-line{width:80px;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto 56px}
     .reveal{opacity:0;transform:translateY(24px);transition:all .6s ease}
     .reveal.visible{opacity:1;transform:translateY(0)}
-
-    /* WHITELIST - MULTI STEP */
     .wl-wrap{background:var(--dark2);padding:90px 40px}
     .wl-box{max-width:700px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:48px;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px))}
     .wl-notice{background:rgba(201,168,76,.04);border-left:3px solid var(--gold3);padding:13px 16px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px}
-
-    /* STEPS INDICATOR */
     .steps-wrap{display:flex;align-items:center;margin-bottom:36px}
     .step-circle{width:36px;height:36px;border-radius:50%;border:2px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:16px;color:var(--muted);flex-shrink:0;transition:all .3s;position:relative}
     .step-circle.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
@@ -90,8 +79,6 @@
     .step-circle.active .step-label,.step-circle.done .step-label{color:var(--gold)}
     .step-line{flex:1;height:2px;background:rgba(201,168,76,.15);margin:0 6px}
     .step-line.done{background:var(--gold3)}
-
-    /* STEP PANELS */
     .wl-step-panel{display:none}
     .wl-step-panel.active{display:block}
     .fg{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
@@ -100,8 +87,6 @@
     .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold)}
     .fg select option{background:var(--dark4)}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-
-    /* QUESTIONS */
     .wl-q{background:var(--dark4);border:1px solid rgba(201,168,76,.1);padding:16px 18px;margin-bottom:10px;border-radius:2px}
     .wl-q-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.5}
     .wl-q-opts{display:flex;gap:10px}
@@ -109,27 +94,20 @@
     .wl-q-opt:hover{border-color:var(--gold3);color:var(--text)}
     .wl-q-opt.sel-yes{border-color:var(--green);background:rgba(76,175,80,.1);color:var(--green)}
     .wl-q-opt.sel-no{border-color:var(--red);background:rgba(230,57,70,.1);color:var(--red)}
-
-    /* RESULT */
     .wl-result{text-align:center;padding:32px 0}
     .wl-result-icon{font-size:64px;margin-bottom:16px}
     .wl-result-title{font-family:'Bebas Neue';font-size:36px;letter-spacing:3px;margin-bottom:12px}
     .wl-result-msg{font-size:14px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto 24px}
     .wl-result.approved .wl-result-title{color:var(--green)}
     .wl-result.denied .wl-result-title{color:var(--red)}
-
-    /* BUTTONS */
     .wl-btn{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#000;padding:14px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:14px;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;width:100%;margin-top:8px}
     .wl-btn:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:translateY(-2px)}
     .wl-btn-outline{background:transparent;color:var(--gold);padding:12px;border:1px solid var(--gold3);cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all .25s;width:100%;margin-top:8px}
     .wl-btn-row{display:flex;gap:12px;margin-top:12px}
     .wl-btn-row .wl-btn,.wl-btn-row .wl-btn-outline{flex:1;margin-top:0}
     .wl-step-title{font-family:'Bebas Neue';font-size:22px;color:var(--gold);letter-spacing:2px;margin-bottom:20px}
-    .q-section-title{font-size:11px;letter-spacing:3px;color:var(--gold3);text-transform:uppercase;margin:18px 0 10px;border-bottom:1px solid rgba(201,168,76,.1);padding-bottom:6px}
     .q-unanswered{border-color:var(--red)!important;animation:shake .3s ease}
     @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-
-    /* UPDATES */
     .updates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
     .update-card{background:var(--dark3);border:1px solid rgba(201,168,76,.15);overflow:hidden;transition:transform .25s,border-color .25s;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
     .update-card:hover{transform:translateY(-4px);border-color:rgba(201,168,76,.4)}
@@ -140,31 +118,23 @@
     .update-title{font-size:19px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.2}
     .update-desc{font-size:13px;color:var(--muted);line-height:1.6}
     .update-date{font-size:10px;color:var(--gold3);letter-spacing:1px;margin-top:14px}
-
-    /* GALLERY */
     .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;max-width:1200px;margin:0 auto;padding:0 40px}
     .gallery-item{position:relative;overflow:hidden;aspect-ratio:16/9;cursor:pointer;border:1px solid rgba(201,168,76,.1)}
     .gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
     .gallery-item:hover img{transform:scale(1.08)}
     .gallery-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
     .gallery-item:hover .gallery-ov{opacity:1}
-
-    /* TEAM */
     .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}
     .team-card{background:var(--dark3);border:1px solid rgba(201,168,76,.15);padding:28px 18px;text-align:center;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));transition:border-color .2s}
     .team-card:hover{border-color:rgba(201,168,76,.4)}
     .team-avatar{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--dark4));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;border:2px solid rgba(201,168,76,.3)}
     .team-name{font-size:17px;font-weight:700;color:var(--text)}
     .team-role{display:inline-block;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-top:6px;background:rgba(201,168,76,.08);padding:4px 10px}
-
-    /* DISCORD */
     .discord-block{background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:56px 38px;text-align:center;max-width:680px;margin:0 auto;clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px)}
     .discord-big{font-family:'Bebas Neue',sans-serif;font-size:68px;color:var(--gold2);line-height:1}
     .discord-online-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0 22px;color:var(--muted);font-size:12px;letter-spacing:2px}
     .discord-btn{display:inline-block;background:#5865F2;color:#fff;padding:14px 38px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;text-decoration:none;transition:all .25s;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%)}
     .discord-btn:hover{background:#4752c4;transform:translateY(-2px)}
-
-    /* ADMIN */
     .admin-wrap{background:var(--dark2);padding:90px 40px}
     .admin-box{max-width:960px;margin:0 auto;background:var(--dark3);border:1px solid rgba(201,168,76,.2);padding:38px}
     .admin-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid rgba(201,168,76,.1)}
@@ -192,8 +162,6 @@
     .bd{background:rgba(230,57,70,.15);color:#e63946;border:1px solid rgba(230,57,70,.3)}
     .upload-area{border:2px dashed rgba(201,168,76,.25);padding:38px;text-align:center;cursor:pointer;transition:border-color .2s;color:var(--muted);font-size:12px;letter-spacing:2px;display:block}
     .upload-area:hover{border-color:var(--gold3);color:var(--gold)}
-
-    /* LOGS */
     .log-card{background:var(--dark4);border:1px solid rgba(201,168,76,.1);margin-bottom:10px}
     .log-card.log-approved{border-left:3px solid var(--green)}
     .log-card.log-denied{border-left:3px solid var(--red)}
@@ -205,28 +173,17 @@
     .log-val{color:var(--text);flex:1}
     .log-wrong{background:rgba(230,57,70,.06);border:1px solid rgba(230,57,70,.2);padding:10px 14px;margin-top:10px;font-size:12px;color:#e63946;line-height:1.9}
     .log-acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-
-    /* FOOTER */
     footer{background:var(--dark2);border-top:1px solid rgba(201,168,76,.15);padding:56px 40px 28px;text-align:center}
     .f-logo{width:110px;margin:0 auto 18px;opacity:.7}
     .f-txt{color:var(--muted);font-size:11px;letter-spacing:2px}
     .f-links{display:flex;gap:22px;justify-content:center;margin:18px 0;flex-wrap:wrap}
     .f-links a{color:var(--muted);text-decoration:none;font-size:11px;letter-spacing:1px;transition:color .2s}
     .f-links a:hover{color:var(--gold)}
-
-    /* NOTIF */
+    .social-links{display:flex;gap:18px;justify-content:center;margin:18px 0;flex-wrap:wrap}
+    .social-link{display:inline-flex;align-items:center;gap:7px;color:var(--muted);text-decoration:none;font-size:12px;letter-spacing:1px;padding:8px 16px;border:1px solid rgba(201,168,76,.15);transition:all .2s}
+    .social-link:hover{color:var(--gold);border-color:var(--gold3);background:rgba(201,168,76,.06)}
     .notif{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--dark3);border:1px solid var(--gold3);padding:14px 22px;max-width:300px;font-size:13px;color:var(--text);transform:translateX(120%);transition:transform .4s}
     .notif.show{transform:translateX(0)}
-
-    /* MODAL */
-    .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center}
-    .modal-ov.open{display:flex}
-    .modal{background:var(--dark3);border:1px solid rgba(201,168,76,.3);padding:38px;max-width:480px;width:90%;position:relative}
-    .mc{position:absolute;top:14px;right:18px;font-size:22px;color:var(--muted);cursor:pointer;background:none;border:none;transition:color .2s}
-    .mc:hover{color:var(--gold)}
-    .mt{font-family:'Bebas Neue';font-size:26px;color:var(--gold);margin-bottom:22px;letter-spacing:3px}
-
-    /* DISCORD LOGIN */
     .discord-login-wall{text-align:center;padding:40px 20px}
     .discord-login-wall .dlw-icon{font-size:56px;margin-bottom:16px}
     .discord-login-wall h3{font-family:'Bebas Neue';font-size:28px;color:var(--gold);letter-spacing:3px;margin-bottom:12px}
@@ -235,29 +192,17 @@
     .btn-discord:hover{background:#4752c4;transform:translateY(-2px);box-shadow:0 8px 30px rgba(88,101,242,.4)}
     .discord-user-bar{display:flex;align-items:center;gap:12px;background:rgba(88,101,242,.1);border:1px solid rgba(88,101,242,.3);padding:12px 18px;margin-bottom:20px}
     .discord-user-bar img{width:36px;height:36px;border-radius:50%}
-    .discord-user-bar .dub-name{font-weight:700;color:var(--text);font-size:15px}
-    .discord-user-bar .dub-tag{font-size:11px;color:var(--muted);letter-spacing:1px}
     .dub-logout{margin-left:auto;background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--muted);padding:6px 12px;cursor:pointer;font-family:'Rajdhani';font-size:11px;letter-spacing:1px;transition:all .2s}
     .dub-logout:hover{border-color:var(--red);color:var(--red)}
-    .no-role-msg{background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.3);padding:20px;text-align:center;color:#e63946;font-size:14px;line-height:1.7}
     .verified-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.3);color:#4caf50;font-size:11px;letter-spacing:2px;padding:4px 12px;font-weight:700;margin-left:8px}
-
-    @media(max-width:768px){
-      nav{padding:0 18px}.nav-links{display:none}
-      .form-row,.ir{grid-template-columns:1fr}
-      .stat-item{padding:18px 22px}.sec{padding:60px 18px}
-      .gallery-grid{padding:0 18px}.wl-box{padding:26px 18px}
-      .admin-box{padding:22px 14px}
-    }
+    @media(max-width:768px){nav{padding:0 18px}.nav-links{display:none}.form-row,.ir{grid-template-columns:1fr}.stat-item{padding:18px 22px}.sec{padding:60px 18px}.gallery-grid{padding:0 18px}.wl-box{padding:26px 18px}.admin-box{padding:22px 14px}}
   </style>
 </head>
 <body>
 
-<!-- LOADING BAR -->
 <div id="fb-loading" style="position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(to right,var(--gold3),var(--gold),var(--gold2),var(--gold3));background-size:200% 100%;animation:fbLoad 1.5s linear infinite;z-index:9999;transition:opacity .5s"></div>
 <style>@keyframes fbLoad{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
 
-<!-- NAV -->
 <nav>
   <div class="nav-logo"><img src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/cee79335-1fe0-423c-8072-277523baccaf.png" alt="Cataño RP"></div>
   <ul class="nav-links">
@@ -269,7 +214,6 @@
   <a href="#wl" class="nav-cta">Aplicar Whitelist</a>
 </nav>
 
-<!-- HERO -->
 <div id="hero">
   <video class="hero-video" autoplay muted loop playsinline preload="auto">
     <source src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/Intro.mp4" type="video/mp4">
@@ -286,7 +230,6 @@
   </div>
 </div>
 
-<!-- STATS -->
 <div id="stats-bar">
   <div class="stat-item"><span class="stat-num"><span class="dot"></span><span id="players-num">--</span><span class="live-badge"><span class="live-dot"></span>LIVE</span></span><span class="stat-label">Jugadores Online</span></div>
   <div class="stat-item"><span class="stat-num" id="discord-num">--</span><span class="stat-label">Miembros Discord</span></div>
@@ -294,14 +237,11 @@
   <div class="stat-item"><span class="stat-num">24/7</span><span class="stat-label">Servidor Activo</span></div>
 </div>
 
-<!-- WHITELIST -->
 <div id="wl" class="wl-wrap">
   <p class="section-sub reveal">Únete a la experiencia</p>
   <h2 class="section-title reveal">Aplicación Whitelist</h2>
   <div class="section-line"></div>
   <div class="wl-box reveal">
-
-    <!-- LOGIN WALL -->
     <div id="wl-login-wall">
       <div class="discord-login-wall">
         <div class="dlw-icon">🔐</div>
@@ -315,7 +255,6 @@
       </div>
     </div>
 
-    <!-- WL CONTENT (visible tras login con rol verificado) -->
     <div id="wl-content" style="display:none">
       <div class="discord-user-bar">
         <img id="dub-avatar" src="" alt="" style="width:36px;height:36px;border-radius:50%">
@@ -325,10 +264,7 @@
         </div>
         <button class="dub-logout" onclick="discordLogout()">Cerrar sesión</button>
       </div>
-
       <div class="wl-notice">⚠️ Las aplicaciones son evaluadas automáticamente. Debes tener 14+ años y responder todas las preguntas correctamente.</div>
-
-      <!-- STEPS -->
       <div class="steps-wrap" id="wl-steps-bar">
         <div class="step-circle active" id="sc1">1<span class="step-label">DATOS</span></div>
         <div class="step-line" id="sl1"></div>
@@ -338,8 +274,6 @@
         <div class="step-line" id="sl3"></div>
         <div class="step-circle" id="sc4">4<span class="step-label">RESULTADO</span></div>
       </div>
-
-      <!-- STEP 1: DATOS -->
       <div class="wl-step-panel active" id="wl-p1">
         <div class="wl-step-title">📋 Tus Datos</div>
         <div class="form-row">
@@ -361,8 +295,6 @@
         </div>
         <button class="wl-btn" onclick="wlNext(1)">Siguiente → Normas de RP</button>
       </div>
-
-      <!-- STEP 2: NORMAS -->
       <div class="wl-step-panel" id="wl-p2">
         <div class="wl-step-title">📜 Normas de Roleplay</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Responde cada pregunta correctamente. Selecciona Sí o No.</p>
@@ -372,8 +304,6 @@
           <button class="wl-btn" onclick="wlNext(2)">Siguiente → CK / PK</button>
         </div>
       </div>
-
-      <!-- STEP 3: CK/PK -->
       <div class="wl-step-panel" id="wl-p3">
         <div class="wl-step-title">💀 Conceptos CK / PK</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Demuestra que conoces los conceptos de muerte en RP.</p>
@@ -383,18 +313,14 @@
           <button class="wl-btn" onclick="wlSubmit()">📨 Enviar Aplicación</button>
         </div>
       </div>
-
-      <!-- STEP 4: RESULTADO -->
       <div class="wl-step-panel" id="wl-p4">
         <div id="wl-result-box"></div>
         <button class="wl-btn-outline" onclick="wlReset()" style="margin-top:16px">Volver al inicio</button>
       </div>
-    </div><!-- end wl-content -->
-
+    </div>
   </div>
 </div>
 
-<!-- UPDATES -->
 <div id="updates" class="sec">
   <p class="section-sub reveal">Lo último del servidor</p>
   <h2 class="section-title reveal">Actualizaciones</h2>
@@ -402,7 +328,6 @@
   <div class="updates-grid" id="updates-grid"></div>
 </div>
 
-<!-- GALLERY -->
 <div id="gallery" class="sec-full">
   <div style="padding:0 40px">
     <p class="section-sub reveal" style="text-align:center">Momentos del servidor</p>
@@ -416,7 +341,6 @@
   </div>
 </div>
 
-<!-- TEAM -->
 <div id="team" class="sec">
   <p class="section-sub reveal">Los que hacen posible el servidor</p>
   <h2 class="section-title reveal">Nuestro Equipo</h2>
@@ -424,7 +348,6 @@
   <div class="team-grid" id="team-grid"></div>
 </div>
 
-<!-- DISCORD -->
 <div id="discord" class="sec-full">
   <div style="padding:0 40px">
     <p class="section-sub reveal" style="text-align:center">Únete a la comunidad</p>
@@ -451,7 +374,6 @@
   </div>
 </div>
 
-<!-- ADMIN -->
 <div id="admin" class="admin-wrap">
   <p class="section-sub reveal" style="text-align:center">Solo staff autorizado</p>
   <h2 class="section-title reveal">Panel Admin</h2>
@@ -469,14 +391,10 @@
       <button class="tab" onclick="switchTab('t-team',this)">👥 Equipo</button>
       <button class="tab" onclick="switchTab('t-srv',this)">⚙️ Servidor</button>
     </div>
-
-    <!-- WL TAB -->
     <div id="t-wl" class="tab-content active">
       <div id="wl-stats-bar" style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap"></div>
       <div class="al" id="wl-admin-list"></div>
     </div>
-
-    <!-- LOGS TAB -->
     <div id="t-logs" class="tab-content">
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
         <button class="tab" onclick="filterLogs('all')" id="lf-all">Todos</button>
@@ -489,8 +407,6 @@
       </div>
       <div id="logs-container"></div>
     </div>
-
-    <!-- UPDATES TAB -->
     <div id="t-upd" class="tab-content">
       <div class="ir">
         <input id="upd-title" class="ai" placeholder="Título de la actualización">
@@ -502,8 +418,6 @@
       <button class="ab" onclick="addUpdate()">Publicar Actualización</button>
       <div id="updates-admin-list" style="margin-top:18px;display:flex;flex-direction:column;gap:9px"></div>
     </div>
-
-    <!-- GALLERY TAB -->
     <div id="t-gal" class="tab-content">
       <label class="upload-area" for="admin-gal-upload">
         <div>📁 Arrastra imágenes o haz click para subir</div>
@@ -512,8 +426,6 @@
       <input type="file" id="admin-gal-upload" accept="image/*" multiple style="display:none" onchange="addGallery(event)">
       <div id="gal-preview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px;margin-top:14px"></div>
     </div>
-
-    <!-- TEAM TAB -->
     <div id="t-team" class="tab-content">
       <div class="ir">
         <input id="team-name" class="ai" placeholder="Nombre del miembro">
@@ -523,16 +435,14 @@
       <button class="ab" onclick="addTeam()">Agregar Miembro</button>
       <div id="team-admin-list" style="margin-top:18px;display:flex;flex-direction:column;gap:9px"></div>
     </div>
-
-    <!-- SERVER TAB -->
     <div id="t-srv" class="tab-content">
-      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🤖 DISCORD WEBHOOK (logs de whitelist)</label>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🤖 DISCORD WEBHOOK</label>
       <div style="display:flex;gap:10px;margin-bottom:6px">
         <input id="srv-webhook" class="ai" placeholder="https://discord.com/api/webhooks/..." style="flex:1">
         <button class="ab" onclick="saveSrv('webhook')" style="margin-top:0;white-space:nowrap">Guardar</button>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:18px">Canal Discord → Editar → Integraciones → Webhooks → Crear Webhook → Copiar URL</div>
-      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🔴 FIVEM SERVER ID (jugadores live)</label>
+      <label style="font-size:10px;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:7px">🔴 FIVEM SERVER ID</label>
       <div style="display:flex;gap:10px;margin-bottom:18px">
         <input id="srv-fivemid" class="ai" placeholder="Ej: eqjgpm" style="flex:1">
         <button class="ab" onclick="saveSrv('fivemid')" style="margin-top:0;white-space:nowrap">Conectar</button>
@@ -561,10 +471,27 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <img src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/cee79335-1fe0-423c-8072-277523baccaf.png" alt="Cataño RP" class="f-logo">
   <p class="f-txt">PUERTO RICO'S FINEST • A GTA V EXPERIENCE</p>
+  <div class="social-links">
+    <a href="https://www.tiktok.com/@catanorp" target="_blank" class="social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+      TikTok
+    </a>
+    <a href="https://www.instagram.com/mtstudioenlacasa" target="_blank" class="social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Instagram
+    </a>
+    <a href="https://www.youtube.com/@CATA%C3%91ORP/shorts" target="_blank" class="social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      YouTube
+    </a>
+    <a href="https://discord.gg/catanorp" target="_blank" class="social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Discord
+    </a>
+  </div>
   <div class="f-links">
     <a href="#hero">Inicio</a><a href="#wl">Whitelist</a><a href="#updates">Actualizaciones</a>
     <a href="#gallery">Galería</a><a href="#team">Equipo</a><a href="#discord">Discord</a>
@@ -587,7 +514,9 @@
 <div class="notif" id="notif"></div>
 
 <script>
-// DISCORD OAUTH2
+// ══════════════════════════════════════════
+// DISCORD OAUTH2 — FIXED SCOPE
+// ══════════════════════════════════════════
 const DISCORD_CLIENT_ID = '1477752422536319146';
 const DISCORD_REDIRECT = 'https://catanorp.netlify.app';
 const VERIFIED_ROLE_ID = '1447434378413084875';
@@ -599,7 +528,7 @@ const discordLogin = () => {
     client_id: DISCORD_CLIENT_ID,
     redirect_uri: DISCORD_REDIRECT,
     response_type: 'token',
-    scope: 'identify guilds.members.read'
+    scope: 'identify guilds guilds.members.read'  // Fixed: added guilds scope
   });
   window.location.href = 'https://discord.com/api/oauth2/authorize?' + params.toString();
 };
@@ -711,6 +640,7 @@ const restoreDiscordSession = () => {
   }
 };
 
+// ══════════════════════════════════════════
 // STORE
 // ══════════════════════════════════════════
 let S = {
@@ -721,9 +651,6 @@ let S = {
   fivemId:'eqjgpm', webhook:''
 };
 
-// ══════════════════════════════════════════
-// WHITELIST QUESTIONS
-// ══════════════════════════════════════════
 const WL_NORMAS = [
   { text:'¿Sabes la diferencia entre PK (Player Kill) y CK (Character Kill)?', correct:'si' },
   { text:'¿Está permitido hacer metagaming en el servidor?', correct:'no' },
@@ -907,19 +834,15 @@ const wlNext = (step) => {
       });
       notify('⚠️ Responde todas las preguntas'); return;
     }
-    if(!wlAnswers['wl-q-normas']) wlAnswers['wl-q-normas']={};
     buildQuestions('wl-q-ckpk', WL_CKPK);
     setStep(3);
     wlAnswers['wl-q-ckpk']={};
   }
 };
 
-const wlBack = (step) => {
-  setStep(step-1);
-};
+const wlBack = (step) => { setStep(step-1); };
 
 const wlSubmit = () => {
-  // Validate open answers
   const unansweredCK = WL_CKPK.map((_,i)=>{
     const ans = wlAnswers['wl-q-ckpk'] && wlAnswers['wl-q-ckpk'][i];
     return (!ans || ans.length < 10) ? i : null;
@@ -940,22 +863,19 @@ const wlSubmit = () => {
   const exp = document.getElementById('w-exp').value;
   const found = document.getElementById('w-found').value;
 
-  // Check for troll/gibberish answers
   let trollAnswers = [];
   WL_CKPK.forEach((q,i)=>{
     const ans = (wlAnswers['wl-q-ckpk'][i]||'').trim();
     const words = ans.split(/\s+/).filter(w=>w.length>2);
-    const isGibberish = words.length < 3 || /^(.)+$/.test(ans) || ans.replace(/[aeiou]/gi,'').length > ans.length*0.8;
+    const isGibberish = words.length < 3 || /^(.)+$/.test(ans) || ans.replace(/[aeiou]/gi,'').length > ans.length*0.8;
     if(isGibberish) trollAnswers.push(`Pregunta ${i+1}: respuesta incoherente`);
   });
 
-  // Evaluate Si/No answers
   let wrongNormas = [];
   WL_NORMAS.forEach((q,i)=>{
     if(wlAnswers['wl-q-normas'][i] !== q.correct) wrongNormas.push(`Normas P${i+1}: "${q.text}"`);
   });
 
-  // Evaluate open answers by keywords
   let wrongCKPK = [];
   WL_CKPK.forEach((q,i)=>{
     const ans = wlAnswers['wl-q-ckpk'][i]||'';
@@ -964,13 +884,12 @@ const wlSubmit = () => {
 
   const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
   const autoStatus = (totalWrong === 0 && trollAnswers.length === 0) ? 'approved' : 'denied';
-
-  // Build open answers summary
   const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');
 
   const entry = {
     id: Date.now(),
-    nombre, edad, gmail, discord, ic, exp: exp||'No indicado', found: found||'No indicado',
+    nombre, edad, gmail, discord, ic,
+    exp: exp||'No indicado', found: found||'No indicado',
     fecha: new Date().toLocaleDateString('es-PR'),
     status: autoStatus,
     wrongCount: totalWrong,
@@ -981,39 +900,53 @@ const wlSubmit = () => {
 
   S.wl.unshift(entry);
   save(); renderWL(); updateStats();
-
-  // Send Discord webhook
   sendWebhook(entry);
-
-  // Send Gmail notification (delayed 10-15 min simulation via setTimeout)
   sendEmailResult(entry);
 
-  // Show result
   setStep(4);
   const rb = document.getElementById('wl-result-box');
   if(autoStatus==='approved'){
     rb.innerHTML = `<div class="wl-result approved">
       <div class="wl-result-icon">🎉</div>
       <div class="wl-result-title">¡FELICIDADES!</div>
-      <div class="wl-result-msg">Has aprobado correctamente la whitelist. Demostraste tener claros los conceptos básicos y las normas del servidor.<br><br>Ya puedes continuar con el proceso de ingreso. Te damos la bienvenida y esperamos que disfrutes tu experiencia roleando.<br><br><strong>¡Nos vemos dentro! 🚀</strong><br><br>Únete al Discord: <a href="https://discord.gg/catanorp" target="_blank" style="color:var(--gold)">discord.gg/catanorp</a></div>
+      <div class="wl-result-msg">Has aprobado correctamente la whitelist. Demostraste tener claros los conceptos básicos y las normas del servidor.<br><br>Ya puedes continuar con el proceso de ingreso. Te damos la bienvenida.<br><br><strong>¡Nos vemos dentro! 🚀</strong><br><br>Únete al Discord: <a href="https://discord.gg/catanorp" target="_blank" style="color:var(--gold)">discord.gg/catanorp</a></div>
     </div>`;
   } else {
     rb.innerHTML = `<div class="wl-result denied">
       <div class="wl-result-icon">❌</div>
       <div class="wl-result-title">NO APROBADO</div>
-      <div class="wl-result-msg">Lamentablemente, no has aprobado en esta ocasión. Algunas respuestas no fueron correctas y es importante tener claros los conceptos básicos de rol (MG, PG, CK, PK, valoración de vida, etc.) antes de ingresar al servidor.<br><br>Te invitamos a repasar las normas y volver a intentarlo cuando te sientas preparado/a.<br><br><strong>¡Te esperamos en la próxima oportunidad!</strong><br><br>Tienes <strong>${totalWrong} respuesta(s) incorrecta(s)</strong>.</div>
+      <div class="wl-result-msg">Lamentablemente, no has aprobado en esta ocasión. Es importante tener claros los conceptos básicos de rol antes de ingresar.<br><br>Te invitamos a repasar las normas y volver a intentarlo.<br><br><strong>¡Te esperamos en la próxima oportunidad!</strong><br><br>Tienes <strong>${totalWrong} respuesta(s) incorrecta(s)</strong>.</div>
     </div>`;
   }
 };
 
 const wlReset = () => {
   wlAnswers = {};
-  document.getElementById('w-nombre').value='';
-  document.getElementById('w-edad').value='';
-  document.getElementById('w-gmail').value='';
-  document.getElementById('w-discord').value='';
-  document.getElementById('w-ic').value='';
+  ['w-nombre','w-edad','w-gmail','w-discord','w-ic'].forEach(id=>{document.getElementById(id).value='';});
   setStep(1);
+};
+
+// ══════════════════════════════════════════
+// EMAIL (EmailJS)
+// ══════════════════════════════════════════
+const sendEmailResult = async (entry) => {
+  try {
+    if (typeof emailjs === 'undefined') return;
+    const isApproved = entry.status === 'approved';
+    const title = isApproved ? '✅ ¡Tu whitelist fue APROBADA! — Cataño RP' : '❌ Tu whitelist no fue aprobada — Cataño RP';
+    const message = isApproved
+      ? `¡Felicidades ${entry.nombre}!\n\nHas aprobado la whitelist de Cataño RP correctamente.\n\nDemostraste tener claros los conceptos básicos de rol.\n\n¡Nos vemos dentro! 🚀\n\nÚnete al Discord: https://discord.gg/catanorp`
+      : `Hola ${entry.nombre},\n\nLamentablemente tu aplicación no fue aprobada.\n\nTuviste ${entry.wrongCount} respuesta(s) incorrecta(s).\n\nPreguntas falladas:\n${(entry.wrongList||[]).join('\n')}\n\nTe invitamos a repasar las normas y volver a intentarlo.\n\n¡Te esperamos!`;
+
+    await emailjs.send('service_j6xhrbk', 'template_pi04afl', {
+      to_email: entry.gmail,
+      title: title,
+      message: message
+    });
+    console.log('Email enviado a:', entry.gmail);
+  } catch(e) {
+    console.log('Email error:', e);
+  }
 };
 
 // ══════════════════════════════════════════
@@ -1065,21 +998,15 @@ const renderWL = () => {
     <div style="background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.3);padding:10px 18px;color:#e63946;font-family:'Bebas Neue';font-size:20px">❌ ${denied} <span style="font-size:11px;font-family:'Rajdhani'">DENEGADOS</span></div>
     <div style="background:rgba(255,165,0,.1);border:1px solid rgba(255,165,0,.3);padding:10px 18px;color:orange;font-family:'Bebas Neue';font-size:20px">⏳ ${pending} <span style="font-size:11px;font-family:'Rajdhani'">PENDIENTES</span></div>
     <div style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);padding:10px 18px;color:var(--gold);font-family:'Bebas Neue';font-size:20px">📋 ${total} <span style="font-size:11px;font-family:'Rajdhani'">TOTAL</span></div>`;
-
   list.innerHTML = S.wl.length ? S.wl.map((w,i)=>`
     <div class="ali" style="flex-direction:column;align-items:flex-start;gap:8px">
       <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;flex-wrap:wrap;gap:8px">
         <div style="flex:1">
           <div class="ali-t">👤 ${w.nombre} <span style="color:var(--muted);font-size:12px">— IC: ${w.ic||'N/A'}</span></div>
           <div class="ali-m">📧 ${w.gmail||'N/A'} &nbsp;|&nbsp; 💬 ${w.discord} &nbsp;|&nbsp; 🎂 ${w.edad} años &nbsp;|&nbsp; 📅 ${w.fecha}</div>
-          <div class="ali-m">🎮 Exp: ${w.exp||'N/A'} &nbsp;|&nbsp; 🔍 Encontró: ${w.found||'N/A'}</div>
-          <div style="margin-top:6px">${w.wrongCount>0
-            ? `<span style="color:#e63946;font-size:12px">❌ ${w.wrongCount} respuesta(s) incorrecta(s)</span>`
-            : '<span style="color:#4caf50;font-size:12px">✅ Todas las respuestas correctas</span>'}</div>
+          <div style="margin-top:6px">${w.wrongCount>0?`<span style="color:#e63946;font-size:12px">❌ ${w.wrongCount} respuesta(s) incorrecta(s)</span>`:'<span style="color:#4caf50;font-size:12px">✅ Todas correctas</span>'}</div>
         </div>
-        <div>
-          <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'DENEGADO'}</span>
-        </div>
+        <span class="badge ${w.status==='pending'?'bp':w.status==='approved'?'ba':'bd'}">${w.status==='pending'?'PENDIENTE':w.status==='approved'?'APROBADO':'DENEGADO'}</span>
       </div>
       <div class="aa">
         ${w.status!=='approved'?`<button class="ab ab-g" onclick="actWL(${i},'approved')" style="padding:6px 14px;font-size:10px;margin-top:0">✓ Aprobar</button>`:''}
@@ -1092,10 +1019,8 @@ const renderWL = () => {
 };
 
 const actWL = (i,s) => {
-  S.wl[i].status=s;
-  save(); renderWL(); updateStats();
+  S.wl[i].status=s; save(); renderWL(); updateStats();
   notify(s==='approved'?'✅ Aprobado':'❌ Denegado');
-  // Send webhook on manual action too
   sendWebhookAction(S.wl[i], s);
 };
 const delWL = (i) => { S.wl.splice(i,1); save(); renderWL(); updateStats(); notify('🗑️ Eliminado'); };
@@ -1125,20 +1050,15 @@ const renderLogs = (filter) => {
   let items = [...S.wl];
   if(filter==='approved') items=items.filter(w=>w.status==='approved');
   else if(filter==='denied') items=items.filter(w=>w.status==='denied');
-  if(search) {
-    const q=search.toLowerCase();
-    items=items.filter(w=>(w.nombre||'').toLowerCase().includes(q)||(w.discord||'').toLowerCase().includes(q)||(w.gmail||'').toLowerCase().includes(q));
-  }
-  ['lf-all','lf-approved','lf-denied'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.classList.remove('active');
-  });
+  if(search) { const q=search.toLowerCase(); items=items.filter(w=>(w.nombre||'').toLowerCase().includes(q)||(w.discord||'').toLowerCase().includes(q)||(w.gmail||'').toLowerCase().includes(q)); }
+  ['lf-all','lf-approved','lf-denied'].forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.remove('active'); });
   const activeBtn = document.getElementById(`lf-${filter==='search'?currentLogFilter:filter}`);
   if(activeBtn) activeBtn.classList.add('active');
   const c = document.getElementById('logs-container');
   if(!items.length){ c.innerHTML='<div style="text-align:center;color:var(--muted);padding:28px;font-size:12px;letter-spacing:2px">Sin registros</div>'; return; }
-  c.innerHTML = items.map((w,i)=>{
+  c.innerHTML = items.map((w)=>{
     const realIdx = S.wl.indexOf(w);
-    return `<div class="log-card log-${w.status}" id="lc-${realIdx}">
+    return `<div class="log-card log-${w.status}">
       <div class="log-header" onclick="toggleLog(${realIdx})">
         <div style="flex:1">
           <div style="font-weight:700;font-size:15px;color:var(--text)">👤 ${w.nombre}</div>
@@ -1153,15 +1073,12 @@ const renderLogs = (filter) => {
         <div class="log-field"><span class="log-lbl">Edad</span><span class="log-val">${w.edad} años</span></div>
         <div class="log-field"><span class="log-lbl">Gmail</span><span class="log-val">${w.gmail||'N/A'}</span></div>
         <div class="log-field"><span class="log-lbl">Discord</span><span class="log-val">${w.discord}</span></div>
-        <div class="log-field"><span class="log-lbl">Experiencia</span><span class="log-val">${w.exp||'N/A'}</span></div>
-        <div class="log-field"><span class="log-lbl">Nos encontró</span><span class="log-val">${w.found||'N/A'}</span></div>
-        <div class="log-field"><span class="log-lbl">Fallos</span><span class="log-val">${w.wrongCount||0} respuesta(s) incorrecta(s)</span></div>
         ${w.wrongList&&w.wrongList.length>0?`<div class="log-wrong">⚠️ Preguntas falladas:<br>${w.wrongList.join('<br>')}</div>`:''}
         <div class="log-acts">
           ${w.status!=='approved'?`<button class="ab ab-g" onclick="actWL(${realIdx},'approved');renderLogs('${currentLogFilter}')" style="padding:8px 16px;font-size:11px;margin-top:0">✓ Aprobar</button>`:''}
           ${w.status!=='denied'?`<button class="ab ab-d" onclick="actWL(${realIdx},'denied');renderLogs('${currentLogFilter}')" style="padding:8px 16px;font-size:11px;margin-top:0">✕ Denegar</button>`:''}
-          <button class="ab" onclick="resendWebhook(${realIdx})" style="padding:8px 16px;font-size:11px;margin-top:0;background:linear-gradient(135deg,#1a3a7a,#2980b9);color:#fff">📨 Reenviar Discord</button>
-          <button class="ab ab-d" onclick="delWL(${realIdx});renderLogs('${currentLogFilter}')" style="padding:8px 14px;font-size:11px;margin-top:0">🗑️ Eliminar</button>
+          <button class="ab" onclick="resendWebhook(${realIdx})" style="padding:8px 16px;font-size:11px;margin-top:0;background:linear-gradient(135deg,#1a3a7a,#2980b9);color:#fff">📨 Reenviar</button>
+          <button class="ab ab-d" onclick="delWL(${realIdx});renderLogs('${currentLogFilter}')" style="padding:8px 14px;font-size:11px;margin-top:0">🗑️</button>
         </div>
       </div>
     </div>`;
@@ -1169,7 +1086,7 @@ const renderLogs = (filter) => {
 };
 const filterLogs = f => renderLogs(f==='search'?currentLogFilter:f);
 const toggleLog = i => { const el=document.getElementById(`lb-${i}`); if(el) el.classList.toggle('open'); };
-const clearLogs = () => { if(!confirm('¿Limpiar todos los logs? Esto no se puede deshacer.')) return; S.wl=[]; save(); renderLogs('all'); updateStats(); notify('🗑️ Logs limpiados'); };
+const clearLogs = () => { if(!confirm('¿Limpiar todos los logs?')) return; S.wl=[]; save(); renderLogs('all'); updateStats(); notify('🗑️ Logs limpiados'); };
 
 // ══════════════════════════════════════════
 // UPDATES
@@ -1177,25 +1094,9 @@ const clearLogs = () => { if(!confirm('¿Limpiar todos los logs? Esto no se pued
 const renderUpdates = () => {
   const g = document.getElementById('updates-grid');
   const al = document.getElementById('updates-admin-list');
-  if(!S.updates.length) {
-    g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;letter-spacing:2px;font-size:12px">Sin actualizaciones todavía</div>';
-  } else {
-    g.innerHTML=S.updates.map((u,i)=>`
-      <div class="update-card reveal">
-        ${u.img?`<img src="${u.img}" class="update-img-el" alt="">`:`<div class="update-ph">CATAÑO RP</div>`}
-        <div class="update-body">
-          <span class="update-tag">${u.tag||'UPDATE'}</span>
-          <div class="update-title">${u.title}</div>
-          <div class="update-desc">${u.desc}</div>
-          <div class="update-date">${u.date}</div>
-        </div>
-      </div>`).join('');
-  }
-  if(al) al.innerHTML=S.updates.map((u,i)=>`
-    <div class="ali" style="display:flex;justify-content:space-between;align-items:center">
-      <div><div class="ali-t">${u.title}</div><div class="ali-m">${u.date} • ${u.tag||'UPDATE'}</div></div>
-      <button class="ab ab-d" onclick="delUpdate(${i})" style="padding:7px 14px;font-size:10px;margin-top:0">Eliminar</button>
-    </div>`).join('');
+  if(!S.updates.length) { g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;letter-spacing:2px;font-size:12px">Sin actualizaciones todavía</div>'; }
+  else { g.innerHTML=S.updates.map((u,i)=>`<div class="update-card reveal">${u.img?`<img src="${u.img}" class="update-img-el" alt="">`:`<div class="update-ph">CATAÑO RP</div>`}<div class="update-body"><span class="update-tag">${u.tag||'UPDATE'}</span><div class="update-title">${u.title}</div><div class="update-desc">${u.desc}</div><div class="update-date">${u.date}</div></div></div>`).join(''); }
+  if(al) al.innerHTML=S.updates.map((u,i)=>`<div class="ali" style="display:flex;justify-content:space-between;align-items:center"><div><div class="ali-t">${u.title}</div><div class="ali-m">${u.date}</div></div><button class="ab ab-d" onclick="delUpdate(${i})" style="padding:7px 14px;font-size:10px;margin-top:0">Eliminar</button></div>`).join('');
   observeReveal();
 };
 const addUpdate = () => {
@@ -1204,13 +1105,8 @@ const addUpdate = () => {
   const tag=document.getElementById('upd-tag').value.trim();
   const f=document.getElementById('upd-img').files[0];
   if(!t||!d){notify('⚠️ Título y descripción requeridos');return;}
-  const add=img=>{
-    S.updates.unshift({title:t,desc:d,tag:tag||'UPDATE',date:new Date().toLocaleDateString('es-PR'),img:img||null});
-    save();renderUpdates();notify('✅ Actualización publicada');
-    ['upd-title','upd-desc','upd-tag'].forEach(id=>document.getElementById(id).value='');
-  };
-  if(f){const r=new FileReader();r.onload=e=>add(e.target.result);r.readAsDataURL(f);}
-  else add(null);
+  const add=img=>{ S.updates.unshift({title:t,desc:d,tag:tag||'UPDATE',date:new Date().toLocaleDateString('es-PR'),img:img||null}); save();renderUpdates();notify('✅ Publicado'); ['upd-title','upd-desc','upd-tag'].forEach(id=>document.getElementById(id).value=''); };
+  if(f){const r=new FileReader();r.onload=e=>add(e.target.result);r.readAsDataURL(f);} else add(null);
 };
 const delUpdate = i=>{S.updates.splice(i,1);save();renderUpdates();notify('🗑️ Eliminado');};
 
@@ -1220,26 +1116,10 @@ const delUpdate = i=>{S.updates.splice(i,1);save();renderUpdates();notify('🗑�
 const renderGallery = () => {
   const g=document.getElementById('gallery-grid');
   const p=document.getElementById('gal-preview');
-  g.innerHTML=S.gallery.length?S.gallery.map((img,i)=>`
-    <div class="gallery-item">
-      <img src="${img}" alt="Cataño RP" loading="lazy">
-      <div class="gallery-ov"><span style="font-size:26px;color:var(--gold)">🔍</span></div>
-    </div>`).join('')
-    :`<div style="grid-column:1/-1;text-align:center;padding:56px 0;color:var(--muted)">📷 Sin fotos todavía</div>`;
-  if(p) p.innerHTML=S.gallery.map((img,i)=>`
-    <div style="position:relative">
-      <img src="${img}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block">
-      <button onclick="delGallery(${i})" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;cursor:pointer;padding:2px 7px;font-size:11px">✕</button>
-    </div>`).join('');
+  g.innerHTML=S.gallery.length?S.gallery.map((img,i)=>`<div class="gallery-item"><img src="${img}" alt="Cataño RP" loading="lazy"><div class="gallery-ov"><span style="font-size:26px;color:var(--gold)">🔍</span></div></div>`).join(''):`<div style="grid-column:1/-1;text-align:center;padding:56px 0;color:var(--muted)">📷 Sin fotos todavía</div>`;
+  if(p) p.innerHTML=S.gallery.map((img,i)=>`<div style="position:relative"><img src="${img}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block"><button onclick="delGallery(${i})" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;cursor:pointer;padding:2px 7px;font-size:11px">✕</button></div>`).join('');
 };
-const addGallery=e=>{
-  Array.from(e.target.files).forEach(f=>{
-    const r=new FileReader();
-    r.onload=ev=>{S.gallery.push(ev.target.result);save();renderGallery();};
-    r.readAsDataURL(f);
-  });
-  notify(`✅ ${e.target.files.length} foto(s) agregada(s)`);
-};
+const addGallery=e=>{ Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{S.gallery.push(ev.target.result);save();renderGallery();};r.readAsDataURL(f);}); notify(`✅ ${e.target.files.length} foto(s) agregada(s)`); };
 const delGallery=i=>{S.gallery.splice(i,1);save();renderGallery();};
 
 // ══════════════════════════════════════════
@@ -1248,29 +1128,11 @@ const delGallery=i=>{S.gallery.splice(i,1);save();renderGallery();};
 const renderTeam=()=>{
   const g=document.getElementById('team-grid');
   const al=document.getElementById('team-admin-list');
-  g.innerHTML=S.team.length?S.team.map(m=>`
-    <div class="team-card reveal">
-      <div class="team-avatar">${m.emoji||m.name[0]}</div>
-      <div class="team-name">${m.name}</div>
-      <div class="team-role">${m.role}</div>
-    </div>`).join('')
-    :'<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;font-size:12px;letter-spacing:2px">Sin miembros todavía</div>';
-  if(al) al.innerHTML=S.team.map((m,i)=>`
-    <div class="ali" style="display:flex;justify-content:space-between;align-items:center">
-      <div><div class="ali-t">${m.emoji||''} ${m.name}</div><div class="ali-m">${m.role}</div></div>
-      <button class="ab ab-d" onclick="delTeam(${i})" style="padding:7px 14px;font-size:10px;margin-top:0">Eliminar</button>
-    </div>`).join('');
+  g.innerHTML=S.team.length?S.team.map(m=>`<div class="team-card reveal"><div class="team-avatar">${m.emoji||m.name[0]}</div><div class="team-name">${m.name}</div><div class="team-role">${m.role}</div></div>`).join(''):'<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:56px 0;font-size:12px;letter-spacing:2px">Sin miembros todavía</div>';
+  if(al) al.innerHTML=S.team.map((m,i)=>`<div class="ali" style="display:flex;justify-content:space-between;align-items:center"><div><div class="ali-t">${m.emoji||''} ${m.name}</div><div class="ali-m">${m.role}</div></div><button class="ab ab-d" onclick="delTeam(${i})" style="padding:7px 14px;font-size:10px;margin-top:0">Eliminar</button></div>`).join('');
   observeReveal();
 };
-const addTeam=()=>{
-  const n=document.getElementById('team-name').value.trim();
-  const r=document.getElementById('team-role').value.trim();
-  const e=document.getElementById('team-emoji').value.trim();
-  if(!n||!r){notify('⚠️ Nombre y rol requeridos');return;}
-  S.team.push({name:n,role:r,emoji:e});
-  save();renderTeam();notify('✅ Miembro agregado');
-  ['team-name','team-role','team-emoji'].forEach(id=>document.getElementById(id).value='');
-};
+const addTeam=()=>{ const n=document.getElementById('team-name').value.trim(); const r=document.getElementById('team-role').value.trim(); const e=document.getElementById('team-emoji').value.trim(); if(!n||!r){notify('⚠️ Nombre y rol requeridos');return;} S.team.push({name:n,role:r,emoji:e}); save();renderTeam();notify('✅ Miembro agregado'); ['team-name','team-role','team-emoji'].forEach(id=>document.getElementById(id).value=''); };
 const delTeam=i=>{S.team.splice(i,1);save();renderTeam();};
 
 // ══════════════════════════════════════════
@@ -1316,40 +1178,17 @@ const switchTab=(id,btn)=>{
 // ══════════════════════════════════════════
 const fetchLivePlayers=async()=>{
   const id=S.fivemId||'eqjgpm';
-  try{
-    const res=await fetch('https://servers-frontend.fivem.net/api/servers/single/'+id);
-    if(!res.ok) return;
-    const data=await res.json();
-    if(data&&data.Data){
-      const online=data.Data.clients||0;
-      const max=data.Data.sv_maxclients||64;
-      S.players=online+'/'+max;
-      updateStats();
-    }
-  }catch(e){}
+  try{ const res=await fetch('https://servers-frontend.fivem.net/api/servers/single/'+id); if(!res.ok) return; const data=await res.json(); if(data&&data.Data){ S.players=(data.Data.clients||0)+'/'+(data.Data.sv_maxclients||64); updateStats(); } }catch(e){}
 };
 const fetchDiscord=async()=>{
-  try{
-    const res=await fetch('https://discord.com/api/v9/invites/catanorp?with_counts=true');
-    if(!res.ok) return;
-    const data=await res.json();
-    if(data&&data.guild){
-      const total=data.approximate_member_count||0;
-      const online=data.approximate_presence_count||0;
-      S.discm=total.toLocaleString();
-      S.onlineCnt=online.toLocaleString();
-      updateStats();
-    }
-  }catch(e){}
+  try{ const res=await fetch('https://discord.com/api/v9/invites/catanorp?with_counts=true'); if(!res.ok) return; const data=await res.json(); if(data&&data.guild){ S.discm=(data.approximate_member_count||0).toLocaleString(); S.onlineCnt=(data.approximate_presence_count||0).toLocaleString(); updateStats(); } }catch(e){}
 };
 
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
-  // Init EmailJS
   if(typeof emailjs !== 'undefined') emailjs.init('MDw-2Gp7Ab4cq2_ZN');
-  // Discord OAuth2 callback check
   if(window.location.hash.includes('access_token')) { handleDiscordCallback(); }
   else { restoreDiscordSession(); }
   updateStats();renderUpdates();renderGallery();renderTeam();renderWL();observeReveal();

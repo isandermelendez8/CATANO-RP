@@ -754,9 +754,19 @@ const saveOpenAnswer = (group, idx, val) => {
   wlAnswers[group][idx] = val.trim();
 };
 const analyzeOpenAnswer = (answer, keywords) => {
-  if(!answer || answer.length < 15) return false;
+  if(!answer || answer.length < 8) return false;
   const lower = answer.toLowerCase();
-  return keywords.filter(k => lower.includes(k)).length >= 2;
+  // 1 keyword exacta basta
+  if(keywords.filter(k => lower.includes(k)).length >= 1) return true;
+  // Coincidencia parcial: primeras 4 letras
+  const words = lower.split(/\s+/);
+  for(const word of words) {
+    if(word.length < 4) continue;
+    for(const kw of keywords) {
+      if(kw.length >= 4 && (word.startsWith(kw.substring(0,4)) || kw.startsWith(word.substring(0,4)))) return true;
+    }
+  }
+  return false;
 };
 const selectQ = (group, idx, val, el) => {
   const card = document.getElementById(`q-${group}-${idx}`);
@@ -814,7 +824,7 @@ const wlSubmit = () => {
   let wrongCKPK = [];
   WL_CKPK.forEach((q,i)=>{ const ans = wlAnswers['wl-q-ckpk'][i]||''; if(!analyzeOpenAnswer(ans, q.keyword)) wrongCKPK.push(`General P${i+1}: "${q.text}"`); });
   const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
-  const autoStatus = (totalWrong === 0 && trollAnswers.length === 0) ? 'approved' : 'denied';
+  const autoStatus = (totalWrong <= 3 && trollAnswers.length === 0) ? 'approved' : 'denied';
   const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');
   const entry = { id:Date.now(), nombre, edad, gmail, discord, ic, exp:exp||'No indicado', found:found||'No indicado', fecha:new Date().toLocaleDateString('es-PR'), status:autoStatus, wrongCount:totalWrong, wrongList:[...wrongNormas,...wrongCKPK,...trollAnswers], openAnswers, autoEval:true };
   S.wl.unshift(entry);

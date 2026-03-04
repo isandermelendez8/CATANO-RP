@@ -1063,10 +1063,20 @@ const startQuestionTimer = (containerId, idx) => {
     else el.style.color = 'var(--gold)';
     if(secs <= 0) {
       clearInterval(questionTimers[key]);
-      el.textContent = '⏰';
-      el.style.color = '#e74c3c';
-      const card = document.getElementById('q-'+containerId+'-'+idx);
-      if(card) card.classList.add('q-unanswered');
+      // Stop all other timers
+      Object.keys(questionTimers).forEach(k => clearInterval(questionTimers[k]));
+      questionTimers = {};
+      // Notify and send back to step 1
+      notify('⏰ Se acabó el tiempo. Vuelve a completar tus datos.');
+      wlAnswers = {};
+      setTimeout(() => {
+        setStep(1);
+        // Clear all fields
+        ['w-nombre','w-edad','w-ic'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+        const gmailField = document.getElementById('w-gmail');
+        if(gmailField && !gmailField.readOnly) gmailField.value = '';
+        wlStartTime = null;
+      }, 1500);
     }
   }, 1000);
 };

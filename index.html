@@ -874,11 +874,11 @@ const WL_NORMAS = [
   { text:'¿Un personaje puede recordar todo después de un PK?', correct:'no' }
 ];
 const WL_CKPK = [
-  { text:'Explica con tus palabras qué es PK y qué consecuencias tiene.', correct:'open', keyword:['muere','muerte','memoria','kill','pk','personaje','no recuerda','olvida','parcial'] },
-  { text:'¿Qué es CK y en qué situaciones puede aplicarse?', correct:'open', keyword:['permanente','definitiv','nuevo personaje','administr','aprobacion','caracter'] },
-  { text:'¿Qué es metagaming y da un ejemplo claro?', correct:'open', keyword:['discord','stream','fuera','externo','informacion','juego','ic','ooc'] },
-  { text:'¿Qué es powergaming y cómo evitarlo?', correct:'open', keyword:['forzar','irreales','reaccionar','responder','imposible','real','accion'] },
-  { text:'¿Qué significa valorar la vida (NVL) y por qué es importante?', correct:'open', keyword:['morir','muerte','arma','cooperar','temer','vida','peligro','miedo'] }
+  { text:'Explica con tus palabras qué es PK y qué consecuencias tiene.', correct:'open', keyword:['muere','muerte','memoria','kill','pk','personaje','recuerda','olvida','morir','matar','respawn','revive'] },
+  { text:'¿Qué es CK y en qué situaciones puede aplicarse?', correct:'open', keyword:['permanente','definitiv','nuevo','administr','aprobacion','caracter','forever','siempre','borrar','elimina','ck'] },
+  { text:'¿Qué es metagaming y da un ejemplo claro?', correct:'open', keyword:['discord','stream','fuera','externo','informacion','juego','ic','ooc','real','afuera','chat','fuera del rol','saber'] },
+  { text:'¿Qué es powergaming y cómo evitarlo?', correct:'open', keyword:['forzar','irreal','reaccionar','responder','imposible','real','accion','obligar','poder','chance','oportunidad','god'] },
+  { text:'¿Qué significa valorar la vida (NVL) y por qué es importante?', correct:'open', keyword:['morir','muerte','arma','cooperar','temer','vida','peligro','miedo','valor','nvl','apunta','pistola','matar','importa'] }
 ];
 
 let fbReady = false;
@@ -1029,20 +1029,115 @@ const saveOpenAnswer = (group, idx, val) => {
   if(!wlAnswers[group]) wlAnswers[group]={};
   wlAnswers[group][idx] = val.trim();
 };
+// Keyword check - used as fallback only
 const analyzeOpenAnswer = (answer, keywords) => {
-  if(!answer || answer.length < 8) return false;
+  if(!answer || answer.length < 5) return false;
   const lower = answer.toLowerCase();
-  // 1 keyword exacta basta
-  if(keywords.filter(k => lower.includes(k)).length >= 1) return true;
-  // Coincidencia parcial: primeras 4 letras
+  if(keywords && keywords.filter(k => lower.includes(k)).length >= 1) return true;
   const words = lower.split(/\s+/);
   for(const word of words) {
     if(word.length < 4) continue;
-    for(const kw of keywords) {
+    for(const kw of (keywords||[])) {
       if(kw.length >= 4 && (word.startsWith(kw.substring(0,4)) || kw.startsWith(word.substring(0,4)))) return true;
     }
   }
   return false;
+};
+
+// ══════════════════════════════════════════
+// 3-AI VOTING SYSTEM
+// PUT YOUR API KEYS HERE ↓
+const OPENAI_KEY = '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';
+const GEMINI_KEY = 'AIzaSyB2poR8JD5CtSOXz9l7jLG8Z-zvo3lLDCY';
+// ══════════════════════════════════════════
+
+const AI_SYSTEM_PROMPT = `Eres evaluador de whitelist para un servidor de roleplay llamado Cataño RP.
+Evalúa si cada respuesta demuestra que el jugador ENTIENDE el concepto, aunque no use palabras exactas.
+Sé generoso — si la respuesta tiene sentido y está relacionada con la pregunta, apruébala.
+Solo rechaza si la respuesta no tiene nada que ver, está vacía, o es completamente incorrecta.
+Responde SOLO en JSON sin markdown: {"results": [true, false, true, ...]} — un boolean por pregunta en orden.`;
+
+const evalWithClaude = async (questions) => {
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:300,
+        system: AI_SYSTEM_PROMPT,
+        messages:[{role:'user', content:questions}]
+      })
+    });
+    const d = await r.json();
+    const text = d.content?.[0]?.text || '{}';
+    return JSON.parse(text.replace(/```json|```/g,'').trim()).results;
+  } catch(e) { console.log('Claude eval error:',e); return null; }
+};
+
+const evalWithOpenAI = async (questions) => {
+  try {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
+      body: JSON.stringify({
+        model:'gpt-4o-mini', max_tokens:300,
+        messages:[
+          {role:'system', content: AI_SYSTEM_PROMPT},
+          {role:'user', content: questions}
+        ]
+      })
+    });
+    const d = await r.json();
+    const text = d.choices?.[0]?.message?.content || '{}';
+    return JSON.parse(text.replace(/```json|```/g,'').trim()).results;
+  } catch(e) { console.log('OpenAI eval error:',e); return null; }
+};
+
+const evalWithGemini = async (questions) => {
+  try {
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents:[{parts:[{text: AI_SYSTEM_PROMPT + '\n\n' + questions}]}],
+        generationConfig:{maxOutputTokens:300}
+      })
+    });
+    const d = await r.json();
+    const text = d.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    return JSON.parse(text.replace(/```json|```/g,'').trim()).results;
+  } catch(e) { console.log('Gemini eval error:',e); return null; }
+};
+
+const evaluateOpenAnswersWithAI = async (answers) => {
+  const questions = answers.map((a,i) => `P${i+1}: ${a.question}\nRespuesta: "${a.answer}"`).join('\n\n');
+  
+  console.log('🤖 Evaluando con 3 IAs...');
+  
+  // Call all 3 AIs at the same time
+  const [claudeRes, openaiRes, geminiRes] = await Promise.all([
+    evalWithClaude(questions),
+    evalWithOpenAI(questions),
+    evalWithGemini(questions)
+  ]);
+
+  console.log('Claude:', claudeRes);
+  console.log('OpenAI:', openaiRes);
+  console.log('Gemini:', geminiRes);
+
+  // Vote — if 2 out of 3 say true, it passes
+  const numAnswers = answers.length;
+  const finalResults = [];
+  for(let i = 0; i < numAnswers; i++) {
+    const votes = [claudeRes, openaiRes, geminiRes]
+      .filter(r => r !== null && r[i] !== undefined)
+      .map(r => r[i] === true);
+    const yesVotes = votes.filter(Boolean).length;
+    const totalVotes = votes.length;
+    // Needs majority (2 of 3, or 1 of 1-2 if some failed)
+    const passes = totalVotes === 0 ? true : yesVotes >= Math.ceil(totalVotes / 2);
+    finalResults.push(passes);
+    console.log(`P${i+1}: ${yesVotes}/${totalVotes} votos ✅ → ${passes?'PASA':'FALLA'}`);
+  }
+  return finalResults;
 };
 const selectQ = (group, idx, val, el) => {
   const card = document.getElementById(`q-${group}-${idx}`);
@@ -1218,18 +1313,38 @@ const wlSubmit = async () => {
     const ans = wlAnswers['wl-q-normas'][shuffledIdx];
     if(ans !== q.correct) wrongNormas.push(`Normas: "${q.text}"`);
   });
-  let wrongCKPK = [];
+  // AI evaluates open answers
   const shuffledCKPK = window['_shuffled_wl-q-ckpk'] || WL_CKPK;
-  shuffledCKPK.forEach((q,shuffledIdx)=>{
-    const ans = wlAnswers['wl-q-ckpk'][shuffledIdx]||'';
-    if(!analyzeOpenAnswer(ans, q.keyword)) wrongCKPK.push(`General: "${q.text}"`);
+  const openAnswersList = shuffledCKPK.map((q,i) => ({
+    question: q.text,
+    answer: wlAnswers['wl-q-ckpk']?.[i] || '',
+    keywords: q.keyword
+  }));
+  
+  // Show loading indicator
+  const submitBtn = document.querySelector('.wl-btn');
+  if(submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '⏳ Evaluando respuestas...'; }
+  
+  const aiResults = await evaluateOpenAnswersWithAI(openAnswersList);
+  
+  if(submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Enviar Aplicación'; }
+  
+  let wrongCKPK = [];
+  shuffledCKPK.forEach((q,i) => {
+    if(!aiResults[i]) wrongCKPK.push(`General: "${q.text}"`);
   });
   const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
   const autoStatus = (totalWrong <= 3 && trollAnswers.length === 0) ? 'approved' : 'denied';
   const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');
   // Snapshot answers for webhook detail
   window._wlAnswersSnapshot = JSON.parse(JSON.stringify(wlAnswers));
-  const entry = { id:Date.now(), nombre, edad, gmail, discord, ic, exp:exp||'No indicado', found:found||'No indicado', fecha:new Date().toLocaleDateString('es-PR'), status:autoStatus, wrongCount:totalWrong, wrongList:[...wrongNormas,...wrongCKPK,...trollAnswers], openAnswers, autoEval:true };
+  // Build detailed openAnswers for webhook
+  const openAnswersDetailed = {};
+  const _sN = window['_shuffled_wl-q-normas'] || WL_NORMAS;
+  const _sC = window['_shuffled_wl-q-ckpk']   || WL_CKPK;
+  _sN.forEach((q,i) => { openAnswersDetailed['normas_'+i] = { question: q.text, answer: (wlAnswers['wl-q-normas']||{})[i]||'', correct: q.correct }; });
+  _sC.forEach((q,i) => { openAnswersDetailed['ckpk_'+i]   = { question: q.text, answer: (wlAnswers['wl-q-ckpk']  ||{})[i]||'', keywords: q.keyword }; });
+  const entry = { id:Date.now(), nombre, edad, gmail, discord, ic, exp:exp||'No indicado', found:found||'No indicado', fecha:new Date().toLocaleDateString('es-PR'), status:autoStatus, wrongCount:totalWrong, wrongList:[...wrongNormas,...wrongCKPK,...trollAnswers], openAnswers:openAnswersDetailed, autoEval:true };
   S.wl.unshift(entry);
   save(); renderWL(); updateStats();
   sendWebhook(entry);
@@ -1284,55 +1399,60 @@ const sendWebhook = async (entry) => {
   const color = entry.status==='approved' ? 3066993 : 15158332;
 
   const fields = [
-    {name:'👤 Nombre Real', value:String(entry.nombre||'-'), inline:true},
-    {name:'🎂 Edad', value:String(entry.edad||'-'), inline:true},
-    {name:'📧 Gmail', value:String(entry.gmail||'-'), inline:true},
-    {name:'💬 Discord', value:String(entry.discord||'-'), inline:true},
-    {name:'🎭 Personaje IC', value:String(entry.ic||'-'), inline:true},
-    {name:'🎮 Experiencia', value:String(entry.exp||'No indicado'), inline:true},
-    {name:'📅 Fecha', value:String(entry.fecha||'-'), inline:true},
-    {name:'📊 Resultado', value:entry.status==='approved'?'✅ APROBADO':'❌ DENEGADO — '+entry.wrongCount+' incorrecta(s)', inline:false},
+    {name:'👤 Nombre Real',  value:String(entry.nombre||'-'),  inline:true},
+    {name:'🎂 Edad',         value:String(entry.edad||'-'),    inline:true},
+    {name:'📧 Gmail',        value:String(entry.gmail||'-'),   inline:true},
+    {name:'💬 Discord',      value:String(entry.discord||'-'), inline:true},
+    {name:'🎭 Personaje IC', value:String(entry.ic||'-'),      inline:true},
+    {name:'🎮 Experiencia',  value:String(entry.exp||'-'),     inline:true},
+    {name:'📅 Fecha',        value:String(entry.fecha||'-'),   inline:true},
+    {name:'📊 Resultado',    value:entry.status==='approved'?'✅ APROBADO':'❌ DENEGADO — '+entry.wrongCount+' incorrecta(s)', inline:false},
   ];
 
-  // Add wrong normas with what they answered vs correct
-  if(entry.status==='denied' && entry.wrongList && entry.wrongList.length > 0) {
-    const shuffledNormas = window['_shuffled_wl-q-normas'] || WL_NORMAS;
-    const shuffledCKPK  = window['_shuffled_wl-q-ckpk']   || WL_CKPK;
-    const snap = window._wlAnswersSnapshot || {};
-
+  if(entry.status === 'denied' && entry.openAnswers) {
+    // Normas incorrectas
     let normasLines = [];
-    shuffledNormas.forEach((q,i) => {
-      const ans = snap['wl-q-normas'] && snap['wl-q-normas'][i];
-      if(ans && ans !== q.correct) {
-        normasLines.push('❌ ' + q.text + '\n  ↳ Respondió: **' + ans.toUpperCase() + '** | Correcto: **' + q.correct.toUpperCase() + '**');
+    Object.keys(entry.openAnswers).filter(k=>k.startsWith('normas_')).forEach(k => {
+      const d = entry.openAnswers[k];
+      if(d.answer && d.answer !== d.correct) {
+        normasLines.push('❌ '+d.question+'
+  ↳ Respondió: **'+d.answer.toUpperCase()+'** | Correcto: **'+d.correct.toUpperCase()+'**');
       }
     });
     if(normasLines.length > 0) {
-      const val = normasLines.join('\n\n').substring(0,1020);
-      fields.push({name:'📋 Normas Incorrectas', value:val, inline:false});
+      fields.push({name:'📋 Normas Incorrectas', value: normasLines.join('
+
+').substring(0,1020), inline:false});
     }
 
+    // Preguntas abiertas incorrectas
     let ckpkLines = [];
-    shuffledCKPK.forEach((q,i) => {
-      const ans = (snap['wl-q-ckpk'] && snap['wl-q-ckpk'][i]) || '';
-      if(!analyzeOpenAnswer(ans, q.keyword)) {
-        const preview = ans ? (ans.length > 120 ? ans.substring(0,120)+'…' : ans) : '(sin respuesta)';
-        ckpkLines.push('❌ ' + q.text + '\n  ↳ "' + preview + '"');
+    Object.keys(entry.openAnswers).filter(k=>k.startsWith('ckpk_')).forEach(k => {
+      const d = entry.openAnswers[k];
+      if(!analyzeOpenAnswer(d.answer, d.keywords||[])) {
+        const preview = d.answer ? (d.answer.length > 100 ? d.answer.substring(0,100)+'…' : d.answer) : '(sin respuesta)';
+        ckpkLines.push('❌ '+d.question+'
+  ↳ "'+preview+'"');
       }
     });
     if(ckpkLines.length > 0) {
-      const val = ckpkLines.join('\n\n').substring(0,1020);
-      fields.push({name:'📝 Preguntas Abiertas Incorrectas', value:val, inline:false});
+      fields.push({name:'📝 Preguntas Abiertas Incorrectas', value: ckpkLines.join('
+
+').substring(0,1020), inline:false});
     }
   }
 
   const embed = {embeds:[{
-    title: (entry.status==='approved'?'✅':'❌') + ' Nueva Whitelist — ' + entry.nombre,
+    title: (entry.status==='approved'?'✅':'❌')+' Nueva Whitelist — '+entry.nombre,
     color, fields,
     footer:{text:'Cataño RP — Sistema de Whitelist'},
     timestamp: new Date().toISOString()
   }]};
-  try { const r=await fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(embed)}); console.log('Webhook auto status:',r.status); } catch(e){console.log('Webhook error:',e);}
+  try {
+    const r = await fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(embed)});
+    console.log('Webhook status:', r.status);
+    if(!r.ok) console.log('Webhook error body:', await r.text());
+  } catch(e){ console.log('Webhook error:',e); }
 };
 
 const renderWL = () => {

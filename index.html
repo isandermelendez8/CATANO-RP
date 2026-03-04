@@ -683,7 +683,8 @@ const handleDiscordCallback = async () => {
         if(member && member.roles) {
           const roles = member.roles;
           if(roles.includes(STAFF_ROLE_ID) || roles.includes(OWNER_ROLE_ID)) {
-            userData.staffVerified = true;
+            discordUser = discordUser || {};
+            discordUser.staffVerified = true;
           }
         }
       }
@@ -1095,8 +1096,8 @@ const analyzeOpenAnswer = (answer, keywords) => {
 // ══════════════════════════════════════════
 // 3-AI VOTING SYSTEM
 // PUT YOUR API KEYS HERE ↓
-const OPENAI_KEY = 'PUT_OPENAI_KEY_HERE';
-const GEMINI_KEY = 'PUT_GEMINI_KEY_HERE';
+const OPENAI_KEY = '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';
+const GEMINI_KEY = 'AIzaSyB2poR8JD5CtSOXz9l7jLG8Z-zvo3lLDCY';
 // ══════════════════════════════════════════
 
 const AI_SYSTEM_PROMPT = `Eres evaluador de whitelist para un servidor de roleplay llamado Cataño RP.
@@ -1204,7 +1205,6 @@ const getOriginalQ = (containerId, shuffledIdx) => {
   const origList = containerId === 'wl-q-normas' ? WL_NORMAS : WL_CKPK;
   return origList.indexOf(q);
 };
-let wlStartTime = null;
 const setStep = (n) => {
   if(n === 1 && !wlStartTime) wlStartTime = Date.now();
   for(let i=1;i<=4;i++){
@@ -1339,8 +1339,9 @@ Gmail: ${gmail}`
 };
 
 const wlSubmit = async () => {
-  const unansweredCK = WL_CKPK.map((_,i)=>{ const ans = wlAnswers['wl-q-ckpk'] && wlAnswers['wl-q-ckpk'][i]; return (!ans || ans.length < 10) ? i : null; }).filter(x=>x!==null);
-  if(unansweredCK.length>0){ unansweredCK.forEach(i=>{ const card=document.getElementById(`q-wl-q-ckpk-${i}`); if(card) card.classList.add('q-unanswered'); }); notify('⚠️ Responde todas las preguntas generales'); return; }
+  const shuffledCK = window['_shuffled_wl-q-ckpk'] || WL_CKPK;
+  const unansweredCK = shuffledCK.map((_,i)=>{ const ans = wlAnswers['wl-q-ckpk'] && wlAnswers['wl-q-ckpk'][i]; return (!ans) ? i : null; }).filter(x=>x!==null);
+  if(unansweredCK.length>0){ unansweredCK.forEach(i=>{ const card=document.getElementById(`q-wl-q-ckpk-${i}`); if(card) card.classList.add('q-unanswered'); }); notify('⚠️ Responde todas las preguntas de escenario'); return; }
   // SPEEDRUN CHECK — less than 10 seconds = invalid
   if(checkSpeedrun()) {
     const rb = document.getElementById('wl-result-box');
@@ -1386,21 +1387,21 @@ const wlSubmit = async () => {
   const ic = document.getElementById('w-ic').value.trim();
   const exp = document.getElementById('w-exp').value;
   const found = document.getElementById('w-found').value;
-  let trollAnswers = [];
-  WL_CKPK.forEach((q,i)=>{ const ans = (wlAnswers['wl-q-ckpk'][i]||'').trim(); const words = ans.split(/\s+/).filter(w=>w.length>2); const isGibberish = words.length < 3 || /^(.)+$/.test(ans) || ans.replace(/[aeiou]/gi,'').length > ans.length*0.8; if(isGibberish) trollAnswers.push(`Pregunta ${i+1}: respuesta incoherente`); });
+  const trollAnswers = [];
   let wrongNormas = [];
   const shuffledNormas = window['_shuffled_wl-q-normas'] || WL_NORMAS;
   shuffledNormas.forEach((q,shuffledIdx)=>{
     const ans = wlAnswers['wl-q-normas'][shuffledIdx];
     if(ans !== q.correct) wrongNormas.push(`Normas: "${q.text}"`);
   });
-  // Evaluate scenario questions (si/no just like normas)
-  const shuffledCKPK = window['_shuffled_wl-q-ckpk'] || WL_CKPK;
+  // Evaluate CKPK scenarios (si/no)
+  const shuffledCKPK2 = window['_shuffled_wl-q-ckpk'] || WL_CKPK;
   let wrongCKPK = [];
-  shuffledCKPK.forEach((q,i) => {
+  shuffledCKPK2.forEach((q,i) => {
     const ans = (wlAnswers['wl-q-ckpk'] || {})[i];
     if(ans !== q.correct) wrongCKPK.push(`Escenario: "${q.text.substring(0,60)}..."`);
   });
+
   const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
   const autoStatus = (totalWrong <= 3 && trollAnswers.length === 0) ? 'approved' : 'denied';
   const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');

@@ -541,7 +541,7 @@ const discordLogin = () => {
     client_id: DISCORD_CLIENT_ID,
     redirect_uri: DISCORD_REDIRECT,
     response_type: 'token',
-    scope: 'identify guilds'
+    scope: 'identify guilds guilds.members.read'
   });
   window.location.href = 'https://discord.com/api/oauth2/authorize?' + params.toString();
 };
@@ -671,6 +671,22 @@ const handleDiscordCallback = async () => {
     console.log('Guilds encontrados:', Array.isArray(guilds) ? guilds.map(g=>g.id+' = '+g.name).join('\n') : JSON.stringify(guilds));
     console.log('inGuild:', inGuild);
 
+    // Check staff roles using guilds.members.read if available
+    try {
+      const memberRes = await fetch('https://discord.com/api/users/@me/guilds/'+DISCORD_GUILD_ID+'/member', {
+        headers:{ Authorization:'Bearer '+token }
+      });
+      if(memberRes.ok) {
+        const member = await memberRes.json();
+        if(member && member.roles) {
+          const roles = member.roles;
+          if(roles.includes(STAFF_ROLE_ID) || roles.includes(OWNER_ROLE_ID)) {
+            userData.staffVerified = true;
+          }
+        }
+      }
+    } catch(e) { /* guilds.members.read not available, skip */ }
+
     if (!inGuild) {
       const guildList = Array.isArray(guilds) ? guilds.map(g=>`${g.name} (${g.id})`).join('<br>') : JSON.stringify(guilds);
       document.getElementById('wl-login-wall').innerHTML = `
@@ -741,6 +757,12 @@ const showWLForm = async () => {
       }
     }
   }
+  // Check if user is staff/owner - show bypass instead
+  if(discordUser && discordUser.staffVerified) {
+    showStaffBypass();
+    return;
+  }
+
   document.getElementById('wl-login-wall').style.display = 'none';
   document.getElementById('wl-content').style.display = 'block';
   if(discordUser){
@@ -748,6 +770,62 @@ const showWLForm = async () => {
     document.getElementById('dub-name').textContent = discordUser.tag;
     document.getElementById('w-discord').value = discordUser.tag;
   }
+};
+
+const STAFF_BYPASS_CODE = 'CATANO2025STAFF';
+
+const showStaffBypass = () => {
+  document.getElementById('wl-login-wall').style.display = 'block';
+  document.getElementById('wl-content').style.display = 'none';
+  document.getElementById('wl-login-wall').innerHTML = `
+    <div class="discord-login-wall">
+      <div class="dlw-icon">🛡️</div>
+      <h3 style="color:var(--gold)">Acceso Staff Detectado</h3>
+      <p style="color:var(--muted)">Se detectó que tienes un rol de <strong style="color:var(--gold)">Staff / Owner</strong>.<br>Ingresa el código de acceso para obtener tu whitelist.</p>
+      <div style="margin:20px 0">
+        <input id="staff-bypass-input" type="password" placeholder="Código de acceso..." 
+          style="width:100%;padding:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,215,0,.3);color:#fff;font-size:14px;letter-spacing:4px;text-align:center"
+          onkeydown="if(event.key==='Enter')verifyStaffBypass()"/>
+      </div>
+      <button onclick="verifyStaffBypass()" class="wl-btn" style="width:auto;padding:12px 32px">✅ Verificar Código</button>
+      <p id="bypass-error" style="color:var(--red);font-size:12px;margin-top:12px;display:none">❌ Código incorrecto</p>
+    </div>`;
+};
+
+const verifyStaffBypass = async () => {
+  const code = document.getElementById('staff-bypass-input').value.trim();
+  if(code !== STAFF_BYPASS_CODE) {
+    document.getElementById('bypass-error').style.display = 'block';
+    return;
+  }
+  // Auto-approve with staff data
+  const entry = {
+    id: Date.now(),
+    nombre: 'NOMBRE REAL STAFF',
+    edad: '00',
+    gmail: 'CATANOSTAFF@GMAIL.COM',
+    discord: discordUser?.tag || 'STAFF',
+    ic: 'STAFF',
+    exp: 'MUCHA',
+    found: 'YOUTUBE',
+    fecha: new Date().toLocaleDateString('es-PR'),
+    status: 'approved',
+    wrongCount: 0,
+    wrongList: [],
+    openAnswers: {},
+    autoEval: true,
+    isStaff: true
+  };
+  S.wl.unshift(entry);
+  save(); renderWL(); updateStats();
+  sendWebhook(entry);
+  // Show success
+  document.getElementById('wl-login-wall').innerHTML = `
+    <div class="discord-login-wall">
+      <div class="dlw-icon">✅</div>
+      <h3 style="color:#2ecc71">¡Whitelist Aprobada!</h3>
+      <p>Tu whitelist de staff ha sido registrada correctamente.</p>
+    </div>`;
 };
 
 const restoreDiscordSession = () => {
@@ -906,9 +984,18 @@ const updateStats = () => {
 };
 
 let wlAnswers = {};
+const shuffleArray = (arr) => {
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+};
+
 const buildQuestions = (containerId, questions) => {
   const c = document.getElementById(containerId);
-  c.innerHTML = questions.map((q,i)=>`
+  const shuffled = shuffleArray(questions);
+  // Store shuffled order for evaluation
+  window['_shuffled_'+containerId] = shuffled;
+  c.innerHTML = shuffled.map((q,i)=>`
     <div class="wl-q" id="q-${containerId}-${i}">
       <div class="wl-q-text">${i+1}. ${q.text}</div>
       ${q.correct==='open'
@@ -947,6 +1034,15 @@ const selectQ = (group, idx, val, el) => {
   wlAnswers[group][idx] = val;
   card.classList.remove('q-unanswered');
 };
+
+// Get original question index from shuffled index
+const getOriginalQ = (containerId, shuffledIdx) => {
+  const shuffled = window['_shuffled_'+containerId];
+  if(!shuffled) return shuffledIdx;
+  const q = shuffled[shuffledIdx];
+  const origList = containerId === 'wl-q-normas' ? WL_NORMAS : WL_CKPK;
+  return origList.indexOf(q);
+};
 const setStep = (n) => {
   for(let i=1;i<=4;i++){
     document.getElementById(`wl-p${i}`).classList.toggle('active',i===n);
@@ -970,7 +1066,8 @@ const wlNext = (step) => {
     setStep(2);
     wlAnswers['wl-q-normas']={};
   } else if(step===2){
-    const unanswered = WL_NORMAS.map((_,i)=>wlAnswers['wl-q-normas']&&wlAnswers['wl-q-normas'][i]?null:i).filter(x=>x!==null);
+    const shuffledN = window['_shuffled_wl-q-normas'] || WL_NORMAS;
+    const unanswered = shuffledN.map((_,i)=>wlAnswers['wl-q-normas']&&wlAnswers['wl-q-normas'][i]?null:i).filter(x=>x!==null);
     if(unanswered.length>0){ unanswered.forEach(i=>{ const card=document.getElementById(`q-wl-q-normas-${i}`); if(card) card.classList.add('q-unanswered'); }); notify('⚠️ Responde todas las preguntas'); return; }
     buildQuestions('wl-q-ckpk', WL_CKPK);
     setStep(3);
@@ -991,9 +1088,17 @@ const wlSubmit = async () => {
   let trollAnswers = [];
   WL_CKPK.forEach((q,i)=>{ const ans = (wlAnswers['wl-q-ckpk'][i]||'').trim(); const words = ans.split(/\s+/).filter(w=>w.length>2); const isGibberish = words.length < 3 || /^(.)+$/.test(ans) || ans.replace(/[aeiou]/gi,'').length > ans.length*0.8; if(isGibberish) trollAnswers.push(`Pregunta ${i+1}: respuesta incoherente`); });
   let wrongNormas = [];
-  WL_NORMAS.forEach((q,i)=>{ if(wlAnswers['wl-q-normas'][i] !== q.correct) wrongNormas.push(`Normas P${i+1}: "${q.text}"`); });
+  const shuffledNormas = window['_shuffled_wl-q-normas'] || WL_NORMAS;
+  shuffledNormas.forEach((q,shuffledIdx)=>{
+    const ans = wlAnswers['wl-q-normas'][shuffledIdx];
+    if(ans !== q.correct) wrongNormas.push(`Normas: "${q.text}"`);
+  });
   let wrongCKPK = [];
-  WL_CKPK.forEach((q,i)=>{ const ans = wlAnswers['wl-q-ckpk'][i]||''; if(!analyzeOpenAnswer(ans, q.keyword)) wrongCKPK.push(`General P${i+1}: "${q.text}"`); });
+  const shuffledCKPK = window['_shuffled_wl-q-ckpk'] || WL_CKPK;
+  shuffledCKPK.forEach((q,shuffledIdx)=>{
+    const ans = wlAnswers['wl-q-ckpk'][shuffledIdx]||'';
+    if(!analyzeOpenAnswer(ans, q.keyword)) wrongCKPK.push(`General: "${q.text}"`);
+  });
   const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
   const autoStatus = (totalWrong <= 3 && trollAnswers.length === 0) ? 'approved' : 'denied';
   const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');

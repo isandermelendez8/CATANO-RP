@@ -1096,8 +1096,8 @@ const analyzeOpenAnswer = (answer, keywords) => {
 // ══════════════════════════════════════════
 // 3-AI VOTING SYSTEM
 // PUT YOUR API KEYS HERE ↓
-const OPENAI_KEY = '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';
-const GEMINI_KEY = 'AIzaSyB2poR8JD5CtSOXz9l7jLG8Z-zvo3lLDCY';
+const OPENAI_KEY = 'PUT_OPENAI_KEY_HERE';
+const GEMINI_KEY = 'PUT_GEMINI_KEY_HERE';
 // ══════════════════════════════════════════
 
 const AI_SYSTEM_PROMPT = `Eres evaluador de whitelist para un servidor de roleplay llamado Cataño RP.
@@ -1493,14 +1493,11 @@ const sendWebhook = async (entry) => {
     Object.keys(entry.openAnswers).filter(k=>k.startsWith('normas_')).forEach(k => {
       const d = entry.openAnswers[k];
       if(d.answer && d.answer !== d.correct) {
-        normasLines.push('❌ '+d.question+'
-  ↳ Respondió: **'+d.answer.toUpperCase()+'** | Correcto: **'+d.correct.toUpperCase()+'**');
+        normasLines.push('❌ '+d.question+'\n  ↳ Respondió: **'+d.answer.toUpperCase()+'** | Correcto: **'+d.correct.toUpperCase()+'**');
       }
     });
     if(normasLines.length > 0) {
-      fields.push({name:'📋 Normas Incorrectas', value: normasLines.join('
-
-').substring(0,1020), inline:false});
+      fields.push({name:'📋 Normas Incorrectas', value: normasLines.join('\n\n').substring(0,1020), inline:false});
     }
 
     // Preguntas abiertas incorrectas
@@ -1509,14 +1506,11 @@ const sendWebhook = async (entry) => {
       const d = entry.openAnswers[k];
       if(!analyzeOpenAnswer(d.answer, d.keywords||[])) {
         const preview = d.answer ? (d.answer.length > 100 ? d.answer.substring(0,100)+'…' : d.answer) : '(sin respuesta)';
-        ckpkLines.push('❌ '+d.question+'
-  ↳ "'+preview+'"');
+        ckpkLines.push('❌ '+d.question+'\n  ↳ "'+preview+'"');
       }
     });
     if(ckpkLines.length > 0) {
-      fields.push({name:'📝 Preguntas Abiertas Incorrectas', value: ckpkLines.join('
-
-').substring(0,1020), inline:false});
+      fields.push({name:'📝 Preguntas Abiertas Incorrectas', value: ckpkLines.join('\n\n').substring(0,1020), inline:false});
     }
   }
 

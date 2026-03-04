@@ -280,7 +280,7 @@
         <div class="wl-step-title">📋 Tus Datos</div>
         <div class="form-row">
           <div class="fg"><label>Nombre Real *</label><input id="w-nombre" type="text" oninput="scheduleVerify()" placeholder="Ej: Juan Rodriguez"></div>
-          <div class="fg"><label>Edad *</label><input id="w-edad" type="number" oninput="scheduleVerify()" placeholder="Ej: 18" min="1" max="99"></div>
+          <div class="fg"><label>Edad *</label><input id="w-edad" type="number" oninput="scheduleVerify()" placeholder="Ej: 18" min="15" max="99"></div>
         </div>
         <div class="form-row">
           <div class="fg"><label>Gmail *</label><input id="w-gmail" type="email" placeholder="Ej: juan@gmail.com" oninput="scheduleVerify()">
@@ -1157,7 +1157,7 @@ Solo debes verificar DOS cosas:
    RECHAZA si: es un apodo de gamer (xXgamer, darkwolf, etc), contiene números (juan123), es solo letras random (asdf, qwerty), es una palabra genérica (test, admin, player), o tiene caracteres raros.
    ACEPTA nombres como: Juan, María, Carlos, John, Ashley, Miguel Ángel, etc. Sé generoso — si suena a nombre real, acéptalo.
 
-2. EDAD: debe ser 14 o más. Si es menos de 14, rechaza siempre.
+2. EDAD: debe ser 15 o más. Si es menos de 15, rechaza siempre. Si es 15 o más, acepta sin importar nada más relacionado a la edad.
 
 El email ya está verificado con Discord — NO lo evalúes ni lo compares con el nombre.
 
@@ -1181,8 +1181,14 @@ Gmail: ${gmail}`
     }
   } catch(e) {
     console.log('AI verify error:', e);
-    showVerifyStatus('warn', 'No se pudo verificar. Asegúrate de que tus datos sean reales.');
-    verifyResult = 'ok'; // Don't block if AI fails
+    // If AI fails, do basic local check instead
+    const edadNum = parseInt(edad);
+    if(edadNum < 15) {
+      showVerifyStatus('error', 'Debes tener 15 años o más para aplicar.');
+    } else {
+      showVerifyStatus('ok', 'Verificación básica completada.');
+      verifyResult = 'ok';
+    }
   }
 };
 

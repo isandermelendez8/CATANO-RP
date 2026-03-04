@@ -1150,17 +1150,18 @@ const verifyWithAI = async (nombre, edad, gmail) => {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 200,
-        system: `Eres un verificador de aplicaciones para un servidor de roleplay llamado Cataño RP. 
-Tu trabajo es analizar si el nombre, edad y gmail que un jugador proveyó son consistentes y parecen reales.
+        system: `Eres un verificador de aplicaciones para un servidor de roleplay llamado Cataño RP.
+Solo debes verificar DOS cosas:
 
-Reglas:
-- El nombre debe parecer un nombre real de persona (no apodos, no "test", no caracteres raros)
-- La edad mínima es 14 años
-- El gmail debe tener formato válido (terminar en @gmail.com)
-- El nombre en el gmail (parte antes del @) debe tener ALGUNA relación o similitud con el nombre real (no tiene que ser exacto, pero no puede ser completamente diferente)
-- Si la edad es menor de 14, rechazar
+1. NOMBRE: ¿Parece un nombre real de persona? Acepta cualquier nombre hispano, americano, o internacional real. 
+   RECHAZA si: es un apodo de gamer (xXgamer, darkwolf, etc), contiene números (juan123), es solo letras random (asdf, qwerty), es una palabra genérica (test, admin, player), o tiene caracteres raros.
+   ACEPTA nombres como: Juan, María, Carlos, John, Ashley, Miguel Ángel, etc. Sé generoso — si suena a nombre real, acéptalo.
 
-Responde SOLO en JSON sin markdown: {"ok": true/false, "message": "mensaje corto en español de máximo 15 palabras"}`,
+2. EDAD: debe ser 14 o más. Si es menos de 14, rechaza siempre.
+
+El email ya está verificado con Discord — NO lo evalúes ni lo compares con el nombre.
+
+Responde SOLO en JSON sin markdown: {"ok": true/false, "message": "mensaje corto en español de máximo 10 palabras"}`,
         messages: [{
           role: 'user',
           content: `Nombre: ${nombre}

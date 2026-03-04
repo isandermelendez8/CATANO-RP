@@ -768,6 +768,7 @@ const showWLForm = async () => {
 
   document.getElementById('wl-login-wall').style.display = 'none';
   document.getElementById('wl-content').style.display = 'block';
+  wlStartTime = Date.now(); // Start speedrun timer
   if(discordUser){
     document.getElementById('dub-avatar').src = discordUser.avatar;
     document.getElementById('dub-name').textContent = discordUser.tag;
@@ -874,11 +875,11 @@ const WL_NORMAS = [
   { text:'¿Un personaje puede recordar todo después de un PK?', correct:'no' }
 ];
 const WL_CKPK = [
-  { text:'Explica con tus palabras qué es PK y qué consecuencias tiene.', correct:'open', keyword:['muere','muerte','memoria','kill','pk','personaje','recuerda','olvida','morir','matar','respawn','revive'] },
-  { text:'¿Qué es CK y en qué situaciones puede aplicarse?', correct:'open', keyword:['permanente','definitiv','nuevo','administr','aprobacion','caracter','forever','siempre','borrar','elimina','ck'] },
-  { text:'¿Qué es metagaming y da un ejemplo claro?', correct:'open', keyword:['discord','stream','fuera','externo','informacion','juego','ic','ooc','real','afuera','chat','fuera del rol','saber'] },
-  { text:'¿Qué es powergaming y cómo evitarlo?', correct:'open', keyword:['forzar','irreal','reaccionar','responder','imposible','real','accion','obligar','poder','chance','oportunidad','god'] },
-  { text:'¿Qué significa valorar la vida (NVL) y por qué es importante?', correct:'open', keyword:['morir','muerte','arma','cooperar','temer','vida','peligro','miedo','valor','nvl','apunta','pistola','matar','importa'] }
+  { text:'1️⃣ Si tu personaje escucha por casualidad a dos jugadores hablando en un canal de voz externo sobre un atraco que planean hacer en rol, ¿sería correcto que tu personaje tome medidas preventivas dentro de la ciudad aunque técnicamente no lo escuchó en el juego?', correct:'no' },
+  { text:'2️⃣ Si estás rodeado por tres personas armadas pero notas un pequeño descuido en uno de ellos, ¿sería válido intentar desenfundar y disparar primero porque "existe una mínima posibilidad" de que funcione?', correct:'no' },
+  { text:'3️⃣ Si durante una pelea decides escribir que golpeas a otro personaje y lo dejas inconsciente sin darle oportunidad de reacción porque "tu personaje es más fuerte", ¿es válido siempre que tu historia justifique que sabes pelear?', correct:'no' },
+  { text:'4️⃣ Si tu personaje sufre una muerte parcial después de un tiroteo y despierta en el hospital, ¿podría recordar detalles específicos como caras, voces y vehículos para luego tomar represalias si nadie le explicó explícitamente que debe olvidarlo?', correct:'no' },
+  { text:'5️⃣ Si dos personajes tienen una rivalidad profunda y ambos jugadores aceptan terminar la historia con la muerte definitiva de uno, ¿puede ejecutarse inmediatamente sin intervención administrativa porque existe consentimiento mutuo?', correct:'no' }
 ];
 
 let fbReady = false;
@@ -1008,14 +1009,28 @@ const shuffleArray = (arr) => {
   return a;
 };
 
+// Track WL start time for speedrun detection
+let wlStartTime = null;
+let questionTimers = {}; // per-question timers
+let questionStartTimes = {};
+
+const startWLTimer = () => { wlStartTime = Date.now(); };
+
 const buildQuestions = (containerId, questions) => {
   const c = document.getElementById(containerId);
   const shuffled = shuffleArray(questions);
-  // Store shuffled order for evaluation
   window['_shuffled_'+containerId] = shuffled;
+  
+  // Track when this section started
+  if(!wlStartTime) wlStartTime = Date.now();
+  window['_section_start_'+containerId] = Date.now();
+
   c.innerHTML = shuffled.map((q,i)=>`
-    <div class="wl-q" id="q-${containerId}-${i}">
-      <div class="wl-q-text">${i+1}. ${q.text}</div>
+    <div class="wl-q" id="q-${containerId}-${i}" style="position:relative">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="wl-q-text" style="margin:0">${i+1}. ${q.text}</div>
+        <div id="timer-${containerId}-${i}" style="font-family:'Bebas Neue';font-size:20px;color:var(--gold);min-width:40px;text-align:right">60</div>
+      </div>
       ${q.correct==='open'
         ? `<textarea class="wl-open-answer" id="oa-${containerId}-${i}" placeholder="Escribe tu respuesta aquí..." rows="3" oninput="saveOpenAnswer('${containerId}',${i},this.value)" style="width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,.2);color:var(--text);padding:10px;font-family:'Rajdhani';font-size:14px;outline:none;resize:vertical;margin-top:4px"></textarea>`
         : `<div class="wl-q-opts">
@@ -1024,6 +1039,39 @@ const buildQuestions = (containerId, questions) => {
         </div>`
       }
     </div>`).join('');
+
+  // Start per-question timers
+  shuffled.forEach((_,i) => startQuestionTimer(containerId, i));
+};
+
+const startQuestionTimer = (containerId, idx) => {
+  questionStartTimes[containerId+'-'+idx] = Date.now();
+  let secs = 60;
+  const key = containerId+'-'+idx;
+  if(questionTimers[key]) clearInterval(questionTimers[key]);
+  questionTimers[key] = setInterval(() => {
+    secs--;
+    const el = document.getElementById('timer-'+containerId+'-'+idx);
+    if(!el) { clearInterval(questionTimers[key]); return; }
+    el.textContent = secs;
+    if(secs <= 10) el.style.color = '#e74c3c';
+    else if(secs <= 20) el.style.color = 'orange';
+    else el.style.color = 'var(--gold)';
+    if(secs <= 0) {
+      clearInterval(questionTimers[key]);
+      el.textContent = '⏰';
+      el.style.color = '#e74c3c';
+      // Auto-mark unanswered questions
+      const card = document.getElementById('q-'+containerId+'-'+idx);
+      if(card) card.classList.add('q-unanswered');
+    }
+  }, 1000);
+};
+
+const checkSpeedrun = () => {
+  if(!wlStartTime) return false;
+  const elapsed = Date.now() - wlStartTime;
+  return elapsed < 10000; // less than 10 seconds total
 };
 const saveOpenAnswer = (group, idx, val) => {
   if(!wlAnswers[group]) wlAnswers[group]={};
@@ -1156,7 +1204,9 @@ const getOriginalQ = (containerId, shuffledIdx) => {
   const origList = containerId === 'wl-q-normas' ? WL_NORMAS : WL_CKPK;
   return origList.indexOf(q);
 };
+let wlStartTime = null;
 const setStep = (n) => {
+  if(n === 1 && !wlStartTime) wlStartTime = Date.now();
   for(let i=1;i<=4;i++){
     document.getElementById(`wl-p${i}`).classList.toggle('active',i===n);
     const sc = document.getElementById(`sc${i}`);
@@ -1291,6 +1341,37 @@ Gmail: ${gmail}`
 const wlSubmit = async () => {
   const unansweredCK = WL_CKPK.map((_,i)=>{ const ans = wlAnswers['wl-q-ckpk'] && wlAnswers['wl-q-ckpk'][i]; return (!ans || ans.length < 10) ? i : null; }).filter(x=>x!==null);
   if(unansweredCK.length>0){ unansweredCK.forEach(i=>{ const card=document.getElementById(`q-wl-q-ckpk-${i}`); if(card) card.classList.add('q-unanswered'); }); notify('⚠️ Responde todas las preguntas generales'); return; }
+  // SPEEDRUN CHECK — less than 10 seconds = invalid
+  if(checkSpeedrun()) {
+    const rb = document.getElementById('wl-result-box');
+    setStep(4);
+    rb.innerHTML = `<div class="wl-result denied">
+      <div class="wl-result-icon">🚨</div>
+      <div class="wl-result-title">APLICACIÓN INVÁLIDA</div>
+      <div class="wl-result-msg">
+        Tu aplicación fue completada en menos de <strong>10 segundos</strong>, lo cual es imposible si realmente leíste y respondiste las preguntas.<br><br>
+        <strong>Esta aplicación ha sido marcada como inválida y fraudulenta.</strong><br><br>
+        Serás reportado al staff. Vuelve a intentarlo cuando estés dispuesto a hacerlo en serio.
+      </div>
+    </div>`;
+    // Notify staff via webhook
+    if(S.webhook) {
+      const embed = {embeds:[{
+        title:'🚨 APLICACIÓN FRAUDULENTA — '+document.getElementById('w-nombre').value,
+        color:16711680,
+        description:'El jugador completó la whitelist en **menos de 10 segundos**. Aplicación marcada como inválida.',
+        fields:[
+          {name:'💬 Discord', value: discordUser?.tag||'desconocido', inline:true},
+          {name:'⏱️ Tiempo', value: Math.round((Date.now()-wlStartTime)/1000)+'s', inline:true}
+        ],
+        footer:{text:'Cataño RP — Anti-Cheat'},
+        timestamp: new Date().toISOString()
+      }]};
+      fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(embed)}).catch(()=>{});
+    }
+    return;
+  }
+
   // Block if AI says data is invalid
   if(verifyResult === 'warn') {
     notify('⚠️ Corrige tu nombre o edad antes de enviar.');
@@ -1313,29 +1394,24 @@ const wlSubmit = async () => {
     const ans = wlAnswers['wl-q-normas'][shuffledIdx];
     if(ans !== q.correct) wrongNormas.push(`Normas: "${q.text}"`);
   });
-  // AI evaluates open answers
+  // Evaluate scenario questions (si/no just like normas)
   const shuffledCKPK = window['_shuffled_wl-q-ckpk'] || WL_CKPK;
-  const openAnswersList = shuffledCKPK.map((q,i) => ({
-    question: q.text,
-    answer: wlAnswers['wl-q-ckpk']?.[i] || '',
-    keywords: q.keyword
-  }));
-  
-  // Show loading indicator
-  const submitBtn = document.querySelector('.wl-btn');
-  if(submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '⏳ Evaluando respuestas...'; }
-  
-  const aiResults = await evaluateOpenAnswersWithAI(openAnswersList);
-  
-  if(submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Enviar Aplicación'; }
-  
   let wrongCKPK = [];
   shuffledCKPK.forEach((q,i) => {
-    if(!aiResults[i]) wrongCKPK.push(`General: "${q.text}"`);
+    const ans = (wlAnswers['wl-q-ckpk'] || {})[i];
+    if(ans !== q.correct) wrongCKPK.push(`Escenario: "${q.text.substring(0,60)}..."`);
   });
   const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
   const autoStatus = (totalWrong <= 3 && trollAnswers.length === 0) ? 'approved' : 'denied';
   const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');
+  // Calculate time taken
+  const wlEndTime = Date.now();
+  const wlTotalMs = wlStartTime ? (wlEndTime - wlStartTime) : 0;
+  const wlMins = Math.floor(wlTotalMs / 60000);
+  const wlSecs = Math.floor((wlTotalMs % 60000) / 1000);
+  const wlTimeStr = wlMins > 0 ? `${wlMins}m ${wlSecs}s` : `${wlSecs}s`;
+  wlStartTime = null; // reset
+
   // Snapshot answers for webhook detail
   window._wlAnswersSnapshot = JSON.parse(JSON.stringify(wlAnswers));
   // Build detailed openAnswers for webhook
@@ -1344,7 +1420,7 @@ const wlSubmit = async () => {
   const _sC = window['_shuffled_wl-q-ckpk']   || WL_CKPK;
   _sN.forEach((q,i) => { openAnswersDetailed['normas_'+i] = { question: q.text, answer: (wlAnswers['wl-q-normas']||{})[i]||'', correct: q.correct }; });
   _sC.forEach((q,i) => { openAnswersDetailed['ckpk_'+i]   = { question: q.text, answer: (wlAnswers['wl-q-ckpk']  ||{})[i]||'', keywords: q.keyword }; });
-  const entry = { id:Date.now(), nombre, edad, gmail, discord, ic, exp:exp||'No indicado', found:found||'No indicado', fecha:new Date().toLocaleDateString('es-PR'), status:autoStatus, wrongCount:totalWrong, wrongList:[...wrongNormas,...wrongCKPK,...trollAnswers], openAnswers:openAnswersDetailed, autoEval:true };
+  const entry = { id:Date.now(), nombre, edad, gmail, discord, ic, exp:exp||'No indicado', found:found||'No indicado', fecha:new Date().toLocaleDateString('es-PR'), status:autoStatus, wrongCount:totalWrong, wrongList:[...wrongNormas,...wrongCKPK,...trollAnswers], openAnswers:openAnswersDetailed, autoEval:true, tiempoWL: wlTimeStr };
   S.wl.unshift(entry);
   save(); renderWL(); updateStats();
   sendWebhook(entry);
@@ -1406,6 +1482,7 @@ const sendWebhook = async (entry) => {
     {name:'🎭 Personaje IC', value:String(entry.ic||'-'),      inline:true},
     {name:'🎮 Experiencia',  value:String(entry.exp||'-'),     inline:true},
     {name:'📅 Fecha',        value:String(entry.fecha||'-'),   inline:true},
+    {name:'⏱️ Tiempo',        value:String(entry.tiempoWL||'-'), inline:true},
     {name:'📊 Resultado',    value:entry.status==='approved'?'✅ APROBADO':'❌ DENEGADO — '+entry.wrongCount+' incorrecta(s)', inline:false},
   ];
 

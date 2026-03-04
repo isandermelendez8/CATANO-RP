@@ -790,6 +790,7 @@ const showWLForm = async () => {
 };
 
 const STAFF_BYPASS_CODE = 'CATANO2025STAFF';
+const BOT_URL = 'https://unresourceful-gladys-disintegratory.ngrok-free.dev';
 
 const showStaffBypass = () => {
   document.getElementById('wl-login-wall').style.display = 'block';
@@ -1233,7 +1234,24 @@ const wlSubmit = async () => {
   save(); renderWL(); updateStats();
   sendWebhook(entry);
   sendEmailResult(entry);
-  
+
+  // Notify bot if approved
+  if(autoStatus === 'approved' && discordUser) {
+    try {
+      await fetch(BOT_URL + '/wl-aprobada', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+        body: JSON.stringify({
+          discordId:  discordUser.id,
+          discordTag: discordUser.tag,
+          nombre, edad, gmail, ic,
+          exp: exp || 'No indicado'
+        })
+      });
+      console.log('✅ Bot notificado');
+    } catch(e) { console.log('⚠️ Error notificando bot:', e); }
+  }
+
   // Save cooldown in Firebase if denied (anti multi-device)
   if(autoStatus === 'denied' && discordUser) {
     await saveCooldown(discordUser.id, discordUser.tag);

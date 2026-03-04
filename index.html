@@ -197,7 +197,8 @@
     .dub-logout:hover{border-color:var(--red);color:var(--red)}
     .verified-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.3);color:#4caf50;font-size:11px;letter-spacing:2px;padding:4px 12px;font-weight:700;margin-left:8px}
     @media(max-width:768px){nav{padding:0 18px}.nav-links{display:none}.form-row,.ir{grid-template-columns:1fr}.stat-item{padding:18px 22px}.sec{padding:60px 18px}.gallery-grid{padding:0 18px}.wl-box{padding:26px 18px}.admin-box{padding:22px 14px}}
-  </style>
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
 
@@ -278,11 +279,12 @@
       <div class="wl-step-panel active" id="wl-p1">
         <div class="wl-step-title">📋 Tus Datos</div>
         <div class="form-row">
-          <div class="fg"><label>Nombre Real *</label><input id="w-nombre" type="text" placeholder="Ej: Juan Rodriguez"></div>
-          <div class="fg"><label>Edad *</label><input id="w-edad" type="number" placeholder="Ej: 18" min="1" max="99"></div>
+          <div class="fg"><label>Nombre Real *</label><input id="w-nombre" type="text" oninput="scheduleVerify()" placeholder="Ej: Juan Rodriguez"></div>
+          <div class="fg"><label>Edad *</label><input id="w-edad" type="number" oninput="scheduleVerify()" placeholder="Ej: 18" min="1" max="99"></div>
         </div>
         <div class="form-row">
-          <div class="fg"><label>Gmail *</label><input id="w-gmail" type="email" placeholder="Ej: juan@gmail.com"></div>
+          <div class="fg"><label>Gmail *</label><input id="w-gmail" type="email" placeholder="Ej: juan@gmail.com" oninput="scheduleVerify()">
+            <div id="verify-status" style="display:none;margin-top:6px;padding:8px 12px;font-size:11px;border-radius:6px;align-items:center;gap:8px"></div></div>
           <div class="fg"><label>Discord</label><input id="w-discord" type="text" placeholder="Se completa automático" readonly style="opacity:.6"></div>
         </div>
         <div class="form-row">
@@ -1075,9 +1077,108 @@ const wlNext = (step) => {
   }
 };
 const wlBack = (step) => { setStep(step-1); };
+// ══════════════════════════════════════════
+// AI SMART VERIFICATION (Claude API)
+// ══════════════════════════════════════════
+let verifyTimer = null;
+let verifyResult = null; // 'ok' | 'warn' | 'pending'
+
+const scheduleVerify = () => {
+  clearTimeout(verifyTimer);
+  verifyResult = 'pending';
+  const nombre = (document.getElementById('w-nombre')?.value || '').trim();
+  const edad = (document.getElementById('w-edad')?.value || '').trim();
+  const gmail = (document.getElementById('w-gmail')?.value || '').trim();
+  if(!nombre || !edad || !gmail) { 
+    document.getElementById('verify-status').style.display = 'none';
+    return; 
+  }
+  showVerifyStatus('loading');
+  verifyTimer = setTimeout(() => verifyWithAI(nombre, edad, gmail), 1500);
+};
+
+const showVerifyStatus = (type, msg) => {
+  const el = document.getElementById('verify-status');
+  el.style.display = 'flex';
+  if(type === 'loading') {
+    el.style.background = 'rgba(255,255,255,.05)';
+    el.style.border = '1px solid rgba(255,255,255,.1)';
+    el.style.color = '#aaa';
+    el.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⏳</span> Verificando nombre y edad con IA...';
+  } else if(type === 'ok') {
+    el.style.background = 'rgba(46,204,113,.1)';
+    el.style.border = '1px solid rgba(46,204,113,.3)';
+    el.style.color = '#2ecc71';
+    el.innerHTML = '✅ ' + msg;
+    verifyResult = 'ok';
+  } else if(type === 'warn') {
+    el.style.background = 'rgba(255,165,0,.1)';
+    el.style.border = '1px solid rgba(255,165,0,.4)';
+    el.style.color = 'orange';
+    el.innerHTML = '⚠️ ' + msg;
+    verifyResult = 'warn';
+  } else if(type === 'error') {
+    el.style.background = 'rgba(231,76,60,.1)';
+    el.style.border = '1px solid rgba(231,76,60,.3)';
+    el.style.color = '#e74c3c';
+    el.innerHTML = '❌ ' + msg;
+    verifyResult = 'warn';
+  }
+};
+
+const verifyWithAI = async (nombre, edad, gmail) => {
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        system: `Eres un verificador de aplicaciones para un servidor de roleplay llamado Cataño RP. 
+Tu trabajo es analizar si el nombre, edad y gmail que un jugador proveyó son consistentes y parecen reales.
+
+Reglas:
+- El nombre debe parecer un nombre real de persona (no apodos, no "test", no caracteres raros)
+- La edad mínima es 14 años
+- El gmail debe tener formato válido (terminar en @gmail.com)
+- El nombre en el gmail (parte antes del @) debe tener ALGUNA relación o similitud con el nombre real (no tiene que ser exacto, pero no puede ser completamente diferente)
+- Si la edad es menor de 14, rechazar
+
+Responde SOLO en JSON sin markdown: {"ok": true/false, "message": "mensaje corto en español de máximo 15 palabras"}`,
+        messages: [{
+          role: 'user',
+          content: `Nombre: ${nombre}
+Edad: ${edad}
+Gmail: ${gmail}`
+        }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '{}';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
+    if(result.ok) {
+      showVerifyStatus('ok', result.message || 'Nombre y edad verificados correctamente.');
+    } else {
+      showVerifyStatus('error', result.message || 'Los datos no parecen coincidir. Verifica tu información.');
+    }
+  } catch(e) {
+    console.log('AI verify error:', e);
+    showVerifyStatus('warn', 'No se pudo verificar. Asegúrate de que tus datos sean reales.');
+    verifyResult = 'ok'; // Don't block if AI fails
+  }
+};
+
 const wlSubmit = async () => {
   const unansweredCK = WL_CKPK.map((_,i)=>{ const ans = wlAnswers['wl-q-ckpk'] && wlAnswers['wl-q-ckpk'][i]; return (!ans || ans.length < 10) ? i : null; }).filter(x=>x!==null);
   if(unansweredCK.length>0){ unansweredCK.forEach(i=>{ const card=document.getElementById(`q-wl-q-ckpk-${i}`); if(card) card.classList.add('q-unanswered'); }); notify('⚠️ Responde todas las preguntas generales'); return; }
+  // Block if AI says data is invalid
+  if(verifyResult === 'warn') {
+    notify('⚠️ Corrige tu nombre o edad antes de enviar.');
+    document.getElementById('verify-status').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
   const nombre = document.getElementById('w-nombre').value.trim();
   const edad = parseInt(document.getElementById('w-edad').value)||0;
   const gmail = document.getElementById('w-gmail').value.trim();

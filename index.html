@@ -1226,6 +1226,8 @@ const wlSubmit = async () => {
   const totalWrong = wrongNormas.length + wrongCKPK.length + trollAnswers.length;
   const autoStatus = (totalWrong <= 3 && trollAnswers.length === 0) ? 'approved' : 'denied';
   const openAnswers = WL_CKPK.map((q,i)=>`P${i+1}: ${wlAnswers['wl-q-ckpk'][i]||'Sin respuesta'}`).join('\n');
+  // Snapshot answers for webhook detail
+  window._wlAnswersSnapshot = JSON.parse(JSON.stringify(wlAnswers));
   const entry = { id:Date.now(), nombre, edad, gmail, discord, ic, exp:exp||'No indicado', found:found||'No indicado', fecha:new Date().toLocaleDateString('es-PR'), status:autoStatus, wrongCount:totalWrong, wrongList:[...wrongNormas,...wrongCKPK,...trollAnswers], openAnswers, autoEval:true };
   S.wl.unshift(entry);
   save(); renderWL(); updateStats();
@@ -1262,7 +1264,56 @@ const sendEmailResult = async (entry) => {
 const sendWebhook = async (entry) => {
   if(!S.webhook) return;
   const color = entry.status==='approved' ? 3066993 : 15158332;
-  const embed = { embeds:[{ title:`${entry.status==='approved'?'✅':'❌'} Nueva Whitelist — ${entry.nombre}`, color, fields:[{name:'👤 Nombre Real',value:entry.nombre,inline:true},{name:'🎂 Edad',value:String(entry.edad),inline:true},{name:'📧 Gmail',value:entry.gmail,inline:true},{name:'💬 Discord',value:entry.discord,inline:true},{name:'🎭 Personaje IC',value:entry.ic,inline:true},{name:'🎮 Experiencia RP',value:entry.exp,inline:true},{name:'📅 Fecha',value:entry.fecha,inline:true},{name:'❓ Respuestas incorrectas',value:String(entry.wrongCount),inline:true},{name:'📊 Resultado',value:entry.status==='approved'?'APROBADO AUTOMÁTICAMENTE':'DENEGADO AUTOMÁTICAMENTE',inline:false},...(entry.wrongList&&entry.wrongList.length>0?[{name:'❌ Preguntas falladas',value:entry.wrongList.slice(0,5).join('\n'),inline:false}]:[])], footer:{text:'Cataño RP — Sistema de Whitelist'}, timestamp:new Date().toISOString() }]};
+
+  const fields = [
+    {name:'👤 Nombre Real', value:String(entry.nombre||'-'), inline:true},
+    {name:'🎂 Edad', value:String(entry.edad||'-'), inline:true},
+    {name:'📧 Gmail', value:String(entry.gmail||'-'), inline:true},
+    {name:'💬 Discord', value:String(entry.discord||'-'), inline:true},
+    {name:'🎭 Personaje IC', value:String(entry.ic||'-'), inline:true},
+    {name:'🎮 Experiencia', value:String(entry.exp||'No indicado'), inline:true},
+    {name:'📅 Fecha', value:String(entry.fecha||'-'), inline:true},
+    {name:'📊 Resultado', value:entry.status==='approved'?'✅ APROBADO':'❌ DENEGADO — '+entry.wrongCount+' incorrecta(s)', inline:false},
+  ];
+
+  // Add wrong normas with what they answered vs correct
+  if(entry.status==='denied' && entry.wrongList && entry.wrongList.length > 0) {
+    const shuffledNormas = window['_shuffled_wl-q-normas'] || WL_NORMAS;
+    const shuffledCKPK  = window['_shuffled_wl-q-ckpk']   || WL_CKPK;
+    const snap = window._wlAnswersSnapshot || {};
+
+    let normasLines = [];
+    shuffledNormas.forEach((q,i) => {
+      const ans = snap['wl-q-normas'] && snap['wl-q-normas'][i];
+      if(ans && ans !== q.correct) {
+        normasLines.push('❌ ' + q.text + '\n  ↳ Respondió: **' + ans.toUpperCase() + '** | Correcto: **' + q.correct.toUpperCase() + '**');
+      }
+    });
+    if(normasLines.length > 0) {
+      const val = normasLines.join('\n\n').substring(0,1020);
+      fields.push({name:'📋 Normas Incorrectas', value:val, inline:false});
+    }
+
+    let ckpkLines = [];
+    shuffledCKPK.forEach((q,i) => {
+      const ans = (snap['wl-q-ckpk'] && snap['wl-q-ckpk'][i]) || '';
+      if(!analyzeOpenAnswer(ans, q.keyword)) {
+        const preview = ans ? (ans.length > 120 ? ans.substring(0,120)+'…' : ans) : '(sin respuesta)';
+        ckpkLines.push('❌ ' + q.text + '\n  ↳ "' + preview + '"');
+      }
+    });
+    if(ckpkLines.length > 0) {
+      const val = ckpkLines.join('\n\n').substring(0,1020);
+      fields.push({name:'📝 Preguntas Abiertas Incorrectas', value:val, inline:false});
+    }
+  }
+
+  const embed = {embeds:[{
+    title: (entry.status==='approved'?'✅':'❌') + ' Nueva Whitelist — ' + entry.nombre,
+    color, fields,
+    footer:{text:'Cataño RP — Sistema de Whitelist'},
+    timestamp: new Date().toISOString()
+  }]};
   try { const r=await fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(embed)}); console.log('Webhook auto status:',r.status); } catch(e){console.log('Webhook error:',e);}
 };
 

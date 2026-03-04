@@ -1026,11 +1026,13 @@ const buildQuestions = (containerId, questions) => {
   if(!wlStartTime) wlStartTime = Date.now();
   window['_section_start_'+containerId] = Date.now();
 
-  c.innerHTML = shuffled.map((q,i)=>`
+  c.innerHTML = shuffled.map((q,i)=>{
+    const timerSecs = 50 + (i * 10); // P1=50s, P2=60s, P3=70s, etc.
+    return `
     <div class="wl-q" id="q-${containerId}-${i}" style="position:relative">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div class="wl-q-text" style="margin:0">${i+1}. ${q.text}</div>
-        <div id="timer-${containerId}-${i}" style="font-family:'Bebas Neue';font-size:20px;color:var(--gold);min-width:40px;text-align:right">60</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px">
+        <div class="wl-q-text" style="margin:0;flex:1">${i+1}. ${q.text}</div>
+        <div id="timer-${containerId}-${i}" style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);min-width:44px;text-align:right;flex-shrink:0">${timerSecs}</div>
       </div>
       ${q.correct==='open'
         ? `<textarea class="wl-open-answer" id="oa-${containerId}-${i}" placeholder="Escribe tu respuesta aquí..." rows="3" oninput="saveOpenAnswer('${containerId}',${i},this.value)" style="width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,.2);color:var(--text);padding:10px;font-family:'Rajdhani';font-size:14px;outline:none;resize:vertical;margin-top:4px"></textarea>`
@@ -1039,7 +1041,8 @@ const buildQuestions = (containerId, questions) => {
           <div class="wl-q-opt" onclick="selectQ('${containerId}',${i},'no',this)">❌ No</div>
         </div>`
       }
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // Start per-question timers
   shuffled.forEach((_,i) => startQuestionTimer(containerId, i));
@@ -1047,7 +1050,7 @@ const buildQuestions = (containerId, questions) => {
 
 const startQuestionTimer = (containerId, idx) => {
   questionStartTimes[containerId+'-'+idx] = Date.now();
-  let secs = 60;
+  let secs = 50 + (idx * 10); // P1=50s, P2=60s, P3=70s, etc.
   const key = containerId+'-'+idx;
   if(questionTimers[key]) clearInterval(questionTimers[key]);
   questionTimers[key] = setInterval(() => {
@@ -1062,7 +1065,6 @@ const startQuestionTimer = (containerId, idx) => {
       clearInterval(questionTimers[key]);
       el.textContent = '⏰';
       el.style.color = '#e74c3c';
-      // Auto-mark unanswered questions
       const card = document.getElementById('q-'+containerId+'-'+idx);
       if(card) card.classList.add('q-unanswered');
     }

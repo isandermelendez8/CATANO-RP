@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyBCkSVRxTnlsz7OiBAKHD90F766Seo7dHk",
       authDomain: "catano-rp.firebaseapp.com",
@@ -24,6 +24,7 @@
     window.fsSet = setDoc;
     window.fsGet = getDoc;
     window.fsSnapshot = onSnapshot;
+    window.fsDelete = deleteDoc;
     window.firebaseReady = true;
     window.dispatchEvent(new Event('firebase-ready'));
   </script>
@@ -378,6 +379,16 @@
   <p class="section-sub reveal" style="text-align:center">Solo staff autorizado</p>
   <h2 class="section-title reveal">Panel Admin</h2>
   <div class="section-line"></div>
+  <div id="admin-locked" class="admin-box reveal" style="text-align:center;padding:56px">
+    <div style="font-size:56px;margin-bottom:16px">🔒</div>
+    <div style="font-family:'Bebas Neue';font-size:28px;color:var(--gold);letter-spacing:3px;margin-bottom:12px">Acceso Restringido</div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:24px">Debes iniciar sesión con Discord y tener el rol de <strong style="color:var(--gold)">Staff</strong> para acceder al panel.</p>
+    <button class="btn-discord" onclick="discordLoginAdmin()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Verificar con Discord
+    </button>
+  </div>
+  <div id="admin-content" style="display:none">
   <div class="admin-box reveal">
     <div class="admin-hdr">
       <span class="admin-t">🛡️ Panel de Administración</span>
@@ -471,6 +482,7 @@
   </div>
 </div>
 
+</div><!-- end admin-content -->
 <footer>
   <img src="https://r2.fivemanage.com/UzfxcG7Tdkdnc5N8Hw3WF/cee79335-1fe0-423c-8072-277523baccaf.png" alt="Cataño RP" class="f-logo">
   <p class="f-txt">PUERTO RICO'S FINEST • A GTA V EXPERIENCE</p>
@@ -519,6 +531,11 @@ const DISCORD_REDIRECT = 'https://catanorp.netlify.app/';
 const DISCORD_GUILD_ID = '1446677439790055509';
 let discordUser = null;
 
+const STAFF_ROLE_ID = '1456860192149999751';
+const OWNER_ROLE_ID = '1292930070159032511';
+const WL_ROLE_ID = '1447431428588703826';
+let adminUser = null;
+
 const discordLogin = () => {
   const params = new URLSearchParams({
     client_id: DISCORD_CLIENT_ID,
@@ -527,6 +544,63 @@ const discordLogin = () => {
     scope: 'identify guilds'
   });
   window.location.href = 'https://discord.com/api/oauth2/authorize?' + params.toString();
+};
+
+const discordLoginAdmin = () => {
+  sessionStorage.setItem('admin_login_pending', '1');
+  const params = new URLSearchParams({
+    client_id: DISCORD_CLIENT_ID,
+    redirect_uri: DISCORD_REDIRECT,
+    response_type: 'token',
+    scope: 'identify guilds guilds.members.read'
+  });
+  window.location.href = 'https://discord.com/api/oauth2/authorize?' + params.toString();
+};
+
+const checkAdminAccess = async (token) => {
+  try {
+    const [userRes, memberRes] = await Promise.all([
+      fetch('https://discord.com/api/users/@me', { headers:{ Authorization:'Bearer '+token } }),
+      fetch('https://discord.com/api/users/@me/guilds/'+DISCORD_GUILD_ID+'/member', { headers:{ Authorization:'Bearer '+token } })
+    ]);
+    const user = await userRes.json();
+    const member = await memberRes.json();
+    if(!member || member.code) return false;
+    const roles = member.roles || [];
+    const isOwner = roles.includes(OWNER_ROLE_ID);
+    const isStaff = roles.includes(STAFF_ROLE_ID);
+    if(isOwner || isStaff) {
+      adminUser = { ...user, isOwner, isStaff };
+      sessionStorage.setItem('admin_user', JSON.stringify(adminUser));
+      showAdminPanel(isOwner);
+      return true;
+    }
+    return false;
+  } catch(e) { return false; }
+};
+
+const showAdminPanel = (isOwner) => {
+  document.getElementById('admin-locked').style.display = 'none';
+  document.getElementById('admin-content').style.display = 'block';
+  const roleLabel = isOwner ? '👑 OWNER' : '🛡️ STAFF';
+  const roleColor = isOwner ? 'var(--gold)' : '#5865F2';
+  const adminHdr = document.querySelector('.admin-hdr');
+  if(adminHdr) adminHdr.innerHTML = `<span class="admin-t">🛡️ Panel de Administración</span><span style="color:${roleColor};font-size:13px;font-weight:700">${roleLabel} — ${adminUser?.username || ''}</span>`;
+  // Hide sensitive tabs for non-owners
+  if(!isOwner) {
+    const srvTab = document.querySelector('[onclick*="t-srv"]');
+    if(srvTab) srvTab.style.display = 'none';
+  }
+};
+
+const restoreAdminSession = () => {
+  const saved = sessionStorage.getItem('admin_user');
+  if(saved) {
+    try {
+      adminUser = JSON.parse(saved);
+      showAdminPanel(adminUser.isOwner);
+    } catch(e) {}
+  }
 };
 
 const discordLogout = () => {
@@ -553,6 +627,24 @@ const handleDiscordCallback = async () => {
   const token = params.get('access_token');
   if (!token) return;
   history.replaceState(null, '', window.location.pathname);
+
+  // Check if this was an admin login
+  const isAdminLogin = sessionStorage.getItem('admin_login_pending');
+  if(isAdminLogin) {
+    sessionStorage.removeItem('admin_login_pending');
+    document.getElementById('admin-locked').innerHTML = `<div style="text-align:center;padding:40px"><div style="font-size:40px">⏳</div><div style="font-family:'Bebas Neue';font-size:22px;color:var(--gold);margin-top:12px">Verificando rol...</div></div>`;
+    const hasAccess = await checkAdminAccess(token);
+    if(!hasAccess) {
+      document.getElementById('admin-locked').innerHTML = `
+        <div style="text-align:center;padding:56px">
+          <div style="font-size:56px;margin-bottom:16px">🚫</div>
+          <div style="font-family:'Bebas Neue';font-size:28px;color:var(--red);letter-spacing:3px;margin-bottom:12px">Sin Acceso</div>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px">No tienes el rol de <strong>Staff</strong> o <strong>Owner</strong> en el servidor.</p>
+          <button class="btn-discord" onclick="discordLoginAdmin()">Intentar de nuevo</button>
+        </div>`;
+    }
+    return;
+  }
 
   document.getElementById('wl-login-wall').innerHTML = `
     <div class="discord-login-wall">
@@ -618,7 +710,37 @@ const handleDiscordCallback = async () => {
   }
 };
 
-const showWLForm = () => {
+const showWLForm = async () => {
+  // Check cooldown from Firebase (anti multi-device/multi-account)
+  if(discordUser) {
+    const cooldownData = await getCooldown(discordUser.id);
+    if(cooldownData) {
+      const elapsed = Date.now() - cooldownData.timestamp;
+      const tenHours = 10 * 60 * 60 * 1000;
+      if(elapsed < tenHours) {
+        const remaining = tenHours - elapsed;
+        const hours = Math.floor(remaining / 3600000);
+        const mins = Math.floor((remaining % 3600000) / 60000);
+        document.getElementById('wl-login-wall').style.display = 'block';
+        document.getElementById('wl-content').style.display = 'none';
+        document.getElementById('wl-login-wall').innerHTML = `
+          <div class="discord-login-wall">
+            <div class="dlw-icon">⏳</div>
+            <h3 style="color:orange">Cooldown Activo</h3>
+            <p>Tu aplicación fue denegada recientemente. Debes esperar antes de volver a intentarlo.</p>
+            <div style="background:rgba(255,165,0,.1);border:1px solid rgba(255,165,0,.3);padding:18px;margin:16px 0">
+              <div style="font-family:'Bebas Neue';font-size:40px;color:orange">${hours}h ${mins}m</div>
+              <div style="font-size:12px;color:var(--muted);letter-spacing:2px">TIEMPO RESTANTE</div>
+            </div>
+            <p style="font-size:12px">Usa este tiempo para repasar las normas del servidor.</p>
+            <a href="https://discord.gg/catanorp" target="_blank" class="btn-discord" style="display:inline-flex;align-items:center;gap:8px">🔗 Ir al Discord</a>
+          </div>`;
+        return;
+      } else {
+        await deleteCooldown(discordUser.id);
+      }
+    }
+  }
   document.getElementById('wl-login-wall').style.display = 'none';
   document.getElementById('wl-content').style.display = 'block';
   if(discordUser){
@@ -664,6 +786,55 @@ const WL_CKPK = [
 ];
 
 let fbReady = false;
+
+// ══════════════════════════════════════════
+// COOLDOWN SYSTEM (Firebase anti-cheat)
+// ══════════════════════════════════════════
+const saveCooldown = async (discordId, discordTag) => {
+  if(!fbReady || !window.db) return;
+  try {
+    const cooldownData = { discordId, discordTag, timestamp: Date.now(), fecha: new Date().toLocaleDateString('es-PR') };
+    await window.fsSet(window.fsDoc(window.db,'catanorp_cooldowns', discordId), cooldownData);
+    // Send to webhook log
+    sendCooldownWebhook(discordTag);
+    console.log('Cooldown saved for', discordId);
+  } catch(e) { console.log('Cooldown save error:', e); }
+};
+
+const getCooldown = async (discordId) => {
+  if(!fbReady || !window.db) return null;
+  try {
+    const snap = await window.fsGet(window.fsDoc(window.db,'catanorp_cooldowns', discordId));
+    return snap.exists() ? snap.data() : null;
+  } catch(e) { return null; }
+};
+
+const deleteCooldown = async (discordId) => {
+  if(!fbReady || !window.db || !window.fsDelete) return;
+  try {
+    await window.fsDelete(window.fsDoc(window.db,'catanorp_cooldowns', discordId));
+  } catch(e) { console.log('Cooldown delete error:', e); }
+};
+
+const sendCooldownWebhook = async (discordTag) => {
+  if(!S.webhook) return;
+  const embed = {
+    embeds:[{
+      title: '⏳ Cooldown Activado',
+      color: 16753920,
+      fields:[
+        {name:'💬 Discord', value: discordTag, inline:true},
+        {name:'⏱️ Duración', value: '10 horas', inline:true},
+        {name:'📅 Fecha', value: new Date().toLocaleDateString('es-PR'), inline:true},
+        {name:'📋 Motivo', value: 'Aplicación de whitelist denegada', inline:false}
+      ],
+      footer:{text:'Cataño RP — Sistema Anti-Spam'},
+      timestamp: new Date().toISOString()
+    }]
+  };
+  try { await fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(embed)}); } catch(e){}
+};
+
 const saveToFirebase = async (data) => {
   if (!fbReady || !window.db) return;
   try {
@@ -807,7 +978,7 @@ const wlNext = (step) => {
   }
 };
 const wlBack = (step) => { setStep(step-1); };
-const wlSubmit = () => {
+const wlSubmit = async () => {
   const unansweredCK = WL_CKPK.map((_,i)=>{ const ans = wlAnswers['wl-q-ckpk'] && wlAnswers['wl-q-ckpk'][i]; return (!ans || ans.length < 10) ? i : null; }).filter(x=>x!==null);
   if(unansweredCK.length>0){ unansweredCK.forEach(i=>{ const card=document.getElementById(`q-wl-q-ckpk-${i}`); if(card) card.classList.add('q-unanswered'); }); notify('⚠️ Responde todas las preguntas generales'); return; }
   const nombre = document.getElementById('w-nombre').value.trim();
@@ -831,6 +1002,12 @@ const wlSubmit = () => {
   save(); renderWL(); updateStats();
   sendWebhook(entry);
   sendEmailResult(entry);
+  
+  // Save cooldown in Firebase if denied (anti multi-device)
+  if(autoStatus === 'denied' && discordUser) {
+    await saveCooldown(discordUser.id, discordUser.tag);
+  }
+  
   setStep(4);
   const rb = document.getElementById('wl-result-box');
   if(autoStatus==='approved'){
@@ -913,7 +1090,7 @@ const fetchDiscord=async()=>{ try{const res=await fetch('https://discord.com/api
 document.addEventListener('DOMContentLoaded',()=>{
   if(typeof emailjs !== 'undefined') emailjs.init('MDw-2Gp7Ab4cq2_ZN');
   if(window.location.hash.includes('access_token')){handleDiscordCallback();}
-  else{restoreDiscordSession();}
+  else{restoreDiscordSession(); restoreAdminSession();}
   updateStats();renderUpdates();renderGallery();renderTeam();renderWL();observeReveal();
   fetchLivePlayers();fetchDiscord();
   setInterval(fetchLivePlayers,30000);
